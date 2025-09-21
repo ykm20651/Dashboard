@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/dashboard?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root      # ?? ?? MySQL ??
+    password: dnjf1djr!@#  # ?? ??? ??
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create  # create-drop ? ?? ???, update ? ??? ??
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        type.preferred_uuid_jdbc_type: CHAR   # ??! UUID? CHAR? ??
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
