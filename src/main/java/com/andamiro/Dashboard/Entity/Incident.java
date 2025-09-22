@@ -87,6 +87,18 @@ public class Incident {
         i.reportedAt = LocalDateTime.now();
         return i;
     }
+    public void update(String title, String description, String location) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+        if (description != null && !description.isBlank()) {
+            this.description = description;
+        }
+        if (location != null && !location.isBlank()) {
+            this.location = location;
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
 
     public void close() { this.status = Status.CLOSED; }
     public void markReportGenerated() { this.status = Status.REPORT_GENERATED; }
