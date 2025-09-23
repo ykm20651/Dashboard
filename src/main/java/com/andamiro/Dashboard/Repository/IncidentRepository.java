@@ -16,11 +16,6 @@ public interface IncidentRepository extends JpaRepository<Incident, UUID> {
     Q) 이거 DB에 컬럼명이랑 일치하는거 자동 변환하는거 어디서 흐름타고 이렇게 되는거임?
 
 
-
-
-
-
-
      */
 
 }

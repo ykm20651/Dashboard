@@ -63,4 +63,9 @@ public class EvidenceFile {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void updateDescription(String newDescription) {
+        this.description = newDescription;
+    }
+
 }
