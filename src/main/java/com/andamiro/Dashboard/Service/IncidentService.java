@@ -25,8 +25,7 @@ public class IncidentService {
          this.userRepository = userRepository;
      }
      */
-
-    //01-01 : 사고 목록 조회
+    /* 01-01 API 사고 목록 조회 매핑 */
     @Transactional(readOnly = true) //여기도 DTO에 담고
     public List<IncidentResponse> getListIncidents(UUID id) {
         List<Incident> incidents; //실제 엔티티(ERD설계한 테이블에 매핑하도록) 객체를 여기서 만들고
@@ -56,7 +55,7 @@ public class IncidentService {
                 .toList();
     }
 
-    // 01-02: 사고 등록
+    /* 01-02 API 사고 등록 매핑 */
     @Transactional
     public IncidentResponse createIncident(IncidentCreateRequest request) {
         //Service 레이어에서 DTO로 데이터 넘어온걸 실제 [1] 엔티티 클래스의 객체를 만들고 [2] (repository.save)저장하고, [3]응답 DTO로 반환하구나.
@@ -87,7 +86,7 @@ public class IncidentService {
         );
     }
 
-    // 01-03: 사고 상세 조회
+    /* 01-03 API 사고 상세 조회 매핑 */
     @Transactional
     public IncidentDetailResponse getDetailIncident(UUID id) {
         Incident incident = incidentRepository.findById(id)
@@ -112,7 +111,7 @@ public class IncidentService {
         );
     }
 
-    // 01-04: 사고 수정
+    /* 01-04 API 사고 수정 매핑 */
     @Transactional
     public IncidentUpdateResponse updateIncident(UUID id, IncidentUpdateRequest request) {
         Incident incident = incidentRepository.findById(id)
@@ -133,7 +132,7 @@ public class IncidentService {
         );
     }
 
-    // 01-05: 사고 삭제
+    /* 01-05 API 사고 삭제 매핑 */
     @Transactional
     public void deleteIncident(UUID id) {
         if( ! incidentRepository.existsById(id) ){
