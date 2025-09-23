@@ -1,5 +1,6 @@
 package com.andamiro.Dashboard.Dto.UserDTO;
 
+import com.andamiro.Dashboard.Entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
@@ -9,6 +10,6 @@ public record UserResponse(
         UUID id,
         String email,
         String name,
-        String role,
+        User.Role role,
         boolean isApproved
 ) {}

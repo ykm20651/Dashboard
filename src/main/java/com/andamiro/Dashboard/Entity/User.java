@@ -61,13 +61,13 @@ public class User {
     private List<Incident> incidents = new ArrayList<>(); //그래서 DB에서 조인해서 이 User가 작성한 모든 Incident들을 incidents 리스트로 가져올 수 있음.
 
     //-----ENUM 클래스
-    public enum Role{
+    public static enum Role{
         OWNER,
         CREW,
         ADMIN
     }
 
-    //생성자
+    //[1] private으로 생성자를 접근 제한하는 이유
     //외부 코드에서 new User() 하는 걸 막기 위해 protected 나 private 으로 두는 게 좋음.
     //JPA는 리플렉션으로 접근할 수 있기 때문에 private이어도 문제 없음. -> 리플렉션으로 접근하기 위해선 기본 생성자가 필요하기에 @NoArgsConsturctor있는거
     private User(String email, String passwordHash, String name, Role role) {
@@ -76,6 +76,12 @@ public class User {
         this.name = name;
         this.role = role;
         this.isApproved = false; //관리자 admin이 승인하면 통과하도록.
+    }
+    //Q) JPA가 리플렉션으로 엔티티를 만드는 이유, 그리고 우리가 new를 막아두는 이유는?
+
+    //[2] 정적 팩토리 메서드로 소통하게끔 함. 외부에서 new 생성자 쓰게 하면 DB 무결성 꺠질 수 있어서.
+    public static User create(String email, String passwordHash, String name, Role role) {
+        return new User(email, passwordHash, name, role);
     }
 
     @PrePersist //INSERT 전에 실행

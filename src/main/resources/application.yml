@@ -1,19 +1,19 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/dashboard?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root      # ?? ?? MySQL ??
-    password: dnjf1djr!@#  # ?? ??? ??
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create  # create-drop ? ?? ???, update ? ??? ??
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-        type.preferred_uuid_jdbc_type: CHAR   # ??! UUID? CHAR? ??
+        type.preferred_uuid_jdbc_type: CHAR
 
 server:
   port: 8080
@@ -23,3 +23,8 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+jwt:
+  secret: ${JWT_SECRET:change-me-change-me-change-me-change-me}
+  validity-ms: 3600000  # 1h
+  #bG9uZ19yYW5kb21fc2VjcmV0X2tleV93aXRoX2NoYXJzXzEyMzQ1처럼 환경변수 값(JWT_SECRET)은 네가 직접 운영 서버나 로컬에서 지정하는 거고,
+  #기본값 change-me는 단순히 “환경변수 없을 때라도 앱이 뻗지 말고 실행되게” 해 둔 placeholder일 뿐이야.

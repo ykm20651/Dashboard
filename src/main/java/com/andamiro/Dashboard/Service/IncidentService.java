@@ -27,9 +27,9 @@ public class IncidentService {
      */
 
     //01-01 : 사고 목록 조회
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) //여기도 DTO에 담고
     public List<IncidentResponse> getListIncidents(UUID id) {
-        List<Incident> incidents;
+        List<Incident> incidents; //실제 엔티티(ERD설계한 테이블에 매핑하도록) 객체를 여기서 만들고
 
         if( id == null ){
             incidents = incidentRepository.findAll();
@@ -37,7 +37,8 @@ public class IncidentService {
             incidents = incidentRepository.findByCreatorId(id);
         }
 
-        return incidents.stream()
+        return incidents.stream()//여기서 만든 엔티티 객체에 정보를 넣고 반환. 마지막에 List -> stream으로 바꿔서 좀더
+                //데이터 변형하고 순회하기 좋은게 stream객체라 이거 써서 데이터 넣고 해서, List로 마지막에 반환함
                 .map(i -> new IncidentResponse(
                         i.getId(),
                         i.getTitle(),
