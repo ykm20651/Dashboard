@@ -3,6 +3,7 @@ package com.andamiro.Dashboard.Service;
 
 import com.andamiro.Dashboard.Dto.IncidentDTO.*;
 import com.andamiro.Dashboard.Entity.Incident;
+import com.andamiro.Dashboard.Entity.User;
 import com.andamiro.Dashboard.Repository.IncidentRepository;
 import com.andamiro.Dashboard.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +60,11 @@ public class IncidentService {
     @Transactional
     public IncidentResponse createIncident(IncidentCreateRequest request) {
         //Service 레이어에서 DTO로 데이터 넘어온걸 실제 [1] 엔티티 클래스의 객체를 만들고 [2] (repository.save)저장하고, [3]응답 DTO로 반환하구나.
+        User creator = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
         Incident incident = Incident.create(
-                null, // 나중에 creator(User) 넣어줄 부분
+                creator, // 나중에 creator(User) 넣어줄 부분
                 request.title(),
                 request.description(),
                 Incident.IncidentType.valueOf(request.incidentType().toUpperCase()),
