@@ -66,8 +66,8 @@ public class Incident {
     )
     private Set<ResponseGuide> responseGuides = new HashSet<>();
 
-    public enum IncidentType { OIL_SPILL, COLLISION, FIRE, ETC }
-    public enum Status { OPEN, REPORT_GENERATED, CLOSED }
+    public static enum IncidentType { OIL_SPILL, COLLISION, FIRE, ETC }
+    public static enum Status { OPEN, REPORT_GENERATED, CLOSED }
 
     @PrePersist
     protected void onCreate() { this.createdAt = LocalDateTime.now(); }
