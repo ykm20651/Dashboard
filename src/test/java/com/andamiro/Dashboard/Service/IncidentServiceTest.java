@@ -1,5 +1,6 @@
 package com.andamiro.Dashboard.Service;
 
+import com.andamiro.Dashboard.Config.IncidentTestConfig;
 import com.andamiro.Dashboard.Dto.IncidentDTO.IncidentCreateRequest;
 import com.andamiro.Dashboard.Dto.IncidentDTO.IncidentResponse;
 import com.andamiro.Dashboard.Dto.IncidentDTO.IncidentUpdateRequest;
@@ -10,7 +11,6 @@ import com.andamiro.Dashboard.Repository.IncidentRepository;
 import com.andamiro.Dashboard.Repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -25,7 +25,7 @@ import static org.assertj.core.api.BDDAssertions.then; //값 검증
 
 //프로젝트 전체 Bean을 다 올리는데, 실서비스 환경과 똑같이 동작함. 다만 너무 무거워서 아래와같은 옵션을 줘서 올릴 Bean을 제한하였음.
 //classes={(테스트할 대상), (Mock Repository를 Bean으로 등록해주는 설정)}
-@SpringBootTest(classes = {IncidentService.class, IncidentServiceTestConfig.class})
+@SpringBootTest(classes = {IncidentService.class, IncidentTestConfig.class})
 public class IncidentServiceTest {
     //테스트할 Service + 필요한 Mock Bean만 최소한으로 ApllicationContext에 띄운다.
     @Autowired

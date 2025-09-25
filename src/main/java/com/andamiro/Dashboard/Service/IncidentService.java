@@ -31,9 +31,9 @@ public class IncidentService {
     public List<IncidentResponse> getListIncidents(UUID id) {
         List<Incident> incidents; //실제 엔티티(ERD설계한 테이블에 매핑하도록) 객체를 여기서 만들고
 
-        if( id == null ){
+        if( id == null ){ //특정 사용자가 없으면, 그냥 등록된 사고 목록 조회. . .
             incidents = incidentRepository.findAll();
-        }else{
+        }else{ //id가 있으면 특정 사용자 (userId, 즉, creatorId)가 등록한 사고만 List에 답기.
             incidents = incidentRepository.findByCreatorId(id);
         }
 
