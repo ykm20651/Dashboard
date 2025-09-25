@@ -15,10 +15,10 @@ public record IncidentResponse(
         LocalDateTime happenedAt,
         LocalDateTime reportedAt,
         String status,
-        CreatorSummary creator
+        CreatorSummary creator //작성자 요약
 ) {
     public record CreatorSummary(
-            UUID id,
+            UUID id, // 작성자(User의 id) = 사고를 등록한 사용자의 id
             String name
     ){}
 

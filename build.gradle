@@ -46,10 +46,11 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    runtimeOnly 'com.h2database:h2'  // ✅ H2 인메모리 DB - H2로 빠르게 Swagger UI 띄우고 API 테스트부터 진행하려고.
+    //runtimeOnly 'com.h2database:h2'  // ✅ H2 인메모리 DB - H2로 빠르게 Swagger UI 띄우고 API 테스트부터 진행하려고.
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+    systemProperty "spring.profiles.active", "test"
     jvmArgs += ["-XX:+EnableDynamicAgentLoading"]
 }
