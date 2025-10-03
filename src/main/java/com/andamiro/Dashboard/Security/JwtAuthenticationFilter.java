@@ -39,9 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 3. 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
+                            userId, //Principal
+                            null, // Credentials -우린 토큰 기반이라 비밀번호 안씀
+                            //name()은 enum 상수 그대로의 문자열을 리턴해.
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name())) //authorities
                     );
 
             // 4. SecurityContext에 저장 → 이후 컨트롤러에서 사용 가능

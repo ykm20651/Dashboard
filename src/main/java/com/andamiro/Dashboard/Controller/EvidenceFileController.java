@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,27 +29,35 @@ public class EvidenceFileController {
 
     /* 02-02 API 증거자료 추가 업로드 매핑 */
     @Operation(summary = "증거자료 업로드", description = "사고에 대한 증거자료(이미지/영상)를 업로드합니다.")
-    @PostMapping("/incidents/{id}/evidence-files")
+    @PostMapping(value = "/incidents/{id}/evidence-files", consumes = {"multipart/form-data"})
     public ResponseEntity<EvidenceFileCreateResponse> uploadEvidenceFile(
+            @AuthenticationPrincipal UUID userId,
             @PathVariable UUID id,
-            @RequestParam UUID uploaderId, // 임시: 나중에 JWT 인증 붙이면 실제로는 SecurityContext에서 가져와야 함
-            @RequestBody EvidenceFileCreateRequest request
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("description") String description
     ) {
-        return ResponseEntity.status(201).body(evidenceFileService.uploadEvidenceFile(id, uploaderId, request));
+        return ResponseEntity.status(201).body(
+                evidenceFileService.uploadEvidenceFile(id, userId, file, description)
+        );
     }
 
     /* 02-03 API 증거자료 삭제 매핑 */
     @Operation(summary = "증거자료 삭제", description = "증거자료를 삭제합니다.")
     @DeleteMapping("/evidence-files/{id}")
-    public ResponseEntity<Void> deleteEvidenceFile(@PathVariable UUID id) {
-        evidenceFileService.deleteEvidenceFile(id);
+    public ResponseEntity<Void> deleteEvidenceFile(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id) {
+        evidenceFileService.deleteEvidenceFile(userId, id);
         return ResponseEntity.noContent().build();
     }
 
     /* 02-04 API 증거자료 수정 매핑 */
     @Operation(summary = "증거자료 수정", description = "증거자료 설명을 수정합니다.")
     @PutMapping("/evidence-files/{id}")
-    public ResponseEntity<EvidenceFileUpdateResponse> updateEvidenceFile(@PathVariable UUID id, @RequestBody EvidenceFileUpdateRequest request) {
-        return ResponseEntity.ok(evidenceFileService.updateEvidenceFile(id, request));
+    public ResponseEntity<EvidenceFileUpdateResponse> updateEvidenceFile(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id,
+            @RequestBody EvidenceFileUpdateRequest request) {
+        return ResponseEntity.ok(evidenceFileService.updateEvidenceFile(userId, id, request));
     }
 }

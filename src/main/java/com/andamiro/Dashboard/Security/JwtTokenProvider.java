@@ -1,75 +1,81 @@
 package com.andamiro.Dashboard.Security;
 
 import com.andamiro.Dashboard.Entity.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
 
 @Component
-//JWT 발급 및 검증 로직을 담당하는 유틸 클래스 (Spring Bean).
 public class JwtTokenProvider {
 
-    private final Key secretKey; //서명용 비밀 키
-    private final long validityInMilliseconds; //토큰 유효시간
+    private final SecretKey key;
+    private final long validityInMs;
 
-    // 설정값을 주입받아 Key를 생성
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.validity-ms}") long validityInMilliseconds) {
-        // HS256은 최소 32바이트 이상 키 필요
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.validityInMilliseconds = validityInMilliseconds;
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration-ms:3600000}") long validityInMs) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.validityInMs = validityInMs;
     }
 
-    /** 토큰 생성 */
     public String createToken(UUID userId, User.Role role) {
         Date now = new Date();
-        Date exp = new Date(now.getTime() + validityInMilliseconds);
+        Date expiry = new Date(now.getTime() + validityInMs);
 
         return Jwts.builder()
-                .setSubject(userId.toString())
-                .claim("role", role.name())
-                .setIssuedAt(now)
-                .setExpiration(exp)
-                .signWith(secretKey, SignatureAlgorithm.HS256) // 최신 JJWT 문법
-                .compact();
+                .setSubject(userId.toString())        // 토큰의 "주체" = 유저 id (문자열)
+                .claim("role", role.name())           //  커스텀 claim에 역할 박제
+                .setIssuedAt(now)                     // 발급 시각
+                .setExpiration(expiry)                // 만료 시각
+                .signWith(key, SignatureAlgorithm.HS256) // HMAC-SHA256 서명
+                .compact();                           // 문자열 토큰 완성
     }
 
-    /** 토큰 검증 */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            parseClaims(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
+            System.out.println("❌ JWT 검증 실패: " + e.getMessage());
             return false;
         }
     }
 
-    /** 토큰에서 사용자 ID 추출 */
     public UUID getUserId(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return UUID.fromString(claims.getSubject());
+        return UUID.fromString(claims.getSubject()); // ✅ 이렇게 돼야 함
     }
 
     public User.Role getRole(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return User.Role.valueOf(claims.get("role", String.class));
+        String role = (String) parseClaims(token).get("role");
+        return User.Role.valueOf(role);
+    }
+
+    public Authentication getAuthentication(String token) {
+        // 필요시 UserDetailsService 연동 가능. 여기선 심플하게 ID/ROLE만 담아 인증 생성
+        UUID userId = getUserId(token);
+        User.Role role = getRole(token);
+        return new UsernamePasswordAuthenticationToken(
+                userId.toString(),  // principal (간단화)
+                null,               // credentials
+                java.util.List.of(() -> "ROLE_" + role.name())
+        );
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody();
     }
 }

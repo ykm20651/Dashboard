@@ -51,11 +51,12 @@ public class Incident {
 
     // Incident (사고 상세 화면에서 증거 목록도 조회할 수 있게끔)
     @OneToMany(mappedBy = "incident")
-    private List<EvidenceFile> evidenceFiles = new ArrayList<>();
+    @OrderBy("createdAt ASC") // 등록 시간 순 정렬
+    private Set<EvidenceFile> evidenceFiles = new HashSet<>();
 
-    // Incident (사고 상세 화면에서 보고서 생성도 할 수 있게끔)
     @OneToMany(mappedBy = "incident")
-    private List<Report> reports = new ArrayList<>();
+    @OrderBy("generatedAt ASC") // 등록 시간 순 정렬
+    private Set<Report> reports = new HashSet<>();
 
     // incident_response_guide_map (중간 테이블) 사용
     @ManyToMany
@@ -66,7 +67,7 @@ public class Incident {
     )
     private Set<ResponseGuide> responseGuides = new HashSet<>();
 
-    public static enum IncidentType { OIL_SPILL, COLLISION, FIRE, ETC }
+    public static enum IncidentType { OIL_SPILL, COLLISION, FIRE, CREW_INJURY }
     public static enum Status { OPEN, REPORT_GENERATED, CLOSED }
 
     @PrePersist

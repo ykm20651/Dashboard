@@ -41,7 +41,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
 
-        // 3. JWT 토큰 생성
+        // 3. JWT 토큰 생성 //DB에서 레코드 식별용 PK id를 여기서 끌고오는구나. userId와 User.Role 쌍으로 토큰 생성.
         String token = jwtTokenProvider.createToken(user.getId(), user.getRole());
 
         // 4. 응답 반환
@@ -111,7 +111,12 @@ public class UserService {
 
     /* 00-05 API 건 매핑 */
     @Transactional
-    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
+    public UserResponse updateUser(UUID userId, UUID id, UpdateUserRequest request) {
+        // 보안 체크: 로그인한 사용자와 PathVariable이 일치하는지 검증
+        if (!userId.equals(id)) {
+            throw new IllegalArgumentException("본인만 수정할 수 있습니다.");
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -128,7 +133,11 @@ public class UserService {
 
     /* 00-06 API 건 매핑 */
     @Transactional
-    public UserResponse getUser(UUID id) {
+    public UserResponse getUser(UUID userId, UUID id) {
+        if (!userId.equals(id)) {
+            throw new IllegalArgumentException("본인만 조회할 수 있습니다.");
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -138,10 +147,15 @@ public class UserService {
 
     /* 00-07 API 건 매핑 */
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(UUID userId, UUID id) {
+        if (!userId.equals(id)) {
+            throw new IllegalArgumentException("본인만 삭제할 수 있습니다.");
+        }
+
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
         }
+
         userRepository.deleteById(id);
     }
 

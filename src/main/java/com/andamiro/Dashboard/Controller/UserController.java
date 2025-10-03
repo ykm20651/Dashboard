@@ -2,12 +2,12 @@ package com.andamiro.Dashboard.Controller;
 
 import com.andamiro.Dashboard.Dto.*;
 import com.andamiro.Dashboard.Dto.UserDTO.*;
-import com.andamiro.Dashboard.Entity.User;
 import com.andamiro.Dashboard.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -61,25 +61,27 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    /* 00-05 수정 */
-    @Operation(summary = "유저 정보 수정", description = "유저 정보 수정 (이름, 비밀번호 등)")
+    /* 00-05 본인 정보 수정 */
+    @Operation(summary = "내 정보 수정", description = "현재 로그인한 사용자 정보 수정")
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest request) {
-        return ResponseEntity.ok(userService.updateUser(id, request));
+    public ResponseEntity<UserResponse> updateCurrentUser(
+            @AuthenticationPrincipal UUID userId, @PathVariable UUID id,
+            @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(userId, id, request));
     }
 
-    /* 00-06 조회 */
-    @Operation(summary = "유저 정보 조회", description = "유저 단건 조회")
+    /* 00-06 본인 정보 조회 */
+    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자 정보 반환")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getUser(id));
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UUID userId, @PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getUser(userId,id));
     }
 
-    /* 00-07 삭제 */
-    @Operation(summary = "유저 삭제", description = "유저 삭제 (선주/선원 공통)")
+    /* 00-07 본인 삭제 (회원 탈퇴) */
+    @Operation(summary = "회원 탈퇴", description = "현재 로그인한 사용자 계정 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteCurrentUser(@AuthenticationPrincipal UUID userId, @PathVariable UUID id) {
+        userService.deleteUser(userId, id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,6 +6,7 @@ import java.util.UUID;
 // 02-01 목록 조회 응답 DTO
 public record EvidenceFileResponse(
         UUID id,
+        UUID incidentId,
         String fileUrl,
         String fileType,
         String description,

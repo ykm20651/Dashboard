@@ -2,7 +2,6 @@ package com.andamiro.Dashboard.Config;
 
 import com.andamiro.Dashboard.Repository.IncidentRepository;
 import com.andamiro.Dashboard.Repository.UserRepository;
-import com.andamiro.Dashboard.Service.IncidentService;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -27,13 +26,19 @@ public class IncidentTestConfig {
         return Mockito.mock(UserRepository.class);
     }
 
-    @Bean
-    @Primary
-    public IncidentService mockIncidentService() {
-        return Mockito.mock(IncidentService.class);
-    }
+    /*
+    MockMvc로 요청을 보내면 진짜 서비스 메서드가 불리는데, Repository도 Mock이라서 → 결국 null 리턴되거나,
+    DTO 생성 안 되고 Body가 빈 채로 응답 내려온 거지.
+    @WebMvcTest 에서는 IncidentService 반드시 @MockBean 으로 선언해야 함.
+    IncidentTestConfig는 Repository Mock용으로만 사용하고, Service는 직접 MockBean 등록해.
 
+    */
 
+    //@Bean
+    //@Primary
+    //public IncidentService mockIncidentService() {
+    //    return Mockito.mock(IncidentService.class);
+    //}
 
 
 }

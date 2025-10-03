@@ -11,9 +11,8 @@ import java.util.UUID;
 public class IncidentFixture {
 
     /*요청 DTO 객체 생성 */
-    public static IncidentCreateRequest createIncidentCreateRequest(UUID userId) {
+    public static IncidentCreateRequest createIncidentCreateRequest() {
         return new IncidentCreateRequest(
-                userId,
                 "유류 유출",
                 "기관실에서 기름이 유출됨",
                 "OIL_SPILL",

@@ -2,9 +2,12 @@ package com.andamiro.Dashboard.Repository;
 
 import com.andamiro.Dashboard.Entity.Incident;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -24,5 +27,9 @@ public interface IncidentRepository extends JpaRepository<Incident, UUID> {
 
     즉, 메서드 이름 → 엔티티 필드 매핑 → DB 컬럼명 매핑 순서로 흘러가.
      */
-
+    @Query("SELECT i FROM Incident i " +
+            "LEFT JOIN FETCH i.evidenceFiles " +
+            "LEFT JOIN FETCH i.reports " +
+            "WHERE i.id = :id")
+    Optional<Incident> findByIdWithDetails(@Param("id") UUID id);
 }
