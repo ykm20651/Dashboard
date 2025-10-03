@@ -1,16 +1,14 @@
 package com.andamiro.Dashboard.Controller;
 
-
 import com.andamiro.Dashboard.Dto.IncidentDTO.*;
 import com.andamiro.Dashboard.Service.IncidentService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,48 +18,51 @@ import java.util.UUID;
 @Tag(name ="Incident API", description = "사고 등록, 관리, 조회 API")
 public class IncidentController {
 
-    private final IncidentService incidentService; //@RequiredArgsConstructor
+    private final IncidentService incidentService;
 
     /* 01-01 API 사고 목록 조회 매핑 */
-    @Operation(summary ="사고 목록 조회", description = "선원/선주 본인이 등록한 사고의 리스트 조회")
+    @Operation(summary ="사고 목록 조회", description = "선원/선주 본인이 소속된 사고의 리스트 조회")
     @GetMapping
-    public ResponseEntity<List<IncidentResponse>> getIncident(@RequestParam(required = true) UUID id){
-        List<IncidentResponse> response = incidentService.getListIncidents(id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<IncidentResponse>> getIncidents(
+            @AuthenticationPrincipal UUID userId) {
+        return ResponseEntity.ok(incidentService.getListIncidents(userId));
     }
 
     /* 01-02 API 사고 등록 매핑 */
     @Operation(summary = "사고 등록", description = "선원/선주가 새로운 사고 정보를 등록합니다.")
     @PostMapping
-    public ResponseEntity<IncidentResponse> createIncident(@RequestBody IncidentCreateRequest request) {
-        return ResponseEntity.status(201).body(incidentService.createIncident(request));
+    public ResponseEntity<IncidentResponse> createIncident(
+            @AuthenticationPrincipal UUID userId,
+            @RequestBody IncidentCreateRequest request) {
+        return ResponseEntity.status(201).body(incidentService.createIncident(userId, request));
     }
 
     /* 01-03 API 사고 상세 조회 매핑 */
-    @Operation(summary = "사고 상세 조회", description = "특정 사고의 상세 정보를 조회합니다.")
+    @Operation(summary = "사고 상세 조회", description = "특정 사고의 상세 정보를 조회합니다. (Owner 전용, 본인 소유만)")
     @GetMapping("/{id}")
-    public ResponseEntity<IncidentDetailResponse> getDetailIncident(@PathVariable UUID id) {
-        IncidentDetailResponse response = incidentService.getDetailIncident(id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<IncidentDetailResponse> getDetailIncident(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(incidentService.getDetailIncident(userId, id));
     }
 
     /* 01-04 API 사고 수정 매핑 */
-    @Operation(summary = "사고 수정", description = "사고 정보를 수정합니다.")
+    @Operation(summary = "사고 수정", description = "사고 정보를 수정합니다. (Owner 전용, 본인 소유만)")
     @PutMapping("/{id}")
-    public ResponseEntity<IncidentUpdateResponse> updateIncident(@PathVariable UUID id, @RequestBody IncidentUpdateRequest request) {
-        // TODO: service.updateIncident(id, request)
-        IncidentUpdateResponse response = incidentService.updateIncident(id, request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<IncidentUpdateResponse> updateIncident(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id,
+            @RequestBody IncidentUpdateRequest request) {
+        return ResponseEntity.ok(incidentService.updateIncident(userId, id, request));
     }
 
     /* 01-05 API 사고 삭제 매핑 */
-    @Operation(summary = "사고 삭제", description = "사고를 삭제합니다.")
+    @Operation(summary = "사고 삭제", description = "사고를 삭제합니다. (Owner 전용, 본인 소유만)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteIncident(@PathVariable UUID id) {
-        // TODO: service.deleteIncident(id)
-        incidentService.deleteIncident(id);
+    public ResponseEntity<Void> deleteIncident(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id) {
+        incidentService.deleteIncident(userId, id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

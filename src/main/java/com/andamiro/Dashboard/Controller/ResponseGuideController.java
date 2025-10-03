@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,16 +23,16 @@ public class ResponseGuideController {
     /* 04-01: 맞춤형 대응 가이드 전략 생성 */
     @Operation(summary = "맞춤형 대응 가이드 전략 생성", description = "사고 유형에 맞는 대응 가이드를 생성합니다.")
     @PostMapping
-    public ResponseEntity<ResponseGuideCreateResponse> createGuide(@PathVariable UUID id) {
-        ResponseGuideCreateResponse response = responseGuideService.createGuide(id);
+    public ResponseEntity<ResponseGuideCreateResponse> createGuide(@AuthenticationPrincipal UUID userId, @PathVariable UUID id) {
+        ResponseGuideCreateResponse response = responseGuideService.createGuide(userId, id);
         return ResponseEntity.status(201).body(response);
     }
 
     /* 04-02: 맞춤형 대응 가이드 조회 */
     @Operation(summary = "맞춤형 대응 가이드 조회", description = "사고에 대한 대응 가이드 리스트를 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<ResponseGuideResponse>> getGuides(@PathVariable UUID id) {
-        List<ResponseGuideResponse> response = responseGuideService.getGuides(id);
+    public ResponseEntity<List<ResponseGuideResponse>> getGuides(@AuthenticationPrincipal UUID userId, @PathVariable UUID id) {
+        List<ResponseGuideResponse> response = responseGuideService.getGuides(userId, id);
         return ResponseEntity.ok(response);
     }
 }

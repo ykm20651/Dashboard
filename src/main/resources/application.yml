@@ -7,13 +7,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
         type.preferred_uuid_jdbc_type: CHAR
+  servlet:
+    multipart:
+      max-file-size: 50MB     # 단일 파일 최대 크기
+      max-request-size: 50MB  # 전체 요청 크기 (파일 여러 개 포함 시)
 
 server:
   port: 8080

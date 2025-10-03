@@ -9,6 +9,7 @@ import com.andamiro.Dashboard.Entity.Incident;
 import com.andamiro.Dashboard.Entity.User;
 import com.andamiro.Dashboard.Repository.IncidentRepository;
 import com.andamiro.Dashboard.Repository.UserRepository;
+import com.andamiro.Dashboard.Util.TestEntityUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.BDDAssertions.then; //값 검증
 
 
 //프로젝트 전체 Bean을 다 올리는데, 실서비스 환경과 똑같이 동작함. 다만 너무 무거워서 아래와같은 옵션을 줘서 올릴 Bean을 제한하였음.
-//classes={(테스트할 대상), (Mock Repository를 Bean으로 등록해주는 설정)}
+////classes={(테스트할 대상), (Mock Repository를 Bean으로 등록해주는 설정)}
 @SpringBootTest(classes = {IncidentService.class, IncidentTestConfig.class})
 public class IncidentServiceTest {
     //테스트할 Service + 필요한 Mock Bean만 최소한으로 ApllicationContext에 띄운다.
@@ -52,7 +53,7 @@ public class IncidentServiceTest {
         // given
         UUID userId = UUID.randomUUID();
         IncidentCreateRequest request = new IncidentCreateRequest(
-                userId,
+
                 "유류 유출",
                 "기관실에서 기름이 유출됨",
                 "OIL_SPILL",
@@ -80,7 +81,7 @@ public class IncidentServiceTest {
         given(incidentRepository.save(any(Incident.class))).willReturn(incident);
 
         // when
-        IncidentResponse result = incidentService.createIncident(request);
+        IncidentResponse result = incidentService.createIncident(userId, request);
 
         // then - DTO가 record로 선언되어있어 필드명 그대로 getter만들어져있음.
         then(result.title()).isEqualTo("유류 유출");
@@ -93,7 +94,8 @@ public class IncidentServiceTest {
     @DisplayName("updateIncident 메서드는 특정 사고 정보에 대하여 수정을 성공적 완료")
     void updateIncidentTest(){
         //given
-        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID incidentId = UUID.randomUUID();
         IncidentUpdateRequest request = new IncidentUpdateRequest(
                 "수정된 제목",
                 "수정된 설명",
@@ -102,6 +104,12 @@ public class IncidentServiceTest {
 
         // 가짜 사용자
         User fakeUser = User.create("ykm3065@example.com", "password1234", "유경민", User.Role.OWNER);
+        // ->테스트에서 만든 fakeUser는 User.create(...) 팩토리 메서드로 만든 객체라 id가 null이야.
+        // (DB에 persist되지 않았으니까 @GeneratedValue로 할당되지 않은 상태)
+        //JPA에서 영속화될 때 DB에 id가 GeneratedValue로 할당된다고 함.
+
+        // ★ 리플렉션으로 id 주입
+        TestEntityUtil.forceSetId(fakeUser, "id", userId);
 
         // 가짜 Incident
         Incident incident = Incident.create(
@@ -114,10 +122,10 @@ public class IncidentServiceTest {
         );
 
         // Incident가 DB에 있는 것처럼 findById가 incident 반환하도록 Mocking
-        given(incidentRepository.findById(id)).willReturn(Optional.of(incident));
+        given(incidentRepository.findById(incidentId)).willReturn(Optional.of(incident));
         given(incidentRepository.save(any(Incident.class))).willReturn(incident);
         //when
-        IncidentUpdateResponse result = incidentService.updateIncident(id, request);
+        IncidentUpdateResponse result = incidentService.updateIncident(userId, incidentId, request);
 
         //then
         then(result.title()).isEqualTo("수정된 제목");

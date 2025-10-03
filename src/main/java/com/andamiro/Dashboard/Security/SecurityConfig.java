@@ -1,8 +1,11 @@
 package com.andamiro.Dashboard.Security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,18 +23,53 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) //CSRF(Cross-Site Request Forgery)는 보통 세션-쿠키 기반 인증에서만 필요한 보안 기능.
-                .authorizeHttpRequests(auth -> auth //“어떤 요청을 허용/차단할지 규칙 세우기” 시작.
-                        .requestMatchers("/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // /login, /swagger-ui/**, /v3/api-docs/** 경로는 누구나 접근 가능 (로그인 안 해도 됨).
-                        .requestMatchers("/owner/**").hasRole("OWNER")
-                        .requestMatchers("/crew/**").hasRole("CREW")
-                        .anyRequest().authenticated() //위에 명시 안 된 나머지 API는 로그인만 되어 있으면 접근 가능.
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ✅ 추가
+                .authorizeHttpRequests(auth -> auth
+                        // 공개
+                        .requestMatchers("/users/login", "/users", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // 관리자 전용
+                        .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
+
+                        // 선주 전용
+                        .requestMatchers(HttpMethod.POST, "/users/*/owner-info").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.GET,    "/incidents/*").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT,    "/incidents/*").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/incidents/*").hasRole("OWNER")
+                        .requestMatchers("/incidents/*/analyze").hasRole("OWNER")
+                        .requestMatchers("/incidents/*/evidence-files").hasRole("OWNER")
+                        .requestMatchers("/evidence-files/*").hasRole("OWNER")
+                        .requestMatchers("/incidents/*/reports").hasRole("OWNER")
+                        .requestMatchers("/incidents/*/response-guide").hasRole("OWNER")
+
+                        // 선원 전용
+                        .requestMatchers(HttpMethod.POST, "/users/*/crew-info").hasRole("CREW")
+
+                        // 선주 + 선원 공용
+                        .requestMatchers(HttpMethod.PATCH,  "/users/*").hasAnyRole("OWNER","CREW")
+                        .requestMatchers(HttpMethod.GET,    "/users/*").hasAnyRole("OWNER","CREW")
+                        .requestMatchers(HttpMethod.DELETE, "/users/*").hasAnyRole("OWNER","CREW")
+
+                        .requestMatchers(HttpMethod.GET,  "/incidents").hasAnyRole("OWNER","CREW")
+                        .requestMatchers(HttpMethod.POST, "/incidents").hasAnyRole("OWNER","CREW")
+                        .requestMatchers(HttpMethod.GET,  "/incidents/*/reports").hasAnyRole("OWNER","CREW")
+
+                        // 증거자료 업로드 (둘 다 가능)
+                        .requestMatchers(HttpMethod.POST, "/incidents/*/evidence-files").hasAnyRole("OWNER","CREW")
+
+                        // 나머지는 인증만
+                        .anyRequest().authenticated()
                 )
-                // UsernamePasswordAuthenticationFilter 앞에 우리가 만든 JWT 필터 삽입
+                .exceptionHandling(ex -> ex
+                        // 인증 안 된 상태일 때는 무조건 401 Unauthorized
+                        .authenticationEntryPoint((req, res, e) ->
+                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다."))
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class);
 
-        return http.build(); //필터 체인 완성해서 Spring Security한테 넘김.
+        return http.build();
     }
 
     @Bean
