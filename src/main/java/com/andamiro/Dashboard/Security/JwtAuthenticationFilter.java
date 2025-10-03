@@ -28,6 +28,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI();
+
+        // 화이트리스트 경로: /users (정확히 이 경로) + /users/login
+        if (requestURI.equals("/users")
+                || requestURI.equals("/users/login")
+                || requestURI.startsWith("/swagger-ui")
+                || requestURI.startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         // 1. Authorization 헤더에서 토큰 추출 - 별도 메서드(resolveToken)로 분리해서 헤더 파싱.
         String token = resolveToken(request);
 
