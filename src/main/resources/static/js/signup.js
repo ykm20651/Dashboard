@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const contactNumber = document.getElementById("contactNumber").value;
         const businessNumber = document.getElementById("businessNumber").value;
 
-        const ownerRes = await fetch(`http://15.164.99.177:8080/users/${userId}/owner-info`, {
+        const ownerRes = await fetch(`http:// /users/${userId}/owner-info`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ companyName, shipRegId, contactNumber, businessNumber })
