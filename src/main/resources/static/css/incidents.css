@@ -1,0 +1,89 @@
+/* ===== 기본 ===== */
+body {
+  margin: 0;
+  padding: 0;
+  background: url("../images/메인화면.png") center center / cover no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 0;
+}
+
+/* 컨테이너 */
+.incidents-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 120px auto 60px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+/* 로고 */
+.logo {
+  height: 100px;
+  margin-bottom: 40px;
+  margin-top : -5%;
+  margin-right: -10%;
+}
+
+/* 박스 */
+.section-box {
+  background: rgba(0, 0, 0, 0.65);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  margin-bottom: 30px;
+}
+.section-box h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* ===== 테이블 ===== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+.table th, .table td {
+  padding: 12px;
+  border-bottom: 1px solid #555;
+  text-align: center;
+}
+.table th {
+  background: rgba(41, 41, 41, 0.95);
+  font-weight: 600;
+}
+.table tr:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ===== 버튼 ===== */
+.btn {
+  border: 1px solid #666;
+  background: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.btn:hover { background: #333; }
+.btn.danger { border-color: #ff6b35; color: #ff6b35; }
+.btn.danger:hover { background: #e74c3c; color: #fff; }
+
+/* 메시지 */
+#msg {
+  margin-top: 15px;
+  font-size: 0.95rem;
+  text-align: center;
+}

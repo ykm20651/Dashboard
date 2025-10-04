@@ -1,0 +1,101 @@
+/* 기본 배경 */
+body {
+  margin: 0;
+  padding: 0;
+  background: url("../images/메인화면.png") center center / cover no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 0;
+}
+
+/* 컨테이너 */
+.report-container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 100px auto 60px auto;
+  padding: 0 20px;
+}
+
+/* 로고 */
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  margin-right : -5%
+}
+.logo {
+  height: 80px;
+  width: auto;
+}
+
+/* 박스 */
+.section-box {
+  background: rgba(0,0,0,0.65);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  margin-bottom: 30px;
+}
+.section-box h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* 보고서 리스트 */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.report-card {
+  background: rgba(26,26,26,0.9);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+}
+.report-card p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.report-card a {
+  color: #ffb347;
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+/* 버튼 */
+.action-btns {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+.btn {
+  border: 1px solid #666;
+  background: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.btn:hover { background: #333; }
+.btn.primary { border-color: #ff6b35; color: #ff6b35; }
+.btn.primary:hover { background: #ff6b35; color: #fff; }
+
+/* 메시지 */
+#msg {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.95rem;
+}

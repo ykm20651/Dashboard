@@ -1,0 +1,95 @@
+/* === 페이지 전체 === */
+body {
+  background: #e8e4e4; /* 원하는 색으로 교체 가능 */
+  color: #333;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* === 레이아웃 === */
+.contact-page {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 140px auto 60px; /* 헤더 높이 + 여유 */
+  padding: 0 20px;
+  gap: 40px;
+}
+
+/* === 좌측 회사 정보 === */
+.contact-info {
+  flex: 1 1 40%;
+}
+.contact-info h1 {
+  font-size: 2.5rem;
+  color: #000;
+  margin-bottom: 20px;
+}
+.contact-info p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+/* 지도 영역 */
+.map-area {
+  margin-top: 30px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* === 우측 문의 폼 === */
+.contact-form {
+  flex: 1 1 50%;
+}
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.contact-form label {
+  font-weight: 600;
+}
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+}
+.contact-form textarea {
+  min-height: 250px;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: 2px solid #00a8b5;
+}
+
+/* 제출 버튼 */
+.submit-btn {
+  align-self: flex-start;
+  padding: 14px 48px;
+  background: #434545;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.submit-btn:hover {
+  background: #5a5b5b;
+}
+
+/* === 반응형 (모바일) === */
+@media (max-width: 900px) {
+  .contact-page {
+    flex-direction: column;
+  }
+  .contact-form,
+  .contact-info {
+    flex: 1 1 100%;
+  }
+}

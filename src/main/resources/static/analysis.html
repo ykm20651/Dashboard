@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>사고 분석 | OASIS</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/analysis.css">
+  <script defer src="js/analysis.js"></script>
+</head>
+<body>
+  <main class="analysis-container">
+    <!-- 로고 -->
+    <a href="index.html" class="logo-link">
+      <img src="images/오아시스 로고.png" alt="OASIS Logo" class="logo">
+    </a>
+
+    <section class="section-box">
+      <h2>사고 분석</h2>
+
+      <!-- 사고 분석 요청 -->
+      <form id="analyzeForm">
+        <label for="incidentId">사고 ID</label>
+        <input type="text" id="incidentId" required placeholder="사고 ID 입력">
+        <button type="submit">분석 요청</button>
+      </form>
+
+      <!-- 증거자료 업로드 -->
+      <h3>증거자료 업로드</h3>
+      <form id="evidenceForm">
+        <label for="fileUrl">파일 URL</label>
+        <input type="text" id="fileUrl" required placeholder="https://...">
+
+        <label for="fileType">파일 타입</label>
+        <input type="text" id="fileType" required placeholder="image, video, text">
+
+        <label for="description">설명</label>
+        <input type="text" id="description">
+
+        <button type="submit">업로드</button>
+      </form>
+
+      <p id="msg"></p>
+    </section>
+  </main>
+</body>
+</html>

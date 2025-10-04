@@ -1,0 +1,121 @@
+/* ===== 공통 배경 & 폰트 ===== */
+body {
+  background: url("../images/메인화면.png") center center / cover no-repeat;
+  background-color: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== 메인 컨테이너 ===== */
+.incident-container {
+  position: relative;
+  z-index: 1;
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* 로고 */
+.logo-link {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.logo {
+  height: 60px;
+  width: auto;
+}
+
+/* ===== 섹션 박스 ===== */
+.section-box {
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 16px;
+  padding: 40px 30px;
+  text-align: left;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.section-box h2 {
+  font-size: 1.4rem;
+  margin-bottom: 24px;
+  color: #d4d7da;
+}
+
+/* ===== 증거 자료 업로드 ===== */
+.upload-box {
+  border: 2px dashed rgba(255,255,255,0.4);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  color: #ccc;
+}
+.upload-box input[type="file"] {
+  display: block;
+  margin: 20px auto 0;
+  color: #fff;
+}
+
+/* ===== 사고 유형 선택 ===== */
+.incident-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.form-row {
+  display: flex;
+  flex-direction: column;
+}
+.form-row label {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ddd;
+}
+.form-row input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: background 0.3s ease;
+}
+.form-row input:focus {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ===== 저장 버튼 ===== */
+.save-btn {
+  align-self: flex-end;
+  background: #2b2d31;
+  color: #fff;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+}
+.save-btn:hover {
+  background: #4d5158;
+  transform: translateY(-2px);
+}
