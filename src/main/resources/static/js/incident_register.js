@@ -5,33 +5,36 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(form);
-    const incidentData = {
-      title: formData.get("title"),
-      description: formData.get("description"),
-      incidentType: formData.get("incidentType"),
-      location: formData.get("location"),
-      happenedAt: formData.get("happenedAt"),
-      severity: formData.get("severity")
-    };
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const incidentType = document.getElementById("incidentType").value;
+    const location = document.getElementById("location").value;
+    const happenedAt = document.getElementById("happenedAt").value;
 
     try {
-      // 01-02 API: 사고 등록
-      const response = await apiCall("/incidents", {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("로그인이 필요합니다.");
+
+      const res = await fetch("http://15.164.99.177/incidents", {
         method: "POST",
-        body: JSON.stringify(incidentData)
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ title, description, incidentType, location, happenedAt })
       });
 
-      msg.innerText = "✅ 사고가 성공적으로 등록되었습니다.";
+      if (!res.ok) throw new Error("사고 등록 실패");
+
+      const data = await res.json();
+      console.log("사고 등록 성공:", data);
+
+      msg.innerText = "✅ 사고가 성공적으로 등록되었습니다!";
       msg.style.color = "green";
-      
-      // 폼 초기화
-      form.reset();
-      
-      // 2초 후 사고 목록 페이지로 이동
+
       setTimeout(() => {
         window.location.href = "incidents.html";
-      }, 2000);
+      }, 1500);
 
     } catch (err) {
       msg.innerText = "❌ " + err.message;

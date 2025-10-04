@@ -2,10 +2,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const incidentList = document.getElementById("incidentList");
   const msg = document.getElementById("msg");
 
-  // 01-01 API: 사고 목록 불러오기
+  // 사고 목록 불러오기
   async function loadIncidents() {
     try {
-      const incidents = await apiCall("/incidents");
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://15.164.99.177/incidents", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("사고 불러오기 실패");
+
+      const incidents = await res.json();
       incidentList.innerHTML = "";
 
       if (incidents.length === 0) {
@@ -24,8 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>
             <button class="btn tiny" onclick="viewDetail('${incident.id}')">상세</button>
             <button class="btn tiny" onclick="viewReport('${incident.id}')">보고서</button>
-            <button class="btn tiny" onclick="viewEvidence('${incident.id}')">증거자료</button>
-            <button class="btn tiny" onclick="viewGuide('${incident.id}')">대응가이드</button>
             <button class="btn tiny danger" onclick="deleteIncident('${incident.id}')">삭제</button>
           </td>
         `;
@@ -47,24 +51,24 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = `report.html?id=${id}`;
   };
 
-  // 증거자료
-  window.viewEvidence = (id) => {
-    window.location.href = `evidence.html?incidentId=${id}`;
-  };
-
-  // 대응가이드
-  window.viewGuide = (id) => {
-    window.location.href = `response_guide.html?incidentId=${id}`;
-  };
-
-  // 01-05 API: 사고 삭제
+  // 삭제
   window.deleteIncident = async (id) => {
     if (!confirm("정말 이 사고를 삭제하시겠습니까?")) return;
 
     try {
-      await apiCall(`/incidents/${id}`, {
-        method: "DELETE"
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://15.164.99.177/incidents/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
       });
+
+      if (res.status === 401 || res.status === 403) {
+        msg.innerText = "❌ 삭제 권한이 없습니다.";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (!res.ok) throw new Error("사고 삭제 실패");
 
       msg.innerText = "✅ 사고가 삭제되었습니다.";
       msg.style.color = "green";

@@ -17,45 +17,47 @@ body::before {
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 0;
-  pointer-events: none; /* 클릭 막지 않도록 */
+  pointer-events: none;
 }
 
 /* 로그인 전체 컨테이너 */
 .login-container {
-  position: relative;
+  position: absolute;
   z-index: 1;
   display: flex;
-  flex-direction: column;  /* 위아래 배치 */
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* 🔥 위쪽부터 배치되도록 변경 */
   min-height: 100vh;
-  gap: 20px;              /* 로고와 박스 간격 */
+  padding-top: 5%; /* 🔥 로고와 박스 간격 */
 }
 
-/* 로고가 정확히 중앙에 오도록 */
+/* 로고 중앙 정렬 */
 .logo-link {
-  display: flex;                 /* 부모를 flex 박스로 */
-  justify-content: center;       /* 가로 중앙 정렬 */
-  align-items: center;           /* 세로 기준은 가운데 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
 }
 
 .logo {
-  display: block;                /* 여백 제거 */
-  height: 60px;
+  display: block;
+  height: 100px;
   width: auto;
-  margin: 0 auto;                /* 혹시 flex가 안 먹을 때 대비 */
-  transform: none;               /* 기존 translate 제거 */
+  margin-top: -5%;     /* 🔥 기존 10% → 0 으로 */
+  margin-bottom: 50px; /* 🔥 아래 박스와 간격 추가 */
+  margin-right : -15%
 }
+
 /* 로그인 박스 */
 .login-box {
-  background: rgba(28,28,28,0.9);
+  background: rgba(28, 28, 28, 0.9);
   padding: 48px 40px;
   width: 380px;
   border-radius: 18px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.7);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7);
   text-align: center;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 타이틀 */
@@ -80,7 +82,7 @@ body::before {
 }
 .login-form input {
   padding: 12px 14px;
-  background: rgba(42,42,42,0.9);
+  background: rgba(42, 42, 42, 0.9);
   border: 1px solid #444;
   border-radius: 10px;
   color: #fff;
@@ -89,7 +91,7 @@ body::before {
 }
 .login-form input:focus {
   outline: none;
-  background: rgba(60,60,60,0.9);
+  background: rgba(60, 60, 60, 0.9);
   border-color: #fff;
 }
 

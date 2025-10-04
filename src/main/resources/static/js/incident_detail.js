@@ -1,82 +1,205 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const incidentId = urlParams.get('id');
-  
-  if (!incidentId) {
-    document.getElementById("msg").innerText = "❌ 사고 ID가 없습니다.";
-    return;
-  }
+  const params = new URLSearchParams(window.location.search);
+  const incidentId = params.get("id");
 
-  loadIncidentDetail(incidentId);
-});
+  const titleInput = document.getElementById("editTitle");
+  const descInput = document.getElementById("editDesc");
+  const locationInput = document.getElementById("editLocation");
+  const typeInput = document.getElementById("editType");
+  const timeInput = document.getElementById("editTime");
+  const statusSelect = document.getElementById("editStatus");
 
-async function loadIncidentDetail(incidentId) {
-  try {
-    // 01-03 API: 사고 상세 조회
-    const incident = await apiCall(`/incidents/${incidentId}`);
-    
-    // 사고 상세 정보 렌더링 (IncidentDetailResponse DTO 구조에 맞춤)
-    document.getElementById("incidentTitle").textContent = incident.title;
-    document.getElementById("incidentType").textContent = incident.incidentType;
-    document.getElementById("location").textContent = incident.location;
-    document.getElementById("happenedAt").textContent = new Date(incident.happenedAt).toLocaleString();
-    document.getElementById("status").textContent = incident.status;
-    document.getElementById("description").textContent = incident.description;
-    
-    // 증거자료 목록 렌더링
-    if (incident.evidenceFiles && incident.evidenceFiles.length > 0) {
-      const evidenceGrid = document.getElementById("evidenceGrid");
-      evidenceGrid.innerHTML = "";
-      incident.evidenceFiles.forEach(file => {
-        const div = document.createElement("div");
-        div.className = "evidence-item";
-        div.innerHTML = `
-          <div class="evidence-preview">
-            ${file.fileType.startsWith('image/') ? 
-              `<img src="${file.fileUrl}" alt="증거자료" style="max-width: 200px; max-height: 150px;">` :
-              `<div class="file-icon">📄 ${file.fileUrl}</div>`
-            }
-          </div>
-          <div class="evidence-info">
-            <p>${file.description}</p>
-          </div>
-        `;
-        evidenceGrid.appendChild(div);
+  const editBtn = document.getElementById("editBtn");
+  const saveEditBtn = document.getElementById("saveEdit");
+  const cancelEditBtn = document.getElementById("cancelEdit");
+  const msg = document.getElementById("msg");
+
+  const evidenceGrid = document.getElementById("evidenceGrid");
+  const deleteSelectedBtn = document.getElementById("deleteSelected");
+  const evidenceForm = document.getElementById("evidenceForm");
+
+  let editMode = false;
+
+  // 사고 상세 불러오기
+  async function loadIncident() {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://15.164.99.177/incidents/${incidentId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
       });
+      if (!res.ok) throw new Error("사고 불러오기 실패");
+
+      const data = await res.json();
+      titleInput.value = data.title;
+      descInput.value = data.description;
+      locationInput.value = data.location;
+      typeInput.value = data.incidentType;
+      timeInput.value = data.happenedAt;
+      statusSelect.value = data.status;
+    } catch (err) {
+      msg.innerText = "❌ " + err.message;
+      msg.style.color = "red";
     }
-    
-    // 수정/삭제 버튼 이벤트 리스너
-    document.getElementById("editBtn").addEventListener("click", () => {
-      editIncident(incidentId);
-    });
-    
-    document.getElementById("deleteBtn").addEventListener("click", () => {
-      deleteIncident(incidentId);
-    });
-    
-  } catch (err) {
-    document.getElementById("msg").innerText = "❌ " + err.message;
-    document.getElementById("msg").style.color = "red";
   }
-}
 
-async function editIncident(incidentId) {
-  // 수정 폼으로 이동 (기존 데이터와 함께)
-  window.location.href = `incident_register.html?edit=${incidentId}`;
-}
+  // 증거자료 불러오기
+  async function loadEvidence(editMode = false) {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://15.164.99.177/incidents/${incidentId}/evidence-files`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const files = await res.json();
 
-async function deleteIncident(incidentId) {
-  if (!confirm("정말 이 사고를 삭제하시겠습니까?")) return;
+      evidenceGrid.innerHTML = "";
+      if (files.length === 0) {
+        evidenceGrid.innerHTML = `<p class="empty-text">증거자료가 없습니다.</p>`;
+        return;
+      }
 
-  try {
-    await apiCall(`/incidents/${incidentId}`, {
-      method: "DELETE"
-    });
-
-    alert("✅ 사고가 삭제되었습니다.");
-    window.location.href = "incidents.html";
-    
-  } catch (err) {
-    alert("❌ " + err.message);
+      files.forEach(file => {
+        const card = document.createElement("div");
+        card.className = "evidence-card";
+        card.innerHTML = `
+          ${editMode ? `<input type="checkbox" class="select-check" value="${file.id}">` : ""}
+          <div class="preview">${renderFilePreview(file)}</div>
+          <p class="desc">${file.description}</p>
+          <p class="time">${file.createdAt}</p>
+        `;
+        evidenceGrid.appendChild(card);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
-}
+
+  function renderFilePreview(file) {
+    if (file.fileType.startsWith("image")) {
+      return `<img src="${file.fileUrl}" alt="evidence" class="thumb">`;
+    } else if (file.fileType.startsWith("video")) {
+      return `<video src="${file.fileUrl}" class="thumb" controls></video>`;
+    } else {
+      return `<a href="${file.fileUrl}" target="_blank" class="file-link">📄 파일 보기</a>`;
+    }
+  }
+
+  function toggleForm(state) {
+    editMode = state;
+    [titleInput, descInput, locationInput, typeInput, timeInput, statusSelect]
+      .forEach(input => input.disabled = !state);
+
+    editBtn.style.display = state ? "none" : "inline-block";
+    saveEditBtn.style.display = state ? "inline-block" : "none";
+    cancelEditBtn.style.display = state ? "inline-block" : "none";
+
+    // 증거자료 삭제 버튼 표시
+    deleteSelectedBtn.style.display = state ? "inline-block" : "none";
+
+    // 증거자료 다시 로드
+    loadEvidence(state);
+  }
+
+  editBtn.addEventListener("click", () => toggleForm(true));
+  cancelEditBtn.addEventListener("click", () => {
+    toggleForm(false);
+    loadIncident();
+  });
+
+  saveEditBtn.addEventListener("click", async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const body = {
+        title: titleInput.value,
+        description: descInput.value,
+        location: locationInput.value,
+        incidentType: typeInput.value,
+        happenedAt: timeInput.value,
+        status: statusSelect.value
+      };
+
+      const res = await fetch(`http://15.164.99.177/incidents/${incidentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error("수정 실패");
+
+      msg.innerText = "✅ 수정 완료";
+      msg.style.color = "green";
+      toggleForm(false);
+      loadIncident();
+    } catch (err) {
+      msg.innerText = "❌ " + err.message;
+      msg.style.color = "red";
+    }
+  });
+
+  evidenceForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+
+    const fileInput = document.getElementById("fileInput");
+    const descInput = document.getElementById("fileDesc");
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    formData.append("description", descInput.value);
+
+    try {
+      const res = await fetch(`http://15.164.99.177/incidents/${incidentId}/evidence-files`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formData
+      });
+      if (!res.ok) throw new Error("증거자료 업로드 실패");
+
+      msg.innerText = "✅ 증거자료 업로드 성공";
+      msg.style.color = "green";
+      fileInput.value = "";
+      descInput.value = "";
+      loadEvidence(editMode);
+    } catch (err) {
+      msg.innerText = "❌ " + err.message;
+      msg.style.color = "red";
+    }
+  });
+
+  deleteSelectedBtn.addEventListener("click", async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      msg.innerText = "⚠️ 권한이 없습니다. 로그인 후 이용하세요.";
+      msg.style.color = "orange";
+      return;
+    }
+
+    const checked = document.querySelectorAll(".select-check:checked");
+    if (checked.length === 0) {
+      msg.innerText = "⚠️ 삭제할 증거자료를 선택하세요.";
+      msg.style.color = "orange";
+      return;
+    }
+
+    for (let box of checked) {
+      const res = await fetch(`http://15.164.99.177/incidents/${incidentId}/evidence-files/${box.value}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        msg.innerText = "❌ 삭제 권한이 없습니다.";
+        msg.style.color = "red";
+        return;
+      }
+    }
+
+    msg.innerText = "✅ 선택한 증거자료가 삭제되었습니다.";
+    msg.style.color = "green";
+    loadEvidence(true);
+  });
+
+  loadIncident();
+  loadEvidence(false);
+});

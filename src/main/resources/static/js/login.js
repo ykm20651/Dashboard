@@ -9,11 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("password").value;
 
     try {
-      // 00-00 API: 로그인 요청
-      const data = await apiCall("/users/login", {
+      // 서버에 로그인 요청
+      const res = await fetch("http://15.164.99.177/users/login", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ email, password })
       });
+
+      if (!res.ok) throw new Error("로그인 실패: 이메일 또는 비밀번호 확인 필요");
+
+      const data = await res.json();
 
       // 응답에서 토큰/역할/email 저장
       localStorage.setItem("token", data.token);
