@@ -1,0 +1,160 @@
+/* ===== 초기화 ===== */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #111;
+  color: #fff;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: none;
+}
+
+/* ===== 상단 고정 헤더 (메인·BM과 동일) ===== */
+.topbar.blackbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  background: #000;
+  border-bottom: 1px solid #222;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  z-index: 1000;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  transform: translate(-10%);
+  margin-left: -5%;
+}
+
+/* 중앙 메뉴 */
+.gnb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+}
+.gnb ul { display: flex; list-style: none; gap: 32px; }
+.gnb a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+.gnb a:hover { color: #ccc; }
+
+/* 로그인 / 회원가입 버튼 */
+.auth {
+  display: flex;
+  gap: 4px;
+}
+.btn-auth {
+  padding: 10px 10px;
+  border-radius: 15px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+/* ===== About 본문 ===== */
+.about-container {
+  padding-top: 100px; /* 헤더 높이 확보 */
+}
+
+.about-section {
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;   
+  background: #111;
+}
+
+.about-section h2 {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  padding: 4px;
+  margin-top: -3%;
+}
+
+.about-section p {
+  max-width: 780px;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+/* ===== OASIS 이름 정의 섹션 ===== */
+.about-logo {
+  max-width: 500px;
+  width: 60%;
+  margin-bottom: 2rem;
+  margin-top: 50px;
+}
+.slogan {
+  font-size: 2rem !important;
+  font-weight: 600 !important;
+  max-width: 1000px !important; 
+  color: #ff6b35;
+  margin-bottom: 2rem;
+}
+
+.intro{
+    max-width: 1000px;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.intro2{
+    max-width: 1000px;
+  font-size: 1.4rem;
+  margin-bottom: 40px !important;
+}
+
+.brand2{
+  max-width: 900px;
+  font-size: 1.4rem;
+  margin-bottom: -1%;
+}
+
+/* 이미지(공통) */
+.about-image {
+  max-width: 1200px;       /* 필요시 크기 조절 */
+  width: 100%;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+  background: #111;
+  margin-bottom: -10%
+}
+
+.ours{ 
+  max-width: 1200px;       /* 필요시 크기 조절 */
+  width: 100%;
+  margin-top : 20px;
+  margin-bottom : -5%
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 768px) {
+  .about-section h2 { font-size: 2.2rem; }
+  .about-section p { font-size: 1.1rem; }
+  .about-logo { width: 80%; max-width: 400px; }
+  .about-image { width: 95%; max-width: 95%; }
+}

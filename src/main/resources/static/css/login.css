@@ -1,0 +1,126 @@
+/* ===== 로그인 전용 스타일 ===== */
+
+/* 배경 및 기본 설정 */
+body {
+  background: url("../images/메인화면.png") center center / cover no-repeat;
+  background-color: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+  pointer-events: none; /* 클릭 막지 않도록 */
+}
+
+/* 로그인 전체 컨테이너 */
+.login-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;  /* 위아래 배치 */
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 20px;              /* 로고와 박스 간격 */
+}
+
+/* 로고가 정확히 중앙에 오도록 */
+.logo-link {
+  display: flex;                 /* 부모를 flex 박스로 */
+  justify-content: center;       /* 가로 중앙 정렬 */
+  align-items: center;           /* 세로 기준은 가운데 */
+  width: 100%;
+}
+
+.logo {
+  display: block;                /* 여백 제거 */
+  height: 60px;
+  width: auto;
+  margin: 0 auto;                /* 혹시 flex가 안 먹을 때 대비 */
+  transform: none;               /* 기존 translate 제거 */
+}
+/* 로그인 박스 */
+.login-box {
+  background: rgba(28,28,28,0.9);
+  padding: 48px 40px;
+  width: 380px;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.7);
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 타이틀 */
+.login-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: #f5f5f5;
+}
+
+/* 폼 */
+.login-form .form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+.login-form label {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #e0e0e0;
+}
+.login-form input {
+  padding: 12px 14px;
+  background: rgba(42,42,42,0.9);
+  border: 1px solid #444;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+.login-form input:focus {
+  outline: none;
+  background: rgba(60,60,60,0.9);
+  border-color: #fff;
+}
+
+/* 로그인 버튼 */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn-login:hover {
+  background: #e5e5e5;
+  transform: translateY(-2px);
+}
+
+/* 회원가입 안내 */
+.signup-link {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.signup-link a {
+  color: #fff;
+  text-decoration: underline;
+}
+.signup-link a:hover {
+  color: #e5e5e5;
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>사고 상세 | OASIS</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/incident_detail.css">
+  <script defer src="js/config.js"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/incident_detail.js"></script>
+</head>
+<body>
+  <main class="detail-container">
+    <!-- 로고 -->
+    <div class="logo-wrapper">
+      <a href="index.html" class="logo-link">
+        <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo">
+      </a>
+    </div>
+
+    <!-- 사고 정보 -->
+    <section class="section-box">
+      <h2>사고 상세</h2>
+      <form id="incidentForm" class="detail-form">
+        <label>제목</label>
+        <input type="text" id="editTitle" disabled>
+
+        <label>설명</label>
+        <textarea id="editDesc" disabled></textarea>
+
+        <label>위치</label>
+        <input type="text" id="editLocation" disabled>
+
+        <label>유형</label>
+        <input type="text" id="editType" disabled>
+
+        <label>발생시각</label>
+        <input type="text" id="editTime" disabled>
+
+        <label>상태</label>
+        <select id="editStatus" disabled>
+          <option value="open">진행 중</option>
+          <option value="in_progress">조사 중</option>
+          <option value="resolved">해결됨</option>
+          <option value="closed">종료</option>
+        </select>
+
+        <div class="action-btns">
+          <button type="button" id="editBtn" class="btn primary">수정</button>
+          <button type="button" id="saveEdit" class="btn primary" style="display:none;">저장</button>
+          <button type="button" id="cancelEdit" class="btn" style="display:none;">취소</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 증거자료 -->
+    <section class="section-box evidence-section">
+      <div class="evidence-header">
+        <h3>증거자료</h3>
+        <button id="deleteSelected" class="btn danger" style="display:none;">삭제</button>
+      </div>
+
+      <div id="evidenceGrid" class="evidence-grid">
+        <p class="empty-text">증거자료가 없습니다.</p>
+      </div>
+
+      <form id="evidenceForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" accept="image/*,video/*,.txt,.log" required>
+        <input type="text" id="fileDesc" placeholder="설명 입력" required>
+        <button type="submit" class="btn primary">업로드</button>
+      </form>
+    </section>
+
+    <p id="msg"></p>
+  </main>
+</body>
+</html>

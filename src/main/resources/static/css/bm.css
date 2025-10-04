@@ -1,0 +1,199 @@
+/* ===== 초기화 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #111;               /* ✅ 전체 단일 배경 */
+  color: #fff;
+  line-height: 1.6;
+  text-shadow: none !important;   /* ✅ 글자 주변 회색 그림자 제거 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 상단 고정 헤더 (메인 페이지와 동일) ===== */
+.topbar.blackbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  background: #000;
+  border-bottom: 1px solid #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.logo {
+  height: 40px;
+  transform: translate(-10%);
+  margin-left: -5%;
+}
+
+/* 중앙 메뉴 */
+.gnb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+}
+.gnb ul {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+}
+.gnb a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+.gnb a:hover { color: #ccc; }
+
+/* 로그인 / 회원가입 버튼 */
+.auth {
+  display: flex;
+  gap: 4px;
+}
+.btn-auth {
+  padding: 10px 10px;
+  border-radius: 15px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+/* ===== BM 본문 ===== */
+.bm-container {
+  padding-top: 100px; /* 헤더 높이만큼 여백 */
+}
+
+/* 공통 섹션 스타일 */
+.bm-section {
+  min-height: 100vh;
+  padding: 6rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  /* ✅ 모든 섹션에 동일한 단일 배경 */
+  background: #111;
+}
+
+/* 섹션 제목 */
+.bm-section h2 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  margin-top: -10%;
+  text-shadow: none !important; /* 글자 주변 그림자 확실히 제거 */
+}
+
+/* ===== 이미지 크게 ===== */
+.bm-image {
+  max-width: 1400px;
+  width: 95%;
+  margin-top: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  background: #111;              /* 투명 영역 대비 배경 보완 */
+}
+
+.bm-image2 {
+  max-width: 2000px;
+  width: 100%;
+  margin-top: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  background: #111;              /* 투명 영역 대비 배경 보완 */
+}
+
+/* ===== 가치 제안 카드 ===== */
+.value-grid {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+}
+.value-item {
+  max-width: 280px;
+}
+.value-item img {
+  width: 100px;
+  margin-bottom: 1rem;
+  background: #111;
+}
+
+/* ===== 수익 모델 카드 ===== */
+.revenue-grid {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+.revenue-item {
+  max-width: 300px;
+  background: rgba(34, 34, 34, 0.9);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1.4px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+.revenue-item h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  text-shadow: none !important;
+}
+
+/* ===== 파트너 로고 ===== */
+.partner-logos {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+.partner-logos img {
+  width: 150px;
+  opacity: 0.85;
+  transition: opacity 0.3s;
+  background: #111;
+}
+.partner-logos img:hover {
+  opacity: 1;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 1024px) {
+  .bm-section h2 { font-size: 2.4rem; }
+  .bm-image { max-width: 95%; }
+  .value-grid, .revenue-grid, .partner-logos { gap: 30px; }
+}
+@media (max-width: 768px) {
+  .bm-section h2 { font-size: 2rem; }
+  .value-item img { width: 80px; }
+  .revenue-item { max-width: 90%; }
+  .partner-logos img { width: 120px; }
+}
+
+.bm-vision {
+  padding-bottom: 2rem; /* 기존 6rem → 2rem 정도로 줄이기 */
+}

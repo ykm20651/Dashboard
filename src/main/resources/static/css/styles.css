@@ -1,0 +1,368 @@
+/* ====== 초기화 ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+/* ====== 상단 헤더 ====== */
+.topbar.blackbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  background: #000;
+  border-bottom: 1px solid #222;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  z-index: 1000;
+}
+
+.logo {
+  height: 40px;
+  transform: translate(-10%);
+  margin-left: -5%;
+}
+
+/* 중앙 메뉴 */
+.gnb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+}
+.gnb ul {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+}
+.gnb a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+.gnb a:hover { color: #ccc; }
+
+/* 로그인 / 회원가입 버튼 */
+.auth {
+  display: flex;
+  gap: 4px;
+}
+.btn-auth {
+  padding: 10px 10px;
+  border-radius: 15px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+/* ====== Hero ====== */
+.hero {
+  height: 100vh;
+  background: url("../images/메인화면.png") center top / cover repeat-y;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  animation: flowBg 20s linear infinite;
+}
+@keyframes flowBg {
+  from { background-position: center 0; }
+  to   { background-position: center 100%; }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.36);
+  pointer-events: none; /* fullPage 스크롤 방해 방지 */
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 850px;
+  padding: 0 1.5rem;  
+}
+
+.hero-title {
+  font-size: 7rem;
+  font-weight: 900;
+  letter-spacing: 0.3rem;
+}
+.slogan {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 3.2rem;
+}
+
+/* ====== CTA 버튼 ====== */
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.cta {
+  padding: 14px 36px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.cta.primary {
+  background: #ffffff;
+  color: #000;
+}
+.cta.primary:hover {
+  background: #e3e1e1;
+}
+.cta.secondary {
+  border: 2px solid #fff;
+  color: #fff;
+}
+.cta.secondary:hover {
+  background: #747171;
+  color: #000;
+}
+.cta.big {
+  background: #fff;
+  color: #000;
+  font-size: 1.1rem;
+  padding: 18px 70px;
+}
+.cta.big:hover {
+  background: #e5e5e5;
+}
+
+/* ====== 서비스 섹션 ====== */
+.section.service {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  /* fullPage.js가 높이를 관리하므로 min-height 제거 */
+}
+.section.service h2 {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+.section.service p {
+  max-width: 1000px;
+  color: #ccc;
+  line-height: 1.7;
+  font-size: 1.3rem;
+  margin-bottom: 40px;
+}
+
+/* 섹션별 배경 */
+.section.analysis,
+.section.data,
+.section.report {
+  background: #111;
+
+}
+
+
+/* ===== 데이터 관리 섹션 ===== */
+.data-desc {
+  max-width: 900px;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #ddd;                       /* 조금 더 밝은 회색으로 대비 확보 */
+  margin-bottom: 3rem;
+}
+
+.data-visual {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;      /* 중앙 정렬 유지 */
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;                  /* 부모를 전체 폭으로 */
+  max-width: 1400px;            /* 최대 폭을 더 넉넉하게 */
+  margin: 0 auto 3rem auto;     /* 가운데 위치 */
+}
+
+.data-image {
+  flex: 1 1 600px;              /* 최소 800px까지 확보 */
+  max-width: 800px;            /* 최대 폭을 화면 크기에 맞춰 확대 */
+  width: 100%;                  /* 컨테이너 안에서 가득 채우기 */
+  border-radius: 12px;
+  
+  border: 1.5px solid rgba(255,255,255,0.15);   /* 은은한 밝은 테두리 */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);     /* 기존보다 살짝 진한 그림자 */
+}
+
+.data-explain {
+  flex: 1 1 250px;
+  max-width: 450px;
+  background: rgba(34,34,34,0.9);   /* 기존 rgba(30,30,30,0.8) → 약간 더 진하고 선명 */
+  padding: 2rem;
+  border-radius: 12px;
+  color: #eee;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  border: 1.4px solid rgba(255,255,255,0.15);
+}
+
+
+.data-explain h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.data-explain ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.data-explain li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.data-explain li strong {
+  color: #ff6b35; /* 포인트 색상 */
+}
+
+/* ===== 자동 클레임 보고서 섹션 ===== */
+.report-layout {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.report-desc {
+  max-width: 900px;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #ddd;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+}
+
+.report-visual {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 3rem auto;
+}
+
+/* --- 이미지 절반 노출 컨테이너 --- */
+.report-image-half {
+  flex: 1 1 55%;
+  max-width: 700px;
+  width: 100%;
+  height: 350px;                 /* 절반만 보이도록 높이 제한 */
+  overflow: hidden;              /* 나머지 절반 잘라냄 */
+  border-radius: 12px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+}
+
+/* 실제 이미지 : 위쪽 기준으로 절반만 */
+.report-image {
+  width: 100%;
+  height: auto;
+  transform: translateY(-0%);    /* 필요시 -10% 등으로 윗부분 더 이동 */
+}
+
+/* --- 설명 박스 --- */
+.report-explain {
+  flex: 1 1 45%;
+  max-width: 800px !important;
+  background: rgba(34,34,34,0.9);
+  padding: 2rem;
+  border-radius: 12px;
+  color: #eee;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  border: 1.4px solid rgba(255,255,255,0.15); 
+}
+
+.report-explain h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.report-explain ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.report-explain li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.report-explain li strong {
+  color: #ff6b35;
+}
+
+/* 반응형: 좁은 화면에서는 세로 배치 */
+@media (max-width: 1000px) {
+  .report-visual {
+    flex-direction: column;
+    align-items: center;
+  }
+  .report-image-half, .report-explain {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+/* ===== 사고 유형 분석 : 기본 구조 복원 ===== */
+.analysis-desc {
+  max-width: 900px;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: #ddd;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+}
+
+/* 이미지 박스 */
+.analysis-fullimage {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+  margin-bottom: 10px;
+}
+
+/* 이미지 전체가 잘리지 않고 축소 */
+.analysis-fullimage .analysis-image {
+  width: 100%;
+  max-height: 500px;    /* 필요 시 높이 조절 */
+  object-fit: contain;  /* 비율 유지하며 잘리지 않음 */
+  object-position: center;
+  display: block;
+  background: #000;
+}
+
+

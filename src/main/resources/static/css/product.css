@@ -1,0 +1,56 @@
+/* ===== product 전용 ===== */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #000; /* 단색 배경 */
+  min-height: 100vh;
+  color: #fff;
+}
+
+/* 공통 섹션 스타일 */
+.product-wrapper,
+.process-wrapper {
+  display: flex;
+  justify-content: center;   /* 수평 중앙 */
+  align-items: center;       /* 수직 중앙 */
+  flex-direction: column;
+  padding-top: 90px;         /* topbar 높이만큼 여유 */
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
+/* 첫 번째 이미지 (제품 스펙) */
+.product-img {
+  max-width: 90%;            /* 화면 너비의 90% */
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* 두 번째 이미지 (working) */
+.working-img {
+  max-width: 85%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* 세 번째 이미지 (Process) */
+.process-img {
+  max-width: 90%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* topbar 고정 */
+.topbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+}

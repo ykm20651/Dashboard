@@ -1,0 +1,117 @@
+/* ===== 사고 유형 분석 페이지 ===== */
+body {
+  background: #18191b;    /* 메인 톤과 어울리는 약간 밝은 다크 */
+  color: #fff;
+}
+
+/* 전체 레이아웃 */
+.analysis-page {
+  max-width: 900px;
+  margin: 140px auto 60px;  /* 헤더 높이 보정 */
+  padding: 0 20px;
+}
+
+.page-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.page-intro {
+  color: #ccc;
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ===== 이미지 업로드 영역 ===== */
+.upload-area {
+  background: #1d1f22;
+  border: 2px dashed #2f3033;
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.upload-label {
+  display: inline-block;
+  padding: 12px 28px;
+  background: #ff6b35;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.upload-label:hover {
+  background: #e85b25;
+}
+
+#photo {
+  display: none; /* 기본 input 숨기고 라벨 클릭으로 업로드 */
+}
+
+/* ===== 미리보기 박스 ===== */
+.preview-box {
+  background: #0e0f11;
+  border-radius: 10px;
+  padding: 1rem;
+  min-height: 220px;
+  max-height: 40vh;       /* 브라우저 높이의 60%까지만 → 자동 축소 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.preview-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;    /* 박스 안에서 비율 유지하며 축소 */
+  border-radius: 10px;
+}
+
+/* ===== 분석 결과 박스 ===== */
+.analysis-result {
+  background: #1d1f22;
+  border: 2px solid #2f3033;
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+
+.analysis-result h2 {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.result-text {
+  font-size: 1.4rem;
+  color: #ff6b35;
+  font-weight: 700;
+}
+
+/* ===== 우측 하단 버튼 ===== */
+.right-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.right-bottom .cta.big {
+  background: #ff6b35;
+  color: #fff;
+  padding: 18px 60px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.right-bottom .cta.big:hover {
+  background: #e85b25;
+}

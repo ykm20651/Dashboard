@@ -1,0 +1,95 @@
+/* ===== 공통 배경 & 중앙 정렬 ===== */
+body {
+  background: url("../images/메인화면.png") center center / cover no-repeat;
+  background-color: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+  pointer-events: none; /* 오버레이 클릭 차단 방지 */
+}
+
+/* ===== 메인 컨테이너 ===== */
+.signup-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* 로고와 박스 간격 */
+}
+
+/* ===== 로고 ===== */
+.logo-link {
+  display: block;
+}
+.logo {
+  height: 60px;
+  width: auto;
+}
+
+/* ===== 회원가입 박스 ===== */
+.signup-box {
+  background: rgba(0, 0, 0, 0.65);
+  padding: 40px;
+  border-radius: 16px;
+  max-width: 600px; /* 🔥 기존 400px → 600px 로 확대 */
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.signup-box h1 {
+  margin-bottom: 30px;
+  font-size: 2rem; /* 글자 크기도 약간 키움 */
+  font-weight: 600;
+}
+
+/* ===== 폼 입력 ===== */
+.signup-form input,
+.signup-form select {
+  width: 100%;
+  padding: 14px; /* 높이 살짝 키움 */
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.05rem;
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+
+/* ===== 가입 버튼 ===== */
+.signup-btn {
+  width: 100%;
+  padding: 14px;
+  background: #ff6b35;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.signup-btn:hover {
+  background: #fa7f52;
+}
+
+/* ===== 메시지 ===== */
+#msg {
+  margin-top: 15px;
+  font-size: 0.95rem;
+}
