@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://15.164.99.177/incidents/${id}`, {
+      const res = await fetch(`http://15.164.99.177:8080/incidents/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
