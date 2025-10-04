@@ -38,7 +38,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       TZ: Asia/Seoul
     ports:
-      - "8080:8080"   # EC2 외부에서 접속할 앱 포트
+      - "80:8080"   # EC2 외부에서 접속할 앱 포트
 
 volumes:
   db_data:
