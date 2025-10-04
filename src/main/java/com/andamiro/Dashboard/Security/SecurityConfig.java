@@ -30,8 +30,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ✅ 추가
                 .authorizeHttpRequests(auth -> auth
-                        // 공개
+                        // 공개 페이지
+                        .requestMatchers("/", "/login", "/signup").permitAll()
                         .requestMatchers("/users/login", "/users", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        
+                        // 인증 필요 페이지
+                        .requestMatchers("/incidents", "/incident-register", "/incident-detail", 
+                                       "/report", "/evidence", "/response-guide").authenticated()
 
                         // 관리자 전용
                         .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")

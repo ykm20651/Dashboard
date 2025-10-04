@@ -18,6 +18,11 @@ spring:
     multipart:
       max-file-size: 50MB     # 단일 파일 최대 크기
       max-request-size: 50MB  # 전체 요청 크기 (파일 여러 개 포함 시)
+  web:
+    resources:
+      static-locations: classpath:/static/
+      cache:
+        period: 3600  # 1시간 캐시
 
 server:
   port: 8080
