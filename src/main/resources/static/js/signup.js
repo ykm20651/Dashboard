@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const ownerExtra = document.getElementById("owner-extra");
   const crewExtra = document.getElementById("crew-extra");
 
+  // 초기 상태: '선택'이 기본으로 선택
+  roleSelect.value = "";
+
   // 역할 선택 시 추가 입력란 표시
   roleSelect.addEventListener("change", () => {
     if (roleSelect.value === "OWNER") {
@@ -19,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // 회원가입 처리
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -27,35 +31,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const name = document.getElementById("name").value;
     const role = document.getElementById("role").value;
 
+    if (!role) {
+      msg.innerText = "⚠️ 역할을 선택해주세요.";
+      msg.style.color = "orange";
+      return;
+    }
+
     try {
-      // 00-01 API: 공통 회원가입
-      const data = await apiCall("/users", {
+      // 1차 요청: 회원가입
+      const res = await fetch("http://15.164.99.177/users", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ email, password, name, role })
       });
+
+      if (!res.ok) throw new Error("회원가입 실패");
+
+      const data = await res.json();
       const userId = data.id;
 
-      // 00-02 API: 선주 추가 정보 입력
+      // 2차 요청: 역할별 추가 정보
       if (role === "OWNER") {
         const companyName = document.getElementById("companyName").value;
         const shipRegId = document.getElementById("shipRegId").value;
         const contactNumber = document.getElementById("contactNumber").value;
         const businessNumber = document.getElementById("businessNumber").value;
 
-        await apiCall(`/users/${userId}/owner-info`, {
+        const ownerRes = await fetch(`http:// /users/${userId}/owner-info`, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ companyName, shipRegId, contactNumber, businessNumber })
         });
-      } 
-      // 00-03 API: 선원 추가 정보 입력
-      else if (role === "CREW_MEMBER") {
+        if (!ownerRes.ok) throw new Error("선주 정보 등록 실패");
+      } else if (role === "CREW_MEMBER") {
         const assignedOwnerId = document.getElementById("assignedOwnerId").value;
         const position = document.getElementById("position").value;
 
-        await apiCall(`/users/${userId}/crew-info`, {
+        const crewRes = await fetch(`http://15.164.99.177/users/${userId}/crew-info`, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ assignedOwnerId, position })
         });
+        if (!crewRes.ok) throw new Error("선원 정보 등록 실패");
       }
 
       msg.innerText = "✅ 회원가입 성공! 로그인 페이지로 이동합니다.";

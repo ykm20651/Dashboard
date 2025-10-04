@@ -5,16 +5,17 @@
   <title>회원가입 | OASIS</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/signup.css">
-  <script defer src="js/config.js"></script>
   <script defer src="js/signup.js"></script>
 </head>
 <body>
-  <main class="signup-container">
-    <!-- 로고 -->
+  <!-- 로고 (배경 상단 중앙) -->
+  <div class="logo-fixed">
     <a href="index.html" class="logo-link">
-      <img src="images/오아시스 로고.png" alt="OASIS Logo" class="logo">
+      <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo">
     </a>
+  </div>
 
+  <main class="signup-container">
     <!-- 회원가입 박스 -->
     <section class="signup-box">
       <h1>회원가입</h1>
@@ -25,14 +26,20 @@
         <label for="password">비밀번호</label>
         <input type="password" id="password" required>
 
-        <label for="name">이름</label>
-        <input type="text" id="name" required>
-
-        <label for="role">역할</label>
-        <select id="role" required>
-          <option value="OWNER">선주</option>
-          <option value="CREW_MEMBER">선원</option>
-        </select>
+        <div class="row">
+          <div class="col">
+            <label for="name">이름</label>
+            <input type="text" id="name" required>
+          </div>
+          <div class="col">
+            <label for="role">역할</label>
+            <select id="role" required>
+              <option value="">선택</option>
+              <option value="OWNER">선주</option>
+              <option value="CREW_MEMBER">선원</option>
+            </select>
+          </div>
+        </div>
 
         <!-- 추가 정보 영역 -->
         <div id="owner-extra" style="display:none;">
