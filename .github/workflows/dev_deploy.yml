@@ -47,6 +47,19 @@ jobs:
             echo "${{ secrets.ENV_FILE }}" > /home/ec2-user/Dashboard/.env
             echo ".env file created on EC2 ✅"
 
+      # 3.7️⃣ 💥 Spring Boot JAR 재빌드 (JS, HTML 등 최신화 반영)
+      - name: Build JAR on EC2 (include updated static files)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/Dashboard
+            echo "🧱 Building fresh JAR with latest static resources..."
+            ./gradlew clean build -x test
+            echo "✅ JAR build complete!"
+
       # 4️⃣ Amazon Linux 환경에서 Docker Compose 빌드 & 실행
       - name: Build and deploy with Docker Compose (no-cache + build arg)
         uses: appleboy/ssh-action@master
@@ -74,7 +87,7 @@ jobs:
             # 2) 기존 컨테이너 정리
             $CMD down || true
 
-            # 3) 도커 이미지/볼륨 캐시 전부 정리 (선택적)
+            # 3) 도커 이미지/볼륨 캐시 전부 정리
             echo "🧹 Cleaning old Docker data..."
             sudo docker system prune -a -f || true
 
