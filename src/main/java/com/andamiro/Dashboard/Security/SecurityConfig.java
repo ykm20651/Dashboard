@@ -14,6 +14,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -26,48 +28,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                // [1] CORS + CSRF 비활성화
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+
+                // [2] 세션 비활성화 (JWT 기반)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
+
+                // [3] 프레임옵션 비활성화 (H2 콘솔 등)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+
+                // [4] 요청별 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        // ✅ 프리플라이트 요청 전부 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // [1] 정적 리소스는 모두 허용
+
+                        // ✅ 정적 리소스 허용
                         .requestMatchers(
-                                "/", 
-                                "/index.html", 
-                                "/login.html", 
-                                "/signup.html",
-                                "/about.html",
-                                "/product.html",
-                                "/bm.html",
-                                "/contact.html",
-                                "/css/**", 
-                                "/js/**", 
-                                "/images/**", 
-                                "/static/**"
+                                "/", "/index.html",
+                                "/login.html", "/signup.html", "/about.html",
+                                "/product.html", "/bm.html", "/contact.html",
+                                "/css/**", "/js/**", "/images/**", "/static/**"
                         ).permitAll()
 
-                        // [2] 로그인 / 회원가입 / 추가 정보 입력 / Swagger 공개 API
+                        // ✅ 인증 없이 접근 가능한 공개 API
                         .requestMatchers(
-                                "/users/login", 
-                                "/users", 
-                                "/users/*/owner-info",  // 선주 추가 정보 입력 허용
-                                "/users/*/crew-info",   // 선원 추가 정보 입력 허용
-                                "/swagger-ui/**", 
+                                "/users/login",
+                                "/users",
+                                "/users/*/owner-info",
+                                "/users/*/crew-info",
+                                "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        
-
-
-                        // [3] 관리자 전용
+                        // ✅ 관리자 전용
                         .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
 
-                        // [4] 선주 전용 (추가 정보 입력은 permitAll로 이동됨)
-                        // .requestMatchers(HttpMethod.POST, "/users/*/owner-info").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.GET,    "/incidents/*").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.PUT,    "/incidents/*").hasRole("OWNER")
+                        // ✅ 선주 전용
+                        .requestMatchers(HttpMethod.GET, "/incidents/*").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/incidents/*").hasRole("OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/incidents/*").hasRole("OWNER")
                         .requestMatchers("/incidents/*/analyze").hasRole("OWNER")
                         .requestMatchers("/incidents/*/evidence-files").hasRole("OWNER")
@@ -75,49 +74,50 @@ public class SecurityConfig {
                         .requestMatchers("/incidents/*/reports").hasRole("OWNER")
                         .requestMatchers("/incidents/*/response-guide").hasRole("OWNER")
 
-                        // [5] 선원 전용 (추가 정보 입력은 permitAll로 이동됨)
-                        // .requestMatchers(HttpMethod.POST, "/users/*/crew-info").hasRole("CREW")
+                        // ✅ 선원 전용
+                        .requestMatchers(HttpMethod.PATCH, "/users/*").hasAnyRole("OWNER", "CREW")
+                        .requestMatchers(HttpMethod.GET, "/users/*").hasAnyRole("OWNER", "CREW")
+                        .requestMatchers(HttpMethod.DELETE, "/users/*").hasAnyRole("OWNER", "CREW")
+                        .requestMatchers(HttpMethod.GET, "/incidents").hasAnyRole("OWNER", "CREW")
+                        .requestMatchers(HttpMethod.POST, "/incidents").hasAnyRole("OWNER", "CREW")
+                        .requestMatchers(HttpMethod.GET, "/incidents/*/reports").hasAnyRole("OWNER", "CREW")
+                        .requestMatchers(HttpMethod.POST, "/incidents/*/evidence-files").hasAnyRole("OWNER", "CREW")
 
-                        // [6] 선주 + 선원 공용
-                        .requestMatchers(HttpMethod.PATCH,  "/users/*").hasAnyRole("OWNER","CREW")
-                        .requestMatchers(HttpMethod.GET,    "/users/*").hasAnyRole("OWNER","CREW")
-                        .requestMatchers(HttpMethod.DELETE, "/users/*").hasAnyRole("OWNER","CREW")
-                        .requestMatchers(HttpMethod.GET,  "/incidents").hasAnyRole("OWNER","CREW")
-                        .requestMatchers(HttpMethod.POST, "/incidents").hasAnyRole("OWNER","CREW")
-                        .requestMatchers(HttpMethod.GET,  "/incidents/*/reports").hasAnyRole("OWNER","CREW")
-                        .requestMatchers(HttpMethod.POST, "/incidents/*/evidence-files").hasAnyRole("OWNER","CREW")
-
-                        // [7] 그 외 요청은 인증만 필요
+                        // ✅ 그 외는 인증만 필요
                         .anyRequest().authenticated()
                 )
+
+                // [5] 인증 실패 시 처리
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) ->
                                 res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다."))
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+
+                // [6] 필터 순서: CORS 이후 JWT 필터 실행
+                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
+                        org.springframework.web.filter.CorsFilter.class);
 
         return http.build();
     }
 
+    // [7] 패스워드 인코더
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // CORS 설정
+    // [8] CORS 전역 설정
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {  
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*");  // 모든 도메인 허용
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
+        configuration.setAllowedOriginPatterns(List.of("*"));  // 모든 Origin 허용
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 }

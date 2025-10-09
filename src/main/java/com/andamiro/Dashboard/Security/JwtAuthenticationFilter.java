@@ -22,60 +22,60 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @Override //스프링 시큐리티의 진입점 - doFilterInternal
-    //Servlet 컨테이너가 요청을 받으면 여러 보안 필터를 거치는데, 그 중 하나가 이 메서드.
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
         System.out.println("🔍 JWT 필터 진입: " + request.getMethod() + " " + requestURI);
 
-        // OPTIONS 요청은 CORS preflight이므로 허용
-        if (request.getMethod().equals("OPTIONS")) {
-            filterChain.doFilter(request, response);
+        // ✅ CORS preflight OPTIONS 요청은 즉시 통과
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            response.setStatus(HttpServletResponse.SC_OK);
+            System.out.println("✅ OPTIONS 요청 통과 (CORS Preflight)");
             return;
         }
 
-        // 화이트리스트 경로: 회원가입 관련 모든 경로 허용
+        // ✅ 화이트리스트 경로 (JWT 없이 통과)
         if ((requestURI.equals("/users") && request.getMethod().equals("POST"))
                 || requestURI.equals("/users/login")
-                || requestURI.matches("/users/[^/]+/owner-info")  // 선주 추가 정보
-                || requestURI.matches("/users/[^/]+/crew-info")   // 선원 추가 정보
+                || requestURI.matches("/users/[^/]+/owner-info")
+                || requestURI.matches("/users/[^/]+/crew-info")
                 || requestURI.startsWith("/swagger-ui")
                 || requestURI.startsWith("/v3/api-docs")
                 || requestURI.startsWith("/static/")
                 || requestURI.startsWith("/css/")
                 || requestURI.startsWith("/js/")
                 || requestURI.startsWith("/images/")) {
-            System.out.println("✅ JWT 필터 통과: " + request.getMethod() + " " + requestURI);
+            System.out.println("✅ JWT 필터 화이트리스트 통과: " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
 
-
-        // 1. Authorization 헤더에서 토큰 추출 - 별도 메서드(resolveToken)로 분리해서 헤더 파싱.
+        // ✅ Authorization 헤더에서 JWT 추출
         String token = resolveToken(request);
 
-        // 2. 토큰 검증
+        // ✅ JWT 검증 및 SecurityContext 설정
         if (token != null && jwtTokenProvider.validateToken(token)) {
             UUID userId = jwtTokenProvider.getUserId(token);
-            User.Role role = jwtTokenProvider.getRole(token); // JwtTokenProvider에 getRole 추가 필요
+            User.Role role = jwtTokenProvider.getRole(token);
 
-            // 3. 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userId, //Principal
-                            null, // Credentials -우린 토큰 기반이라 비밀번호 안씀
-                            //name()은 enum 상수 그대로의 문자열을 리턴해.
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name())) //authorities
+                            userId,
+                            null,
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
                     );
 
-            // 4. SecurityContext에 저장 → 이후 컨트롤러에서 사용 가능
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        // 다음 필터로 진행
+        // ✅ 다음 필터로 전달
         filterChain.doFilter(request, response);
     }
 

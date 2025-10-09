@@ -1,13 +1,13 @@
-name: OASIS Dev CI/CD #워크플로 이름.
+name: OASIS Dev CI/CD
 
 on:
   pull_request:
     types: [closed]
-  workflow_dispatch: #Actions 탭에서 수동 실행 버튼으로도 돌릴 수 있게
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # GitHub 러너 머신에서 실행
+    runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev')
 
     steps:
@@ -36,7 +36,7 @@ jobs:
             mkdir -p /home/ec2-user/Dashboard/src/main/resources
             echo "${{ secrets.APPLICATION_YML }}" > /home/ec2-user/Dashboard/src/main/resources/application.yml
 
-      # 🆕 3.5️⃣ EC2에서 .env 파일 생성 (로컬 .env 대체)
+      # 3.5️⃣ EC2에서 .env 파일 생성
       - name: Create .env file on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -48,7 +48,7 @@ jobs:
             echo ".env file created on EC2 ✅"
 
       # 4️⃣ Amazon Linux 환경에서 Docker Compose 빌드 & 실행
-      - name: Build and deploy with Docker Compose (robust)
+      - name: Build and deploy with Docker Compose (no-cache)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -57,20 +57,29 @@ jobs:
           script: |
             set -euo pipefail
 
-            # 0) 도커 데몬 기동 보장
+            echo "🔧 Starting no-cache rebuild on EC2..."
+
+            # 0) 도커 데몬 활성화
             sudo systemctl enable --now docker || true
 
             cd /home/ec2-user/Dashboard
 
-            # 1) compose 실행기 선택
+            # 1) compose 실행기 감지
             if sudo docker compose version >/dev/null 2>&1; then
               CMD="sudo docker compose"
             else
               CMD="sudo docker-compose"
             fi
 
-            # 2) 기존 컨테이너 종료
+            # 2) 기존 컨테이너 정리
             $CMD down || true
 
-            # 3) 재빌드 및 재실행
-            $CMD up -d --build
+            # 3) 🔥 캐시 완전 무시하고 새 빌드
+            echo "🚀 Building Docker image from scratch (no cache)"
+            $CMD build --no-cache
+
+            # 4) 컨테이너 재실행
+            echo "🔁 Starting containers..."
+            $CMD up -d
+
+            echo "✅ Deployment complete!"
