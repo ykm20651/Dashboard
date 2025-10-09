@@ -113,7 +113,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(List.of("*"));  // 모든 Origin 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);  // CORS 충돌 해결을 위해 false로 변경
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
