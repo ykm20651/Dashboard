@@ -31,7 +31,7 @@ services:
       - .env   # ✅ 반드시 추가
     working_dir: /app
     volumes:
-      - ./.env:/app/.env:ro  # ✅ Dotenv용
+      - - /home/ec2-user/Dashboard/.env:/app/.env:ro  # ✅ Dotenv용
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=UTC&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
