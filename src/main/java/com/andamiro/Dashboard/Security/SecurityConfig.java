@@ -29,34 +29,27 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            // [1] CORS/CSRF 비활성화
             .cors(c -> c.configurationSource(corsConfigurationSource()))
             .csrf(c -> c.disable())
-
-            // [2] 세션 비활성화 (JWT 기반)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // [3] 요청별 접근 권한
             .authorizeHttpRequests(auth -> auth
-                // ✅ 프리플라이트 요청 허용
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // ✅ 회원가입 / 로그인 요청 허용
+                // ✅ 회원가입 / 로그인 허용
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 
                 // ✅ 정적 리소스
-                .requestMatchers("/", "/**/*.html",
-                        "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
 
-                // ✅ Swagger/OpenAPI
+                // ✅ Swagger
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                // ✅ 나머지는 인증 필요
+                // ✅ 나머지 요청은 인증 필요
                 .anyRequest().authenticated()
             )
 
-            // [4] 예외 처리 (401)
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((req, res, e) -> {
                     res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -65,7 +58,6 @@ public class SecurityConfig {
                 })
             );
 
-        // ✅ 필터 추가: UsernamePasswordAuthenticationFilter 이전에 JWT 필터 추가
         http.addFilterBefore(
                 new JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
@@ -74,13 +66,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // [5] 비밀번호 암호화기
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // [6] CORS 설정
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
