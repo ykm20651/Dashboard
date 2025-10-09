@@ -7,22 +7,24 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update  # ⚠️ 운영 환경에서는 update (데이터 보존)
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         type.preferred_uuid_jdbc_type: CHAR
+
   servlet:
     multipart:
-      max-file-size: 50MB     # 단일 파일 최대 크기
-      max-request-size: 50MB  # 전체 요청 크기 (파일 여러 개 포함 시)
+      max-file-size: 50MB         # 단일 파일 업로드 최대 크기
+      max-request-size: 50MB      # 요청 전체 파일 크기 제한
+
   web:
     resources:
       static-locations: classpath:/static/
       cache:
-        period: 3600  # 1시간 캐시
+        period: 3600              # 정적 자원 캐시 1시간 유지
 
 server:
   port: 8080
@@ -32,8 +34,13 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
 jwt:
-  secret: ${JWT_SECRET:change-me-change-me-change-me-change-me}
-  validity-ms: 3600000  # 1h
-  #bG9uZ19yYW5kb21fc2VjcmV0X2tleV93aXRoX2NoYXJzXzEyMzQ1처럼 환경변수 값(JWT_SECRET)은 네가 직접 운영 서버나 로컬에서 지정하는 거고,
-  #기본값 change-me는 단순히 “환경변수 없을 때라도 앱이 뻗지 말고 실행되게” 해 둔 placeholder일 뿐이야.
+  secret: ${JWT_SECRET}           # GitHub Secret / .env로 주입
+  validity-ms: 3600000            # 1시간 (1000ms * 60 * 60)
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG      # SQL 쿼리 로그 표시
+    org.hibernate.type: TRACE     # 파라미터 값까지 출력 (디버깅용)
