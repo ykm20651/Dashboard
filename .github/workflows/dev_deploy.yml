@@ -8,8 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest #잡은 GitHub의 우분투 호스트 위에서 돈다. (EC2가 아니라 GitHub의 러너 머신)
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev')
     #실제 머지(merged) 되었고, 베이스 브랜치가 dev면 실행.
+
 
     steps:
       # 1️⃣ 코드 체크아웃
