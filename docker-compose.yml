@@ -5,14 +5,10 @@ services:
     image: mysql:8.0
     container_name: oasis-mysql
     restart: always
+    env_file:
+      - .env   # ✅ 이 부분 추가됨 (.env 환경 변수를 MySQL에도 전달)
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       TZ: Asia/Seoul
-    # 외부에서 DB 접속 불필요하면 ports 노출하지 마세요(보안 ↑)
-    # 필요 시만:  - "3306:3306"
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
@@ -31,14 +27,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - .env    # ✅ 이 부분이 핵심입니다 (.env를 백엔드에도 주입)
     environment:
-      # Spring Boot가 컨테이너 내부 MySQL로 붙도록 설정
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=UTC&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       TZ: Asia/Seoul
     ports:
-      - "80:8080"   # EC2 외부에서 접속할 앱 포트
+      - "80:8080"  # ✅ 외부 접근 가능 포트
 
 volumes:
   db_data:
