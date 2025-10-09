@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const incidentId = document.getElementById("incidentId").value;
 
     try {
-      const res = await fetch(`http://15.164.99.177:8080/incidents/${incidentId}/analyze`, {
+      const res = await fetch(`http://52.79.99.132:8080/incidents/${incidentId}/analyze`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` }
       });
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch(`http://15.164.99.177/incidents/${incidentId}/evidence-files`, {
+      const res = await fetch(`http://52.79.99.132:8080/incidents/${incidentId}/evidence-files`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

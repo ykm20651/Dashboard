@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadIncidents() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://15.164.99.177/incidents", {
+      const res = await fetch("http://52.79.99.132:8080/incidents", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("사고 불러오기 실패");
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://15.164.99.177:8080/incidents/${id}`, {
+      const res = await fetch(`http://52.79.99.132:8080/incidents/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });

@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (roleSelect.value === "OWNER") {
       ownerExtra.style.display = "block";
       crewExtra.style.display = "none";
-    } else if (roleSelect.value === "CREW_MEMBER") {
+    } else if (roleSelect.value === "CREW") {
       crewExtra.style.display = "block";
       ownerExtra.style.display = "none";
     } else {
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // 1차 요청: 회원가입
-      const res = await fetch("http://15.164.99.177:8080/users", {
+      const res = await fetch("http://52.79.99.132:8080/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -59,17 +59,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const contactNumber = document.getElementById("contactNumber").value;
         const businessNumber = document.getElementById("businessNumber").value;
 
-        const ownerRes = await fetch(`http:// /users/${userId}/owner-info`, {
+        const ownerRes = await fetch(`http://52.79.99.132:8080/users/${userId}/owner-info`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ companyName, shipRegId, contactNumber, businessNumber })
         });
         if (!ownerRes.ok) throw new Error("선주 정보 등록 실패");
-      } else if (role === "CREW_MEMBER") {
+      } else if (role === "CREW") {
         const assignedOwnerId = document.getElementById("assignedOwnerId").value;
         const position = document.getElementById("position").value;
 
-        const crewRes = await fetch(`http://15.164.99.177:8080/users/${userId}/crew-info`, {
+        const crewRes = await fetch(`http://52.79.99.132:8080/users/${userId}/crew-info`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ assignedOwnerId, position })
