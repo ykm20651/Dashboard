@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // [1] 정적 리소스는 모두 허용
                         .requestMatchers(
                                 "/", 
@@ -54,6 +54,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**", 
                                 "/v3/api-docs/**"
                         ).permitAll()
+
+                        
+
 
                         // [3] 관리자 전용
                         .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
@@ -101,7 +104,7 @@ public class SecurityConfig {
 
     // CORS 설정
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {  
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://52.79.99.132");
         configuration.addAllowedOrigin("http://localhost:3000");
