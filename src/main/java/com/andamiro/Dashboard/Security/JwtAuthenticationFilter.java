@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            response.setHeader("Access-Control-Allow-Credentials", "false");  // CORS 일관성 유지
             response.setStatus(HttpServletResponse.SC_OK);
             System.out.println("✅ OPTIONS 요청 통과 (CORS Preflight)");
             return;
