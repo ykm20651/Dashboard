@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadReports() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132:8080/incidents/${incidentId}/reports`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/reports`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("보고서 조회 실패");
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
   generateBtn.addEventListener("click", async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132:8080/incidents/${incidentId}/reports`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/reports`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` }
       });
