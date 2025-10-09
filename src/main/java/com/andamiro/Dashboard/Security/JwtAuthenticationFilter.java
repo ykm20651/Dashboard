@@ -29,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
+        System.out.println("🔍 JWT 필터 진입: " + request.getMethod() + " " + requestURI);
 
         // OPTIONS 요청은 CORS preflight이므로 허용
         if (request.getMethod().equals("OPTIONS")) {
@@ -36,11 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 화이트리스트 경로: /users (정확히 이 경로) + /users/login
-        if (requestURI.equals("/users")
+        // 화이트리스트 경로: 회원가입 관련 모든 경로 허용
+        if ((requestURI.equals("/users") && request.getMethod().equals("POST"))
                 || requestURI.equals("/users/login")
+                || requestURI.matches("/users/[^/]+/owner-info")  // 선주 추가 정보
+                || requestURI.matches("/users/[^/]+/crew-info")   // 선원 추가 정보
                 || requestURI.startsWith("/swagger-ui")
-                || requestURI.startsWith("/v3/api-docs")) {
+                || requestURI.startsWith("/v3/api-docs")
+                || requestURI.startsWith("/static/")
+                || requestURI.startsWith("/css/")
+                || requestURI.startsWith("/js/")
+                || requestURI.startsWith("/images/")) {
+            System.out.println("✅ JWT 필터 통과: " + request.getMethod() + " " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
