@@ -48,10 +48,12 @@ public class SecurityConfig {
                                 "/static/**"
                         ).permitAll()
 
-                        // [2] 로그인 / 회원가입 / Swagger 공개 API
+                        // [2] 로그인 / 회원가입 / 추가 정보 입력 / Swagger 공개 API
                         .requestMatchers(
                                 "/users/login", 
                                 "/users", 
+                                "/users/*/owner-info",  // 선주 추가 정보 입력 허용
+                                "/users/*/crew-info",   // 선원 추가 정보 입력 허용
                                 "/swagger-ui/**", 
                                 "/v3/api-docs/**"
                         ).permitAll()
@@ -62,8 +64,8 @@ public class SecurityConfig {
                         // [3] 관리자 전용
                         .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
 
-                        // [4] 선주 전용
-                        .requestMatchers(HttpMethod.POST, "/users/*/owner-info").hasRole("OWNER")
+                        // [4] 선주 전용 (추가 정보 입력은 permitAll로 이동됨)
+                        // .requestMatchers(HttpMethod.POST, "/users/*/owner-info").hasRole("OWNER")
                         .requestMatchers(HttpMethod.GET,    "/incidents/*").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT,    "/incidents/*").hasRole("OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/incidents/*").hasRole("OWNER")
@@ -73,8 +75,8 @@ public class SecurityConfig {
                         .requestMatchers("/incidents/*/reports").hasRole("OWNER")
                         .requestMatchers("/incidents/*/response-guide").hasRole("OWNER")
 
-                        // [5] 선원 전용
-                        .requestMatchers(HttpMethod.POST, "/users/*/crew-info").hasRole("CREW")
+                        // [5] 선원 전용 (추가 정보 입력은 permitAll로 이동됨)
+                        // .requestMatchers(HttpMethod.POST, "/users/*/crew-info").hasRole("CREW")
 
                         // [6] 선주 + 선원 공용
                         .requestMatchers(HttpMethod.PATCH,  "/users/*").hasAnyRole("OWNER","CREW")
