@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,10 +40,10 @@ public class SecurityConfig {
 
                 // [4] 요청별 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        //  프리플라이트 요청 전부 허용
+                        // ✅ 프리플라이트 요청 전부 허용 (CORS용)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        //  정적 리소스 허용
+                        // ✅ 정적 리소스 허용
                         .requestMatchers(
                                 "/", "/index.html",
                                 "/login.html", "/signup.html", "/about.html",
@@ -50,21 +51,18 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/images/**", "/static/**"
                         ).permitAll()
 
-                        //  인증 없이 접근 가능한 공개 API (회원가입 포함)
+                        // ✅ 인증 없이 접근 가능한 공개 API (회원가입 포함)
                         .requestMatchers(
-                                "/users/login",
-                                "/users/signup",     //  추가됨: 회원가입 허용
-                                "/users",
-                                "/users/*/owner-info",
-                                "/users/*/crew-info",
+                                "/users",              // POST /users (회원가입)
+                                "/users/**",           // /users/signup, /users/login 등 모두 포함
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        //  관리자 전용
+                        // ✅ 관리자 전용
                         .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
 
-                        //  선주 전용
+                        // ✅ 선주 전용
                         .requestMatchers(HttpMethod.GET, "/incidents/*").hasRole("OWNER")
                         .requestMatchers(HttpMethod.PUT, "/incidents/*").hasRole("OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/incidents/*").hasRole("OWNER")
@@ -74,7 +72,7 @@ public class SecurityConfig {
                         .requestMatchers("/incidents/*/reports").hasRole("OWNER")
                         .requestMatchers("/incidents/*/response-guide").hasRole("OWNER")
 
-                        //  선원 전용
+                        // ✅ 선원 전용
                         .requestMatchers(HttpMethod.PATCH, "/users/*").hasAnyRole("OWNER", "CREW")
                         .requestMatchers(HttpMethod.GET, "/users/*").hasAnyRole("OWNER", "CREW")
                         .requestMatchers(HttpMethod.DELETE, "/users/*").hasAnyRole("OWNER", "CREW")
@@ -83,30 +81,36 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/incidents/*/reports").hasAnyRole("OWNER", "CREW")
                         .requestMatchers(HttpMethod.POST, "/incidents/*/evidence-files").hasAnyRole("OWNER", "CREW")
 
-                        //  그 외는 인증 필요
+                        // ✅ 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )
 
                 // [5] 인증 실패 시 처리
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, e) ->
-                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다."))
-                );
+                        .authenticationEntryPoint((req, res, e) -> {
+                            System.out.println("🚫 인증 실패: " + e.getMessage());
+                            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
+                        })
+                )
+
+                // [6] JWT 인증 필터 추가 (UsernamePasswordAuthenticationFilter 전에 실행)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // [6] 패스워드 인코더
+    // [7] 패스워드 인코더
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // [7] CORS 전역 설정
+    // [8] CORS 전역 설정
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("*"));  // 모든 Origin 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
