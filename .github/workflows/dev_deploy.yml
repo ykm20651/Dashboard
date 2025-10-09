@@ -15,7 +15,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ EC2에 프로젝트 파일 복사
+      # 2️⃣ Gradle 빌드 (로컬 환경에서 최신 JAR 생성)
+      - name: Build Spring Boot project (clean build)
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+          echo "✅ Local Gradle build complete!"
+
+      # 3️⃣ EC2에 프로젝트 및 빌드된 산출물 복사
       - name: Copy project files to EC2
         uses: appleboy/scp-action@master
         with:
@@ -25,7 +32,7 @@ jobs:
           source: "."
           target: "/home/ec2-user/Dashboard"
 
-      # 3️⃣ EC2에서 application.yml 생성
+      # 4️⃣ EC2에서 application.yml 생성
       - name: Create application.yml on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -35,8 +42,9 @@ jobs:
           script: |
             mkdir -p /home/ec2-user/Dashboard/src/main/resources
             echo "${{ secrets.APPLICATION_YML }}" > /home/ec2-user/Dashboard/src/main/resources/application.yml
+            echo "✅ application.yml created!"
 
-      # 3.5️⃣ EC2에서 .env 파일 생성
+      # 5️⃣ EC2에서 .env 생성
       - name: Create .env file on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -45,22 +53,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "${{ secrets.ENV_FILE }}" > /home/ec2-user/Dashboard/.env
-            echo ".env file created on EC2 ✅"
+            echo "✅ .env file created!"
 
-      # 3.7️⃣ 💥 Spring Boot JAR 재빌드 (JS, HTML 등 최신화 반영)
-      - name: Build JAR on EC2 (include updated static files)
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ec2-user/Dashboard
-            echo "🧱 Building fresh JAR with latest static resources..."
-            ./gradlew clean build -x test
-            echo "✅ JAR build complete!"
-
-      # 4️⃣ Amazon Linux 환경에서 Docker Compose 빌드 & 실행
+      # 6️⃣ Docker Compose 빌드 및 배포 (no-cache + BUILD_TIME)
       - name: Build and deploy with Docker Compose (no-cache + build arg)
         uses: appleboy/ssh-action@master
         with:
@@ -72,7 +67,7 @@ jobs:
 
             echo "🔧 Starting no-cache rebuild on EC2..."
 
-            # 0) 도커 데몬 활성화
+            # 0) Docker 데몬 기동
             sudo systemctl enable --now docker || true
 
             cd /home/ec2-user/Dashboard
@@ -84,19 +79,19 @@ jobs:
               CMD="sudo docker-compose"
             fi
 
-            # 2) 기존 컨테이너 정리
+            # 2) 기존 컨테이너 중단
             $CMD down || true
 
-            # 3) 도커 이미지/볼륨 캐시 전부 정리
-            echo "🧹 Cleaning old Docker data..."
+            # 3) 캐시 전부 삭제
+            echo "🧹 Cleaning old Docker cache..."
             sudo docker system prune -a -f || true
 
-            # 4) 🔥 캐시 완전 무시 + BUILD_TIME 전달 (정적 리소스 강제 갱신)
-            echo "🚀 Building Docker image from scratch (no cache, with BUILD_TIME)"
+            # 4) no-cache 빌드
             BUILD_TIME=$(date +%s)
+            echo "🚀 Building Docker image with BUILD_TIME=$BUILD_TIME"
             $CMD build --no-cache --build-arg BUILD_TIME=$BUILD_TIME
 
-            # 5) 컨테이너 재실행
+            # 5) 컨테이너 실행
             echo "🔁 Starting containers..."
             $CMD up -d
 
