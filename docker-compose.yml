@@ -6,7 +6,7 @@ services:
     container_name: oasis-mysql
     restart: always
     env_file:
-      - .env   # ✅ .env에서 값 주입
+      - .env
     environment:
       TZ: Asia/Seoul
     command: >
@@ -28,10 +28,10 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env   # ✅ 반드시 추가
+      - .env
     working_dir: /app
     volumes:
-      - - /home/ec2-user/Dashboard/.env:/app/.env:ro  # ✅ Dotenv용
+      - "/home/ec2-user/Dashboard/.env:/app/.env:ro"   # ✅ 한 줄짜리 문자열로 써야 함
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=UTC&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
