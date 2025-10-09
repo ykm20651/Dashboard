@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("로그인이 필요합니다.");
 
-      const res = await fetch("http://15.164.99.177:8080/incidents", {
+      const res = await fetch("http://52.79.99.132:8080/incidents", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
