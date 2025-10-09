@@ -48,7 +48,7 @@ jobs:
             echo ".env file created on EC2 ✅"
 
       # 4️⃣ Amazon Linux 환경에서 Docker Compose 빌드 & 실행
-      - name: Build and deploy with Docker Compose (no-cache)
+      - name: Build and deploy with Docker Compose (no-cache + build arg)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -74,12 +74,17 @@ jobs:
             # 2) 기존 컨테이너 정리
             $CMD down || true
 
-            # 3) 🔥 캐시 완전 무시하고 새 빌드
-            echo "🚀 Building Docker image from scratch (no cache)"
-            $CMD build --no-cache
+            # 3) 도커 이미지/볼륨 캐시 전부 정리 (선택적)
+            echo "🧹 Cleaning old Docker data..."
+            sudo docker system prune -a -f || true
 
-            # 4) 컨테이너 재실행
+            # 4) 🔥 캐시 완전 무시 + BUILD_TIME 전달 (정적 리소스 강제 갱신)
+            echo "🚀 Building Docker image from scratch (no cache, with BUILD_TIME)"
+            BUILD_TIME=$(date +%s)
+            $CMD build --no-cache --build-arg BUILD_TIME=$BUILD_TIME
+
+            # 5) 컨테이너 재실행
             echo "🔁 Starting containers..."
             $CMD up -d
 
-            echo "✅ Deployment complete!"
+            echo "✅ Deployment complete! (BUILD_TIME=$BUILD_TIME)"
