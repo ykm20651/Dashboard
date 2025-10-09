@@ -42,7 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("http://52.79.99.132/users", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
         },
         body: JSON.stringify({ email, password, name, role })
       });
@@ -61,7 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const ownerRes = await fetch(`http://52.79.99.132/users/${userId}/owner-info`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+          },
           body: JSON.stringify({ companyName, shipRegId, contactNumber, businessNumber })
         });
         if (!ownerRes.ok) throw new Error("선주 정보 등록 실패");
@@ -71,7 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const crewRes = await fetch(`http://52.79.99.132/users/${userId}/crew-info`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+          },
           body: JSON.stringify({ assignedOwnerId, position })
         });
         if (!crewRes.ok) throw new Error("선원 정보 등록 실패");

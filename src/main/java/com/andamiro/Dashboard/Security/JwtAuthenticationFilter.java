@@ -30,6 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
+        // OPTIONS 요청은 CORS preflight이므로 허용
+        if (request.getMethod().equals("OPTIONS")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 화이트리스트 경로: /users (정확히 이 경로) + /users/login
         if (requestURI.equals("/users")
                 || requestURI.equals("/users/login")
