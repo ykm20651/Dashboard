@@ -6,7 +6,7 @@ services:
     container_name: oasis-mysql
     restart: always
     env_file:
-      - .env   # ✅ 이 부분 추가됨 (.env 환경 변수를 MySQL에도 전달)
+      - .env            # ✅ MySQL에도 .env의 값을 환경변수로 주입
     environment:
       TZ: Asia/Seoul
     command: >
@@ -28,12 +28,14 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env    # ✅ 이 부분이 핵심입니다 (.env를 백엔드에도 주입)
+      - .env            # ✅ 값 주입
+    volumes:
+      - ./.env:/.env:ro # ✅ 실제 파일을 컨테이너 루트(/)에 마운트 (Dotenv가 찾음)
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=UTC&characterEncoding=UTF-8
       TZ: Asia/Seoul
     ports:
-      - "80:8080"  # ✅ 외부 접근 가능 포트
+      - "80:8080"       # ✅ 외부 80 → 내부 8080
 
 volumes:
   db_data:
