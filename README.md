@@ -36,7 +36,7 @@ docker run --name andamiro-db \
 
 ## 애플리케이션 실행
 ./gradlew bootRun
-👉 http://15.164.99.177:80/
+👉 http://52.79.99.132:80/
 
 ---
 ## 📂 패키지 구조
