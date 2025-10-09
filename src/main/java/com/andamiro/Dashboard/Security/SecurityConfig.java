@@ -20,104 +20,84 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider) { this.jwtTokenProvider = jwtTokenProvider; }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // [1] CORS + CSRF 비활성화
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+            .cors(c -> c.configurationSource(corsConfigurationSource()))
+            .csrf(c -> c.disable())
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // [2] 세션 비활성화 (JWT 기반)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                // 0) 프리플라이트
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // [3] 프레임옵션 비활성화 (H2 콘솔 등)
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                // 1) 회원가입/로그인 허용
+                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 
-                // [4] 요청별 권한 설정
-                .authorizeHttpRequests(auth -> auth
-                        // ✅ 프리플라이트 요청 전부 허용 (CORS용)
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // 2) 하위 공개 엔드포인트(추가 정보 등)도 전부 허용
+                .requestMatchers("/users/**").permitAll()
 
-                        // ✅ 정적 리소스 허용
-                        .requestMatchers(
-                                "/", "/index.html",
-                                "/login.html", "/signup.html", "/about.html",
-                                "/product.html", "/bm.html", "/contact.html",
-                                "/css/**", "/js/**", "/images/**", "/static/**"
-                        ).permitAll()
+                // 3) 정적 리소스 & 문서
+                .requestMatchers("/", "/**/*.html",
+                        "/css/**", "/js/**", "/images/**", "/static/**",
+                        "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // ✅ 인증 없이 접근 가능한 공개 API (회원가입 포함)
-                        .requestMatchers(
-                                "/users",              // POST /users (회원가입)
-                                "/users/**",           // /users/signup, /users/login 등 모두 포함
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
+                // 4) 나머지 제한
+                .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
 
-                        // ✅ 관리자 전용
-                        .requestMatchers(HttpMethod.PATCH, "/users/*/approve").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/incidents/*").hasRole("OWNER")
+                .requestMatchers(HttpMethod.PUT, "/incidents/*").hasRole("OWNER")
+                .requestMatchers(HttpMethod.DELETE, "/incidents/*").hasRole("OWNER")
+                .requestMatchers("/incidents/*/analyze").hasRole("OWNER")
+                .requestMatchers("/incidents/*/evidence-files").hasRole("OWNER")
+                .requestMatchers("/evidence-files/*").hasRole("OWNER")
+                .requestMatchers("/incidents/*/reports").hasRole("OWNER")
+                .requestMatchers("/incidents/*/response-guide").hasRole("OWNER")
 
-                        // ✅ 선주 전용
-                        .requestMatchers(HttpMethod.GET, "/incidents/*").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.PUT, "/incidents/*").hasRole("OWNER")
-                        .requestMatchers(HttpMethod.DELETE, "/incidents/*").hasRole("OWNER")
-                        .requestMatchers("/incidents/*/analyze").hasRole("OWNER")
-                        .requestMatchers("/incidents/*/evidence-files").hasRole("OWNER")
-                        .requestMatchers("/evidence-files/*").hasRole("OWNER")
-                        .requestMatchers("/incidents/*/reports").hasRole("OWNER")
-                        .requestMatchers("/incidents/*/response-guide").hasRole("OWNER")
+                .requestMatchers(HttpMethod.PATCH, "/users/*").hasAnyRole("OWNER","CREW")
+                .requestMatchers(HttpMethod.GET, "/users/*").hasAnyRole("OWNER","CREW")
+                .requestMatchers(HttpMethod.DELETE, "/users/*").hasAnyRole("OWNER","CREW")
+                .requestMatchers(HttpMethod.GET, "/incidents").hasAnyRole("OWNER","CREW")
+                .requestMatchers(HttpMethod.POST, "/incidents").hasAnyRole("OWNER","CREW")
+                .requestMatchers(HttpMethod.GET, "/incidents/*/reports").hasAnyRole("OWNER","CREW")
+                .requestMatchers(HttpMethod.POST, "/incidents/*/evidence-files").hasAnyRole("OWNER","CREW")
 
-                        // ✅ 선원 전용
-                        .requestMatchers(HttpMethod.PATCH, "/users/*").hasAnyRole("OWNER", "CREW")
-                        .requestMatchers(HttpMethod.GET, "/users/*").hasAnyRole("OWNER", "CREW")
-                        .requestMatchers(HttpMethod.DELETE, "/users/*").hasAnyRole("OWNER", "CREW")
-                        .requestMatchers(HttpMethod.GET, "/incidents").hasAnyRole("OWNER", "CREW")
-                        .requestMatchers(HttpMethod.POST, "/incidents").hasAnyRole("OWNER", "CREW")
-                        .requestMatchers(HttpMethod.GET, "/incidents/*/reports").hasAnyRole("OWNER", "CREW")
-                        .requestMatchers(HttpMethod.POST, "/incidents/*/evidence-files").hasAnyRole("OWNER", "CREW")
+                .anyRequest().authenticated()
+            )
 
-                        // ✅ 그 외는 인증 필요
-                        .anyRequest().authenticated()
-                )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((req, res, e) -> {
+                    // 왜 401이 나는지 바로 확인할 수 있게 헤더/메시지 추가
+                    res.setHeader("X-Auth-Fail", "security");
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
+                })
+            )
 
-                // [5] 인증 실패 시 처리
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, e) -> {
-                            System.out.println("🚫 인증 실패: " + e.getMessage());
-                            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
-                        })
-                )
-
-                // [6] JWT 인증 필터 추가 (UsernamePasswordAuthenticationFilter 전에 실행)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+            // 필터 순서: UsernamePasswordAuthenticationFilter 전에 배치
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                    UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // [7] 패스워드 인코더
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
-    // [8] CORS 전역 설정
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));  // 모든 Origin 허용
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(false);  // CORS 충돌 해결을 위해 false로 변경
-        configuration.setMaxAge(3600L);
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOriginPatterns(List.of("*"));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        // 프런트에서 cache-control/pragma 헤더도 보내므로 허용 목록에 추가
+        cfg.setAllowedHeaders(List.of("Authorization","Content-Type","Cache-Control","Pragma"));
+        cfg.setAllowCredentials(false);
+        cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", cfg);
         return source;
     }
 }
