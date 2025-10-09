@@ -7,37 +7,45 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest #잡은 GitHub의 우분투 호스트 위에서 돈다. (EC2가 아니라 GitHub의 러너 머신)
+    runs-on: ubuntu-latest # GitHub 러너 머신에서 실행
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev')
-    #실제 머지(merged) 되었고, 베이스 브랜치가 dev면 실행.
-
 
     steps:
       # 1️⃣ 코드 체크아웃
       - name: Checkout repository
-        uses: actions/checkout@v3 #“GitHub 마켓플레이스 액션”을 가져다 쓰는 것.
+        uses: actions/checkout@v3
 
       # 2️⃣ EC2에 프로젝트 파일 복사
       - name: Copy project files to EC2
-        uses: appleboy/scp-action@master #SCP 액션(appleboy)을 써서 리포 파일들을 EC2로 복사.
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "."
-          target: "/home/ec2-user/Dashboard" # ⚠️ Amazon Linux 기본 사용자 계정: ec2-user
-          #ec2내에서 실제 실행할 프로젝트 폴더 위치.
+          target: "/home/ec2-user/Dashboard"
 
       # 3️⃣ EC2에서 application.yml 생성
       - name: Create application.yml on EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }} #secrets.* 는 Settings → Secrets에 넣어둔 값.
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             mkdir -p /home/ec2-user/Dashboard/src/main/resources
             echo "${{ secrets.APPLICATION_YML }}" > /home/ec2-user/Dashboard/src/main/resources/application.yml
+
+      # 🆕 3.5️⃣ EC2에서 .env 파일 생성 (로컬 .env 대체)
+      - name: Create .env file on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "${{ secrets.ENV_FILE }}" > /home/ec2-user/Dashboard/.env
+            echo ".env file created on EC2 ✅"
 
       # 4️⃣ Amazon Linux 환경에서 Docker Compose 빌드 & 실행
       - name: Build and deploy with Docker Compose (robust)
@@ -54,20 +62,15 @@ jobs:
 
             cd /home/ec2-user/Dashboard
 
-            # 1) compose 실행기 선택: v2 우선, 없으면 v1
+            # 1) compose 실행기 선택
             if sudo docker compose version >/dev/null 2>&1; then
               CMD="sudo docker compose"
             else
               CMD="sudo docker-compose"
             fi
 
-            # 2) (선택) 기존 컨테이너 내려놓고
+            # 2) 기존 컨테이너 종료
             $CMD down || true
 
-            # 3) (필요 시) compose 파일이 다른 이름이면 -f로 지정
-            # 예: $CMD -f docker-compose.yml up -d --build
-
-            # 4) 올리기
+            # 3) 재빌드 및 재실행
             $CMD up -d --build
-      
-      
