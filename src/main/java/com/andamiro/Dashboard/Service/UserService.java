@@ -52,14 +52,23 @@ public class UserService {
     /* 00-01 API 건 매핑 */
     @Transactional
     public UserResponse signup(UserSignupRequest request) {
-        //1. 요청 DTO에 담긴 데이터 가지고, 엔티티 객체 만들어.
-        //new 생성자가 아니라 static 팩토리 메서드로 객체 생성하도록 했음.
-        User user = User.create(request.email(),  passwordEncoder.encode(request.password()), request.name(), request.role());
+        // ✅ 이메일 중복 검사 추가
+        if (userRepository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
 
-        //2. userRepository에 저장해.
+        // 1. 요청 DTO → 엔티티
+        User user = User.create(
+                request.email(),
+                passwordEncoder.encode(request.password()),
+                request.name(),
+                request.role()
+        );
+
+        // 2. 저장
         User saved = userRepository.save(user);
-        //3. 이제 응답 DTO로 감싸서 반환해. - .stream().map()
 
+        // 3. 응답 DTO 변환
         return new UserResponse(
                 saved.getId(),
                 saved.getEmail(),
@@ -68,6 +77,7 @@ public class UserService {
                 saved.isApproved()
         );
     }
+
 
 
     /* 00-02 API 건 매핑 */
