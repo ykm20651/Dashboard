@@ -31,10 +31,31 @@
       </ul>
     </nav>
 
-    <!-- 로그인 / 회원가입 -->
-    <div class="auth">
-      <a href="login.html" class="btn-auth">로그인</a>
-      <a href="signup.html" class="btn-auth">회원가입</a>
+    <!-- 로그인 상태에 따른 헤더 변경 -->
+    <div class="auth" id="authSection">
+      <!-- 비로그인 상태 -->
+      <div id="guestAuth" style="display: none;">
+        <a href="login.html" class="btn-auth">로그인</a>
+        <a href="signup.html" class="btn-auth">회원가입</a>
+      </div>
+      
+      <!-- 로그인 상태 -->
+      <div id="userAuth" style="display: none;">
+        <div class="user-info">
+          <span id="userEmail" class="user-email"></span>
+          <span id="userRole" class="user-role"></span>
+        </div>
+        <div class="user-menu">
+          <button id="userMenuBtn" class="user-menu-btn">▼</button>
+          <div id="userMenu" class="user-menu-dropdown" style="display: none;">
+            <a href="#myPage" id="myPageLink">마이페이지</a>
+            <a href="#myIncidents" id="myIncidentsLink">내 사고 관리</a>
+            <a href="#myReports" id="myReportsLink">내 보고서</a>
+            <hr>
+            <a href="#" id="logoutBtn">로그아웃</a>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -48,8 +69,22 @@
         <h1 class="hero-title">ANDAMIRO</h1>
         <p class="slogan">사고 현장을 기록하다</p>
         <div class="cta-buttons">
-          <a href="#analysis" class="cta primary" id="start-analysis">내 사고 분석 시작하기</a>
-          <a href="contact.html" class="cta secondary">문의하기</a>
+          <!-- 비로그인 상태 -->
+          <div id="guestButtons" style="display: none;">
+            <a href="#analysis" class="cta primary" id="start-analysis">내 사고 분석 시작하기</a>
+            <a href="contact.html" class="cta secondary">문의하기</a>
+          </div>
+          
+          <!-- 로그인 상태 - 역할별 버튼 -->
+          <div id="ownerButtons" style="display: none;">
+            <a href="incident_register.html" class="cta primary">새 사고 등록하기</a>
+            <a href="incidents.html" class="cta secondary">내 사고 관리</a>
+          </div>
+          
+          <div id="crewButtons" style="display: none;">
+            <a href="incidents.html" class="cta primary">사고 현황 보기</a>
+            <a href="incident_register.html" class="cta secondary">사고 신고하기</a>
+          </div>
         </div>
       </div>
     </div>
@@ -129,6 +164,7 @@
 
   <!-- fullPage.js & 사용자 스크립트 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.25/fullpage.min.js"></script>
+  <script src="js/auth.js" defer></script>
   <script src="js/main.js" defer></script>
 </body>
 </html>
