@@ -39,6 +39,8 @@ public class SecurityConfig {
                         // ✅ 회원가입 / 로그인 허용
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/*/owner-info").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/*/crew-info").permitAll()
 
                         // ✅ Swagger UI
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
