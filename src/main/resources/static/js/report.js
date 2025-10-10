@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // 로그인 상태 확인
+  if (!requireAuth()) return;
+  
   const params = new URLSearchParams(window.location.search);
   const incidentId = params.get("id");
 

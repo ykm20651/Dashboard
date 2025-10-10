@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // 로그인 상태 확인
+  if (!requireAuth()) return;
+  
   const form = document.getElementById("incidentForm");
   const msg = document.getElementById("msg");
 
@@ -12,19 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const happenedAt = document.getElementById("happenedAt").value;
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("로그인이 필요합니다.");
-
       const res = await fetch("http://52.79.99.132/incidents", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ title, description, incidentType, location, happenedAt })
       });
 
-      if (!res.ok) throw new Error("사고 등록 실패");
+      await handleApiError(res, "사고 등록에 실패했습니다.");
 
       const data = await res.json();
       console.log("사고 등록 성공:", data);
