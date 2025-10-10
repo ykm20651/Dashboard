@@ -158,7 +158,7 @@ function setupButtonEventListeners() {
   if (myPageLink) {
     myPageLink.addEventListener('click', e => {
       e.preventDefault();
-      alert('마이페이지는 준비 중입니다.');
+      window.location.href = 'mypage.html';
     });
   }
 
