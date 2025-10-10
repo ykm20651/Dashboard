@@ -31,31 +31,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        System.out.println("🔍 JWT 필터 진입: " + method + " " + requestURI);
+        System.out.println("🔍 [JWT 필터] 요청 감지: " + method + " " + requestURI);
 
-        // ✅ 1. OPTIONS (CORS Preflight) 요청은 바로 통과
+        // ✅ 1. Preflight OPTIONS 요청은 즉시 통과
         if (method.equalsIgnoreCase("OPTIONS")) {
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
             response.setHeader("Access-Control-Allow-Credentials", "false");
             response.setStatus(HttpServletResponse.SC_OK);
-            System.out.println("✅ OPTIONS 요청 통과 (CORS Preflight)");
+            System.out.println("🟢 [JWT 필터] OPTIONS 요청 통과 (CORS)");
             return;
         }
 
-        // ✅ 2. 화이트리스트 경로 — JWT 없이 통과
+        // ✅ 2. 화이트리스트 경로는 JWT 검사 생략
         if (isWhitelisted(requestURI, method)) {
-            System.out.println("✅ JWT 필터 화이트리스트 통과: " + requestURI);
+            System.out.println("🟢 [JWT 필터] 화이트리스트 경로 통과 → " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ✅ 3. Authorization 헤더에서 JWT 토큰 추출
+        // ✅ 3. Authorization 헤더 추출
         String token = resolveToken(request);
+        if (token == null) {
+            System.out.println("⚠️ [JWT 필터] 토큰 없음 → 인증 불가");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        // ✅ 4. JWT 검증 및 SecurityContext 등록
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        // ✅ 4. JWT 검증
+        if (jwtTokenProvider.validateToken(token)) {
             UUID userId = jwtTokenProvider.getUserId(token);
             User.Role role = jwtTokenProvider.getRole(token);
 
@@ -67,40 +72,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("✅ JWT 인증 성공: userId=" + userId + ", role=" + role);
-        } else if (token != null) {
-            System.out.println("❌ 잘못된 JWT 토큰 또는 만료됨");
+            System.out.println("✅ [JWT 필터] 인증 성공: userId=" + userId + ", role=" + role);
+        } else {
+            System.out.println("❌ [JWT 필터] 잘못된 또는 만료된 JWT 토큰");
         }
 
-        // ✅ 5. 다음 필터로 전달
+        // ✅ 5. 다음 필터로 이동
         filterChain.doFilter(request, response);
     }
 
     /**
-     * JWT 화이트리스트 정의
-     * 회원가입, 로그인, Swagger, 정적 리소스 등은 토큰 없이 접근 가능
+     * ✅ 화이트리스트 경로 설정
+     * 회원가입(/users [POST]), 로그인(/users/login [POST]), Swagger, 정적 리소스
      */
     private boolean isWhitelisted(String uri, String method) {
-        // 회원가입 + 로그인
+
+        // 회원가입
         if (uri.equals("/users") && method.equalsIgnoreCase("POST")) return true;
+        // 로그인
         if (uri.equals("/users/login") && method.equalsIgnoreCase("POST")) return true;
 
-        // 공개 API
+        // Swagger
         if (uri.startsWith("/swagger-ui")) return true;
         if (uri.startsWith("/v3/api-docs")) return true;
 
-        // 정적 리소스 (HTML, JS, CSS, 이미지 등)
-        if (uri.startsWith("/static/")) return true;
-        if (uri.startsWith("/css/")) return true;
-        if (uri.startsWith("/js/")) return true;
-        if (uri.startsWith("/images/")) return true;
+        // 정적 리소스
+        if (uri.startsWith("/static/") || uri.startsWith("/css/") ||
+                uri.startsWith("/js/") || uri.startsWith("/images/")) return true;
         if (uri.equals("/") || uri.endsWith(".html")) return true;
 
         return false;
     }
 
     /**
-     * Authorization 헤더에서 Bearer 토큰 추출
+     * ✅ Authorization 헤더에서 Bearer 토큰 추출
      */
     private String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");

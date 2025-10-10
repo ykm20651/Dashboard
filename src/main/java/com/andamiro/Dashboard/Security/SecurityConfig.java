@@ -29,39 +29,43 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(c -> c.configurationSource(corsConfigurationSource()))
-            .csrf(c -> c.disable())
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .csrf(c -> c.disable())
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // ✅ 회원가입 / 로그인 허용
-                .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
+                        // ✅ 회원가입 / 로그인 허용
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 
-                // ✅ 정적 리소스
-                .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        // ✅ Swagger UI
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                // ✅ Swagger
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // ✅ 정적 리소스
+                        .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
 
-                // ✅ 나머지 요청은 인증 필요
-                .anyRequest().authenticated()
-            )
+                        // ✅ 나머지는 인증 필요
+                        .anyRequest().authenticated()
+                )
 
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((req, res, e) -> {
-                    res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    res.setContentType("application/json;charset=UTF-8");
-                    res.getWriter().write("{\"error\": \"인증이 필요합니다.\"}");
-                })
-            );
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> {
+                            System.out.println("🚫 [SecurityConfig] 인증 실패: " + req.getRequestURI());
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"error\": \"인증이 필요합니다.\"}");
+                        })
+                );
 
+        // ✅ JWT 필터 추가
         http.addFilterBefore(
                 new JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
         );
+
+        System.out.println("✅ [SecurityConfig] SecurityFilterChain 초기화 완료");
 
         return http.build();
     }
