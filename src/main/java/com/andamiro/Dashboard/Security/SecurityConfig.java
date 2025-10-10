@@ -46,9 +46,13 @@ public class SecurityConfig {
                         // ✅ 정적 리소스
                         .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
 
+                        // ✅ 에러 페이지 접근 허용 (추가)
+                        .requestMatchers("/error").permitAll()
+
                         // ✅ 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
+
 
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
