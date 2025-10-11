@@ -31,7 +31,7 @@
   width: 80px;
   height: 80px;
   margin: 0 auto 15px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #ff6b35, #e85a2a);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -58,7 +58,7 @@
 
 .role-badge {
   display: inline-block;
-  background: #007bff;
+  background: #ff6b35;
   color: #fff;
   padding: 4px 12px;
   border-radius: 12px;
@@ -89,9 +89,9 @@
 
 .nav-item:hover,
 .nav-item.active {
-  background: rgba(0, 123, 255, 0.2);
-  color: #007bff;
-  border-left: 3px solid #007bff;
+  background: rgba(255, 107, 53, 0.2);
+  color: #ff6b35;
+  border-left: 3px solid #ff6b35;
 }
 
 .nav-icon {
@@ -122,14 +122,14 @@
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid rgba(0, 123, 255, 0.3);
+  border-bottom: 2px solid rgba(255, 107, 53, 0.3);
 }
 
 .section-header h2 {
   margin: 0;
   font-size: 32px;
   font-weight: 700;
-  background: linear-gradient(135deg, #007bff, #00d4ff);
+  background: linear-gradient(135deg, #ff6b35, #ff9b62);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -166,7 +166,7 @@
 
 .stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
 }
 
 .stat-icon {
@@ -179,7 +179,7 @@
   margin: 0 0 5px;
   font-size: 32px;
   font-weight: 700;
-  color: #007bff;
+  color: #ff6b35;
 }
 
 .stat-info p {
@@ -205,7 +205,7 @@
 .dashboard-card h3 {
   margin: 0 0 20px;
   font-size: 20px;
-  color: #007bff;
+  color: #ff6b35;
 }
 
 /* 프로필 폼 */
@@ -225,7 +225,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #007bff;
+  color: #ff6b35;
 }
 
 .form-group input {
@@ -240,8 +240,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
 }
 
 .form-group input[readonly] {
@@ -270,13 +270,13 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #ff6b35, #e85a2a);
   color: #fff;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
 }
 
 .btn-secondary {
@@ -303,91 +303,6 @@
   font-size: 18px;
 }
 
-/* 필터 바 */
-.filter-bar {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 25px;
-  flex-wrap: wrap;
-}
-
-.filter-select, .search-input {
-  padding: 10px 15px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
-}
-
-.search-input {
-  flex: 1;
-  min-width: 200px;
-}
-
-/* 사고 목록 */
-.incidents-list, .reports-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.incident-item, .report-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.3s ease;
-}
-
-.incident-item:hover, .report-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-
-.incident-header, .report-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.incident-title, .report-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.status-reported { background: #ffc107; color: #000; }
-.status-investigating { background: #17a2b8; color: #fff; }
-.status-completed { background: #28a745; color: #fff; }
-
-.incident-meta, .report-meta {
-  display: flex;
-  gap: 20px;
-  color: #ccc;
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.incident-actions, .report-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-small {
-  padding: 6px 12px;
-  font-size: 12px;
-}
-
 /* 빠른 작업 */
 .quick-actions {
   display: flex;
@@ -410,108 +325,13 @@
 }
 
 .quick-action-btn:hover {
-  background: rgba(0, 123, 255, 0.2);
-  border-color: #007bff;
+  background: rgba(255, 107, 53, 0.2);
+  border-color: #ff6b35;
 }
 
 .action-icon {
   margin-right: 12px;
   font-size: 20px;
-}
-
-/* 업로드 영역 */
-.upload-area {
-  border: 2px dashed rgba(0, 123, 255, 0.5);
-  border-radius: 15px;
-  padding: 60px 40px;
-  text-align: center;
-  background: rgba(0, 123, 255, 0.05);
-  transition: all 0.3s ease;
-}
-
-.upload-area:hover {
-  border-color: #007bff;
-  background: rgba(0, 123, 255, 0.1);
-}
-
-.upload-content {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.upload-icon {
-  font-size: 60px;
-  margin-bottom: 20px;
-  opacity: 0.8;
-}
-
-.upload-content h3 {
-  margin: 0 0 15px;
-  font-size: 24px;
-  color: #007bff;
-}
-
-.upload-content p {
-  margin: 0 0 25px;
-  color: #ccc;
-  line-height: 1.6;
-}
-
-/* 분석 결과 */
-.analysis-result {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 30px;
-  margin-top: 30px;
-}
-
-.analysis-result h3 {
-  margin: 0 0 20px;
-  color: #007bff;
-}
-
-/* 설정 */
-.settings-container {
-  max-width: 600px;
-}
-
-.settings-group {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 25px;
-  margin-bottom: 25px;
-}
-
-.settings-group h3 {
-  margin: 0 0 20px;
-  color: #007bff;
-  font-size: 18px;
-}
-
-.setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.setting-item:last-child {
-  border-bottom: none;
-}
-
-.setting-item label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.setting-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
 }
 
 /* 메시지 영역 */
@@ -532,7 +352,7 @@
 }
 
 .message.success {
-  background: #28a745;
+  background: #ff6b35;
   color: #fff;
 }
 
