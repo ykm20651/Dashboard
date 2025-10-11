@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // 로그인 상태 확인
+  if (!requireAuth()) return;
+  
   const params = new URLSearchParams(window.location.search);
   const incidentId = params.get("id");
 
@@ -24,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadIncident() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132:80/incidents/${incidentId}`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("사고 불러오기 실패");
@@ -46,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadEvidence(editMode = false) {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132:80/incidents/${incidentId}/evidence-files`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const files = await res.json();
@@ -117,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         status: statusSelect.value
       };
 
-      const res = await fetch(`http://52.79.99.132:80/incidents/${incidentId}`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("description", descInput.value);
 
     try {
-      const res = await fetch(`http://52.79.99.132:80/incidents/${incidentId}/evidence-files`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         body: formData
@@ -183,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     for (let box of checked) {
-      const res = await fetch(`http://52.79.99.132:80/incidents/${incidentId}/evidence-files/${box.value}`, {
+      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files/${box.value}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이페이지 | OASIS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mypage.css">
+</head>
+<body>
+  <!-- ===== 상단 고정 헤더 ===== -->
+  <header class="topbar blackbar">
+    <div class="brand">
+      <a href="index.html">
+        <img src="images/오아시스 로고.png" alt="OASIS 로고" class="logo" />
+      </a>
+    </div>
+    
+    <!-- 중앙 네비게이션 -->
+    <nav class="gnb">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="product.html">Product</a></li>
+        <li><a href="index.html#analysis">Service</a></li>
+        <li><a href="bm.html">BM</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- 로그인 상태에 따른 헤더 변경 -->
+    <div class="auth" id="authSection">
+      <!-- 동적으로 로드됨 -->
+    </div>
+  </header>
+
+  <main class="mypage-container">
+    <!-- 사이드바 -->
+    <aside class="mypage-sidebar">
+      <div class="user-profile-card">
+        <div class="profile-avatar">
+          <img src="images/icons/user-avatar.svg" alt="프로필" class="avatar-img">
+        </div>
+        <div class="profile-info">
+          <h3 id="userName">사용자</h3>
+          <p id="userEmailSidebar">user@example.com</p>
+          <span id="userRoleBadge" class="role-badge">선주</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#dashboard" class="nav-item active" data-section="dashboard">
+            <span class="nav-icon">📊</span> 대시보드
+          </a></li>
+          <li><a href="#profile" class="nav-item" data-section="profile">
+            <span class="nav-icon">👤</span> 내 정보
+          </a></li>
+          <li><a href="#incidents" class="nav-item" data-section="incidents">
+            <span class="nav-icon">🚨</span> 사고 관리
+          </a></li>
+          <li><a href="#reports" class="nav-item" data-section="reports">
+            <span class="nav-icon">📋</span> 보고서
+          </a></li>
+          <li><a href="#analysis" class="nav-item" data-section="analysis">
+            <span class="nav-icon">🔍</span> 사고 분석
+          </a></li>
+          <li><a href="#settings" class="nav-item" data-section="settings">
+            <span class="nav-icon">⚙️</span> 설정
+          </a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <section class="mypage-content">
+      <!-- 대시보드 섹션 -->
+      <div id="dashboard" class="content-section active">
+        <div class="section-header">
+          <h2>대시보드</h2>
+          <p>전체 현황을 한눈에 확인하세요</p>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🚨</div>
+            <div class="stat-info">
+              <h3 id="totalIncidents">0</h3>
+              <p>총 사고 건수</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <h3 id="pendingIncidents">0</h3>
+              <p>처리 대기</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <h3 id="completedIncidents">0</h3>
+              <p>처리 완료</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+              <h3 id="totalReports">0</h3>
+              <p>생성된 보고서</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <h3>최근 사고 현황</h3>
+            <div id="recentIncidents" class="incident-list">
+              <!-- 최근 사고 목록이 여기에 로드됩니다 -->
+            </div>
+            <a href="#incidents" class="btn-secondary">전체 보기</a>
+          </div>
+          
+          <div class="dashboard-card">
+            <h3>빠른 작업</h3>
+            <div class="quick-actions">
+              <button class="quick-action-btn" onclick="showSection('incidents')">
+                <span class="action-icon">➕</span>
+                새 사고 등록
+              </button>
+              <button class="quick-action-btn" onclick="showSection('analysis')">
+                <span class="action-icon">🔍</span>
+                사고 분석
+              </button>
+              <button class="quick-action-btn" onclick="showSection('reports')">
+                <span class="action-icon">📋</span>
+                보고서 생성
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 프로필 섹션 -->
+      <div id="profile" class="content-section">
+        <div class="section-header">
+          <h2>내 정보</h2>
+          <p>계정 정보를 확인하고 수정하세요</p>
+        </div>
+        
+        <div class="profile-form">
+          <div class="form-group">
+            <label>이메일</label>
+            <input type="email" id="profileEmail" readonly>
+          </div>
+          <div class="form-group">
+            <label>이름</label>
+            <input type="text" id="profileName" placeholder="이름을 입력하세요">
+          </div>
+          <div class="form-group">
+            <label>역할</label>
+            <input type="text" id="profileRole" readonly>
+          </div>
+          <div class="form-group">
+            <label>비밀번호 변경</label>
+            <input type="password" id="newPassword" placeholder="새 비밀번호">
+          </div>
+          <div class="form-group">
+            <label>비밀번호 확인</label>
+            <input type="password" id="confirmPassword" placeholder="비밀번호 확인">
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" id="updateProfileBtn">정보 업데이트</button>
+            <button class="btn-danger" id="deleteAccountBtn">계정 삭제</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 사고 관리 섹션 -->
+      <div id="incidents" class="content-section">
+        <div class="section-header">
+          <h2>사고 관리</h2>
+          <div class="header-actions">
+            <button class="btn-primary" onclick="window.location.href='incident_register.html'">
+              <span class="btn-icon">➕</span>
+              새 사고 등록
+            </button>
+          </div>
+        </div>
+        
+        <div class="incidents-container">
+          <div class="filter-bar">
+            <select id="statusFilter" class="filter-select">
+              <option value="">전체 상태</option>
+              <option value="REPORTED">신고됨</option>
+              <option value="INVESTIGATING">조사중</option>
+              <option value="COMPLETED">완료</option>
+            </select>
+            <select id="typeFilter" class="filter-select">
+              <option value="">전체 유형</option>
+              <option value="COLLISION">충돌</option>
+              <option value="FIRE">화재</option>
+              <option value="LEAK">유출</option>
+              <option value="GROUNDING">좌초</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="사고 제목 검색..." class="search-input">
+            <button class="btn-secondary" id="refreshBtn">새로고침</button>
+          </div>
+          
+          <div id="incidentsList" class="incidents-list">
+            <!-- 사고 목록이 여기에 로드됩니다 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 보고서 섹션 -->
+      <div id="reports" class="content-section">
+        <div class="section-header">
+          <h2>보고서</h2>
+          <div class="header-actions">
+            <button class="btn-primary" id="generateReportBtn">
+              <span class="btn-icon">📋</span>
+              새 보고서 생성
+            </button>
+          </div>
+        </div>
+        
+        <div id="reportsList" class="reports-list">
+          <!-- 보고서 목록이 여기에 로드됩니다 -->
+        </div>
+      </div>
+
+      <!-- 사고 분석 섹션 -->
+      <div id="analysis" class="content-section">
+        <div class="section-header">
+          <h2>사고 유형 분석</h2>
+          <p>AI를 활용한 사고 현장 분석 서비스</p>
+        </div>
+        
+        <div class="analysis-container">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-content">
+              <div class="upload-icon">📷</div>
+              <h3>사고 현장 사진 업로드</h3>
+              <p>사고 현장 사진을 업로드하면 AI가 자동으로 사고 유형을 분석합니다</p>
+              <input type="file" id="imageInput" accept="image/*" style="display: none;">
+              <button class="btn-primary" onclick="document.getElementById('imageInput').click()">
+                사진 선택
+              </button>
+            </div>
+          </div>
+          
+          <div id="analysisResult" class="analysis-result" style="display: none;">
+            <h3>분석 결과</h3>
+            <div class="result-content">
+              <!-- 분석 결과가 여기에 표시됩니다 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 설정 섹션 -->
+      <div id="settings" class="content-section">
+        <div class="section-header">
+          <h2>설정</h2>
+          <p>앱 설정을 관리하세요</p>
+        </div>
+        
+        <div class="settings-container">
+          <div class="settings-group">
+            <h3>알림 설정</h3>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="emailNotifications" checked>
+                이메일 알림
+              </label>
+            </div>
+            <div class="setting-item">
+              <label>
+                <input type="checkbox" id="pushNotifications" checked>
+                푸시 알림
+              </label>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3>데이터 관리</h3>
+            <div class="setting-item">
+              <button class="btn-secondary" id="exportDataBtn">데이터 내보내기</button>
+            </div>
+            <div class="setting-item">
+              <button class="btn-danger" id="clearDataBtn">모든 데이터 삭제</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 메시지 표시 영역 -->
+  <div id="messageArea" class="message-area"></div>
+
+  <script src="/js/auth.js" defer></script>
+  <script src="/js/main.js" defer></script>
+  <script src="/js/mypage.js" defer></script>
+</body>
+</html>
