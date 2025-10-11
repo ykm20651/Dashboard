@@ -5,37 +5,25 @@ let currentReports = [];
 let currentUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 로그인 상태 확인
   if (!requireAuth()) return;
 
-  // 사용자 정보 로드
   loadUserInfo();
-
-  // 대시보드 데이터 로드
   loadDashboardData();
-
-  // 이벤트 리스너 설정
   setupEventListeners();
 
   // 빠른 작업 버튼
-  const newIncidentBtn = document.getElementById("newIncidentBtn");
-  const analysisBtn = document.getElementById("analysisBtn");
-  const reportQuickBtn = document.getElementById("generateReportQuickBtn");
+  document.getElementById("newIncidentBtn")?.addEventListener("click", () => {
+    window.location.href = "incident_register.html";
+  });
 
-  if (newIncidentBtn)
-    newIncidentBtn.addEventListener("click", () => {
-      window.location.href = "incident_register.html";
-    });
+  document.getElementById("analysisBtn")?.addEventListener("click", () => {
+    showMessage("아직 준비 중입니다.", "info");
+  });
 
-  if (analysisBtn)
-    analysisBtn.addEventListener("click", () => {
-      showMessage("아직 준비 중입니다.", "info");
-    });
+  document
+    .getElementById("generateReportQuickBtn")
+    ?.addEventListener("click", generateReport);
 
-  if (reportQuickBtn)
-    reportQuickBtn.addEventListener("click", generateReport);
-
-  // 기본 섹션
   showSection("dashboard");
 });
 
@@ -47,13 +35,14 @@ async function loadUserInfo() {
     const userEmail = getUserEmail();
     const userRole = getUserRole();
 
-    // 사이드바 프로필
-    document.getElementById("userName").textContent = userEmail.split("@")[0];
+    const userName = userEmail.split("@")[0];
+
+    // 프로필 카드 정보 반영
+    document.getElementById("avatarName").textContent = `${userName}님`;
     document.getElementById("userEmailSidebar").textContent = userEmail;
     document.getElementById("userRoleBadge").textContent =
       userRole === "OWNER" ? "선주" : "선원";
 
-    // 프로필 입력칸
     document.getElementById("profileEmail").value = userEmail;
     document.getElementById("profileRole").value =
       userRole === "OWNER" ? "선주" : "선원";
@@ -92,9 +81,8 @@ async function loadIncidents() {
     currentIncidents = await response.json();
     return currentIncidents;
   } catch (error) {
-    console.error("사고 목록 로드 실패:", error);
+    console.warn("사고 목록 로드 실패. 더미 데이터 사용.");
     currentIncidents = generateDummyIncidents();
-    showMessage("더미 데이터를 사용합니다.", "info");
     return currentIncidents;
   }
 }
@@ -113,9 +101,8 @@ async function loadReports() {
     currentReports = await response.json();
     return currentReports;
   } catch (error) {
-    console.error("보고서 목록 로드 실패:", error);
+    console.warn("보고서 목록 로드 실패. 더미 데이터 사용.");
     currentReports = generateDummyReports();
-    showMessage("더미 데이터를 사용합니다.", "info");
     return currentReports;
   }
 }
@@ -244,13 +231,15 @@ function setupEventListeners() {
     });
   });
 
-  const updateBtn = document.getElementById("updateProfileBtn");
-  const deleteBtn = document.getElementById("deleteAccountBtn");
-  const reportBtn = document.getElementById("generateReportBtn");
-
-  if (updateBtn) updateBtn.addEventListener("click", updateProfile);
-  if (deleteBtn) deleteBtn.addEventListener("click", deleteAccount);
-  if (reportBtn) reportBtn.addEventListener("click", generateReport);
+  document
+    .getElementById("updateProfileBtn")
+    ?.addEventListener("click", updateProfile);
+  document
+    .getElementById("deleteAccountBtn")
+    ?.addEventListener("click", deleteAccount);
+  document
+    .getElementById("generateReportBtn")
+    ?.addEventListener("click", generateReport);
 }
 
 /**

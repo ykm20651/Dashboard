@@ -28,15 +28,29 @@
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  position: relative;
+  width: 90px;
+  height: 90px;
   margin: 0 auto 15px;
   background: linear-gradient(135deg, #ff6b35, #e85a2a);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  overflow: hidden;
 }
+
+.avatar-name {
+  padding: 0 6px;
+  word-break: keep-all;
+  white-space: nowrap;
+  text-align: center;
+}
+
 
 .avatar-img {
   width: 50px;
@@ -414,3 +428,4 @@
     min-width: auto;
   }
 }
+

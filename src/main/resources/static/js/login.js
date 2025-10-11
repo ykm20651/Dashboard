@@ -13,9 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("http://52.79.99.132/users/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) throw new Error("로그인 실패: 이메일 또는 비밀번호 확인 필요");
@@ -28,13 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("email", data.email);
       localStorage.setItem("role", data.role);
 
-      msg.innerText = "✅ 로그인 성공! 메인 페이지로 이동합니다.";
-      msg.style.color = "green";
+      // ✅ 이메일 앞부분 추출 → "OOO님, 환영합니다!" 문구 표시
+      const userName = data.email.split("@")[0];
+      msg.innerText = `${userName}님, 환영합니다!`;
+      msg.style.color = "#ff6b35"; // 주황색 포인트 색상
 
+      // 1.5초 뒤 메인으로 이동
       setTimeout(() => {
         window.location.href = "index.html";
       }, 1500);
-
     } catch (err) {
       msg.innerText = "❌ " + err.message;
       msg.style.color = "red";
