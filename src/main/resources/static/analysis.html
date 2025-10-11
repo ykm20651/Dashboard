@@ -1,225 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>사고 유형 분석 | OASIS</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/mypage.css">
-  <link rel="stylesheet" href="/css/analysis.css">
-  <script defer src="/js/auth.js"></script>
-  <script defer src="/js/main.js"></script>
-  <script defer src="/js/analysis.js"></script>
+  <title>사고 분석 | OASIS</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/analysis.css">
+  <script defer src="js/analysis.js"></script>
 </head>
 <body>
-  <!-- ===== 상단 고정 헤더 ===== -->
-  <header class="topbar blackbar">
-    <div class="brand">
-      <a href="index.html">
-        <img src="images/오아시스 로고.png" alt="OASIS 로고" class="logo" />
-      </a>
-    </div>
-    
-    <!-- 중앙 네비게이션 -->
-    <nav class="gnb">
-      <ul>
-        <li><a href="about.html">About</a></li>
-        <li><a href="product.html">Product</a></li>
-        <li><a href="index.html#analysis">Service</a></li>
-        <li><a href="bm.html">BM</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </nav>
-
-    <!-- 로그인 상태에 따른 헤더 변경 -->
-    <div class="auth" id="authSection">
-      <!-- 동적으로 로드됨 -->
-    </div>
-  </header>
-
   <main class="analysis-container">
-    <div class="analysis-header">
-      <div class="breadcrumb">
-        <a href="mypage.html">마이페이지</a>
-        <span> > </span>
-        <span>사고 유형 분석</span>
-      </div>
-      
-      <h1>사고 유형 분석</h1>
-      <p>AI를 활용한 사고 현장 분석 서비스</p>
-    </div>
+    <!-- 로고 -->
+    <a href="index.html" class="logo-link">
+      <img src="images/오아시스 로고.png" alt="OASIS Logo" class="logo">
+    </a>
 
-    <div class="analysis-content">
-      <!-- 업로드 섹션 -->
-      <div class="upload-section">
-        <div class="upload-area" id="uploadArea">
-          <div class="upload-content">
-            <div class="upload-icon">📷</div>
-            <h3>사고 현장 사진 업로드</h3>
-            <p>사고 현장 사진을 업로드하면 AI가 자동으로 사고 유형을 분석합니다</p>
-            
-            <div class="upload-options">
-              <input type="file" id="imageInput" accept="image/*" style="display: none;" multiple>
-              <button class="btn-primary" onclick="document.getElementById('imageInput').click()">
-                <span class="btn-icon">📁</span>
-                사진 선택
-              </button>
-              <button class="btn-secondary" id="cameraBtn">
-                <span class="btn-icon">📸</span>
-                카메라로 촬영
-              </button>
-            </div>
-            
-            <div class="upload-tips">
-              <h4>업로드 팁:</h4>
-              <ul>
-                <li>명확하고 선명한 사진을 업로드하세요</li>
-                <li>사고 현장이 잘 보이는 각도로 촬영하세요</li>
-                <li>여러 각도에서 촬영한 사진이 더 정확한 분석을 제공합니다</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 선택된 이미지 미리보기 -->
-        <div id="imagePreview" class="image-preview" style="display: none;">
-          <h3>선택된 이미지</h3>
-          <div id="previewContainer" class="preview-container">
-            <!-- 이미지 미리보기가 여기에 표시됩니다 -->
-          </div>
-          <div class="preview-actions">
-            <button class="btn-primary" id="analyzeBtn">
-              <span class="btn-icon">🔍</span>
-              분석 시작
-            </button>
-            <button class="btn-secondary" onclick="clearImages()">
-              <span class="btn-icon">🗑️</span>
-              이미지 지우기
-            </button>
-          </div>
-        </div>
-      </div>
+    <section class="section-box">
+      <h2>사고 분석</h2>
 
-      <!-- 분석 결과 섹션 -->
-      <div id="analysisResult" class="analysis-result" style="display: none;">
-        <div class="result-header">
-          <h2>분석 결과</h2>
-          <div class="result-status">
-            <span class="status-badge status-completed">분석 완료</span>
-          </div>
-        </div>
-        
-        <div class="result-content">
-          <div class="result-summary">
-            <div class="summary-card">
-              <div class="summary-icon">🚨</div>
-              <div class="summary-info">
-                <h3 id="incidentType">충돌</h3>
-                <p>사고 유형</p>
-              </div>
-            </div>
-            
-            <div class="summary-card">
-              <div class="summary-icon">⚠️</div>
-              <div class="summary-info">
-                <h3 id="severityLevel">심각</h3>
-                <p>심각도</p>
-              </div>
-            </div>
-            
-            <div class="summary-card">
-              <div class="summary-icon">📊</div>
-              <div class="summary-info">
-                <h3 id="confidenceLevel">85%</h3>
-                <p>신뢰도</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="result-details">
-            <div class="detail-section">
-              <h3>상세 분석</h3>
-              <div class="detail-content">
-                <div class="detail-item">
-                  <strong>사고 위치:</strong>
-                  <span id="detectedLocation">선박 전면부</span>
-                </div>
-                <div class="detail-item">
-                  <strong>손상 정도:</strong>
-                  <span id="damageLevel">중간</span>
-                </div>
-                <div class="detail-item">
-                  <strong>추정 원인:</strong>
-                  <span id="estimatedCause">시계 불량으로 인한 충돌</span>
-                </div>
-                <div class="detail-item">
-                  <strong>환경 영향:</strong>
-                  <span id="environmentalImpact">최소</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="detail-section">
-              <h3>권장 조치사항</h3>
-              <div id="recommendations" class="recommendations">
-                <!-- 권장 조치사항이 여기에 표시됩니다 -->
-              </div>
-            </div>
-            
-            <div class="detail-section">
-              <h3>다음 단계</h3>
-              <div class="next-steps">
-                <button class="btn-primary" onclick="createIncidentFromAnalysis()">
-                  <span class="btn-icon">📝</span>
-                  사고 등록하기
-                </button>
-                <button class="btn-secondary" onclick="saveAnalysisResult()">
-                  <span class="btn-icon">💾</span>
-                  결과 저장
-                </button>
-                <button class="btn-secondary" onclick="downloadReport()">
-                  <span class="btn-icon">📄</span>
-                  보고서 생성
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- 사고 분석 요청 -->
+      <form id="analyzeForm">
+        <label for="incidentId">사고 ID</label>
+        <input type="text" id="incidentId" required placeholder="사고 ID 입력">
+        <button type="submit">분석 요청</button>
+      </form>
 
-      <!-- 분석 히스토리 -->
-      <div class="analysis-history">
-        <h2>분석 히스토리</h2>
-        <div id="historyList" class="history-list">
-          <!-- 분석 히스토리가 여기에 표시됩니다 -->
-        </div>
-      </div>
-    </div>
+      <!-- 증거자료 업로드 -->
+      <h3>증거자료 업로드</h3>
+      <form id="evidenceForm">
+        <label for="fileUrl">파일 URL</label>
+        <input type="text" id="fileUrl" required placeholder="https://...">
+
+        <label for="fileType">파일 타입</label>
+        <input type="text" id="fileType" required placeholder="image, video, text">
+
+        <label for="description">설명</label>
+        <input type="text" id="description">
+
+        <button type="submit">업로드</button>
+      </form>
+
+      <p id="msg"></p>
+    </section>
   </main>
-
-  <!-- 메시지 표시 영역 -->
-  <div id="messageArea" class="message-area"></div>
-
-  <!-- 분석 진행 모달 -->
-  <div id="analysisModal" class="modal" style="display: none;">
-    <div class="modal-content analysis-modal">
-      <div class="modal-header">
-        <h2>AI 분석 진행 중</h2>
-      </div>
-      <div class="modal-body">
-        <div class="analysis-progress">
-          <div class="progress-icon">🤖</div>
-          <div class="progress-text">
-            <h3>AI가 이미지를 분석하고 있습니다...</h3>
-            <p>잠시만 기다려주세요. 보통 30초 내외가 소요됩니다.</p>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="progress-percentage" id="progressPercentage">0%</div>
-        </div>
-      </div>
-    </div>
-  </div>
 </body>
 </html>

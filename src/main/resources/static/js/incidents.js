@@ -1,18 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 로그인 상태 확인
-  if (!requireAuth()) return;
-  
   const incidentList = document.getElementById("incidentList");
   const msg = document.getElementById("msg");
 
   // 사고 목록 불러오기
   async function loadIncidents() {
     try {
-      const res = await fetch("http://52.79.99.132/incidents", {
-        method: "GET",
-        headers: getAuthHeaders()
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://52.79.99.132:80/incidents", {
+        headers: { "Authorization": `Bearer ${token}` }
       });
-      await handleApiError(res, "사고 목록을 불러올 수 없습니다.");
+      if (!res.ok) throw new Error("사고 불러오기 실패");
 
       const incidents = await res.json();
       incidentList.innerHTML = "";
@@ -60,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
+      const res = await fetch(`http://52.79.99.132:80/incidents/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
