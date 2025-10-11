@@ -115,12 +115,12 @@ body {
 .cta-buttons {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 50px;
 }
 .cta {
-  padding: 14px 36px;
-  border-radius: 30px;
-  font-size: 1.2rem;
+  padding: 15px 36px;
+  border-radius: 40px;
+  font-size: 1.32rem;
   font-weight: 700;
   text-transform: uppercase;
   text-decoration: none;
