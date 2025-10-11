@@ -97,7 +97,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65); /* 어두운 오버레이 */
+  background: rgba(0, 0, 0, 0.5); /* 어두운 오버레이 */
   z-index: -1;
 }
 

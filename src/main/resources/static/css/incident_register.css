@@ -60,21 +60,7 @@ body::before {
   color: #d4d7da;
 }
 
-/* ===== 증거 자료 업로드 ===== */
-.upload-box {
-  border: 2px dashed rgba(255,255,255,0.4);
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
-  color: #ccc;
-}
-.upload-box input[type="file"] {
-  display: block;
-  margin: 20px auto 0;
-  color: #fff;
-}
-
-/* ===== 사고 유형 선택 ===== */
+/* ===== 폼 ===== */
 .incident-form {
   display: flex;
   flex-direction: column;
@@ -89,7 +75,8 @@ body::before {
   font-size: 1rem;
   color: #ddd;
 }
-.form-row input {
+.form-row input,
+.form-row select {
   padding: 12px;
   border-radius: 8px;
   border: none;
@@ -99,7 +86,8 @@ body::before {
   outline: none;
   transition: background 0.3s ease;
 }
-.form-row input:focus {
+.form-row input:focus,
+.form-row select:focus {
   background: rgba(255,255,255,0.2);
 }
 
@@ -119,4 +107,31 @@ body::before {
 .save-btn:hover {
   background: #4d5158;
   transform: translateY(-2px);
+}
+
+/* ===== 드롭다운 스타일 수정 ===== */
+.form-row select {
+  appearance: none;           /* 기본 화살표 제거 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  cursor: pointer;
+}
+
+.form-row select option {
+  background-color: #222;     /* ✅ 드롭다운 열렸을 때 배경 */
+  color: #fff;                /* ✅ 글자색 */
+}
+
+.form-row select:focus {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  outline: none;
+}
+
+/* 선택된 옵션도 잘 보이게 */
+.form-row select option:checked {
+  background-color: #444;
+  color: #fff;
 }
