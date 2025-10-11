@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // 서버에 로그인 요청
-      const res = await fetch("http://52.79.99.132/users/login", {
+      const res = await fetch("http://52.79.99.132:80/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

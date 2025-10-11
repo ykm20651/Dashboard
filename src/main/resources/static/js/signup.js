@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (roleSelect.value === "OWNER") {
       ownerExtra.style.display = "block";
       crewExtra.style.display = "none";
-    } else if (roleSelect.value === "CREW") {
+    } else if (roleSelect.value === "CREW_MEMBER") {
       crewExtra.style.display = "block";
       ownerExtra.style.display = "none";
     } else {
@@ -39,12 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // 1차 요청: 회원가입
-      const res = await fetch("http://52.79.99.132/users", {
+      const res = await fetch("http://52.79.99.132:80/users", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache"
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ email, password, name, role })
       });
@@ -61,27 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const contactNumber = document.getElementById("contactNumber").value;
         const businessNumber = document.getElementById("businessNumber").value;
 
-        const ownerRes = await fetch(`http://52.79.99.132/users/${userId}/owner-info`, {
+        const ownerRes = await fetch(`http:// /users/${userId}/owner-info`, {
           method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ companyName, shipRegId, contactNumber, businessNumber })
         });
         if (!ownerRes.ok) throw new Error("선주 정보 등록 실패");
-      } else if (role === "CREW") {
+      } else if (role === "CREW_MEMBER") {
         const assignedOwnerId = document.getElementById("assignedOwnerId").value;
         const position = document.getElementById("position").value;
 
-        const crewRes = await fetch(`http://52.79.99.132/users/${userId}/crew-info`, {
+        const crewRes = await fetch(`http://52.79.99.132:80/users/${userId}/crew-info`, {
           method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ assignedOwnerId, position })
         });
         if (!crewRes.ok) throw new Error("선원 정보 등록 실패");
