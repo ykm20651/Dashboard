@@ -9,8 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
   loadDashboardData();
   setupEventListeners();
 
+
   bindQuickActionHandlers();
   document.addEventListener("click", delegatedClickHandler);
+
 
   showSection("dashboard");
 });
@@ -72,7 +74,8 @@ async function loadReports() {
 function updateDashboardStats() {
   document.getElementById("totalIncidents").textContent = currentIncidents.length;
   document.getElementById("completedIncidents").textContent =
-    currentIncidents.filter((i) => i.status === "closed").length;
+
+  currentIncidents.filter((i) => i.status === "closed").length;
   document.getElementById("totalReports").textContent = currentReports.length;
 }
 
