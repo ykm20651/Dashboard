@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const token = localStorage.getItem("token");
 
       for (let id of deletedEvidenceIds) {
-        await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files/${id}`, {
+        await fetch(`http://52.79.99.132/evidence-files/${id}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
