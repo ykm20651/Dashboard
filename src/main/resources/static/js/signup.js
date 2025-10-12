@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (!ownerRes.ok) throw new Error("선주 정보 등록 실패");
       } else if (role === "CREW") {
-        const assignedOwnerId = document.getElementById("assignedOwnerId").value;
+        const ownerBusinessNumber = document.getElementById("ownerBusinessNumber").value;
         const position = document.getElementById("position").value;
 
         const crewRes = await fetch(`http://52.79.99.132/users/${userId}/crew-info`, {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "Cache-Control": "no-cache",
             "Pragma": "no-cache"
           },
-          body: JSON.stringify({ assignedOwnerId, position })
+          body: JSON.stringify({ ownerBusinessNumber, position })
         });
         if (!crewRes.ok) throw new Error("선원 정보 등록 실패");
       }

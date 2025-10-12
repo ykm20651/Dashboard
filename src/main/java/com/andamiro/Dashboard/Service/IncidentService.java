@@ -52,7 +52,7 @@ public class IncidentService {
                         i.getDescription(),
                         i.getHappenedAt(),
                         i.getReportedAt(),
-                        i.getStatus().name().toLowerCase(),
+                        i.getStatus().name().toLowerCase(), 
                         new IncidentResponse.CreatorSummary(
                                 i.getCreator().getId(),
                                 i.getCreator().getName()

@@ -23,7 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; //얘가 하는 일은? - 사용자가 입력한 비밀번호(평문) 와 DB에 저장된 비밀번호(해시) 를 비교하는 객체.
-    //Spring Security에서 제공하는 암호 해싱/검증 인터페이스dla.
+    //Spring Security에서 제공하는 암호 해싱/검증 인터페이스임.
     private final JwtTokenProvider jwtTokenProvider;  // ✅ 주입받아 사용
     private final OwnerRepository ownerRepository;
     private final CrewMemberRepository crewMemberRepository;
@@ -110,8 +110,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        Owner owner = ownerRepository.findById(UUID.fromString(request.assignedOwnerId()))
-                .orElseThrow(() -> new IllegalArgumentException("소속 선주를 찾을 수 없습니다."));
+        Owner owner = ownerRepository.findByBusinessNumber(request.ownerBusinessNumber())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사업자등록번호의 소속 선주를 찾을 수 없습니다."));
 
         CrewMember crew = CrewMember.create(user, owner, request.position());
         crewMemberRepository.save(crew);
