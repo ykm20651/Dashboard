@@ -121,3 +121,19 @@ body::before {
   margin-top: 15px;
   font-size: 0.95rem;
 }
+
+/* ===== 도움말 텍스트 ===== */
+.help-text {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-top: 6px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Placeholder 스타일 */
+input::placeholder,
+select::placeholder {
+  color: #888;
+  opacity: 1;
+}

@@ -64,8 +64,16 @@
       </div>
 
       <form id="evidenceForm" enctype="multipart/form-data">
-        <input type="file" id="fileInput" accept="image/*,video/*,.txt,.log" required>
-        <input type="text" id="fileDesc" placeholder="설명 입력" required>
+        <div class="form-row">
+          <label for="fileInput">파일 선택</label>
+          <input type="file" id="fileInput" accept="image/*,video/*,.txt,.log,.pdf,.doc,.docx" required>
+          <small class="help-text">이미지, 동영상, 텍스트 파일, PDF, 문서 파일을 업로드할 수 있습니다 (최대 10MB)</small>
+        </div>
+        <div class="form-row">
+          <label for="fileDesc">파일 설명</label>
+          <input type="text" id="fileDesc" placeholder="예: 사고 현장 사진, 선박 손상 부분" required>
+          <small class="help-text">업로드할 파일에 대한 간단한 설명을 입력해주세요</small>
+        </div>
         <button type="submit" class="btn primary">업로드</button>
       </form>
     </section>
