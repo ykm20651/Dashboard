@@ -114,6 +114,8 @@
   flex: 1;
   padding: 30px 40px;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .content-section {
@@ -137,10 +139,9 @@
   margin: 0;
   font-size: 32px;
   font-weight: 700;
-  color: #ff6b35; /* 기본 단색 폴백 */
+  color: #ff6b35; /* 기본 단색 */
 }
 
-/* 브라우저가 그라데이션 텍스트 지원할 때만 적용 */
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .section-header h2 {
     background: linear-gradient(135deg, #ff6b35, #ff9b62);
@@ -211,6 +212,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 25px;
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-card h3 {
@@ -227,6 +230,7 @@
   padding: 15px 20px;
   margin-bottom: 15px;
   transition: all 0.3s ease;
+
 }
 
 .incident-summary:hover {
@@ -253,6 +257,7 @@
   margin: 2px 0;
 }
 
+/* ===== 상태 배지 색상 ===== */
 .status-badge {
   padding: 4px 10px;
   border-radius: 8px;
@@ -266,22 +271,17 @@
   color: #ff5c5c;
 }
 
-.status-investigating {
+.status-report_generated {
   background: rgba(255, 180, 0, 0.2);
   color: #ffc107;
 }
 
-.status-resolved {
+.status-closed {
   background: rgba(40, 167, 69, 0.2);
   color: #28a745;
 }
 
-.status-closed {
-  background: rgba(128, 128, 128, 0.2);
-  color: #bdbdbd;
-}
-
-/* 전체 보기 버튼 */
+/* ===== 전체 보기 버튼 ===== */
 .btn-view-all {
   display: block;
   width: 100%;
@@ -296,11 +296,46 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 .btn-view-all:hover {
   background: rgba(255, 107, 53, 0.3);
   color: #fff;
 }
 
+/* ===== 빠른 작업 버튼 ===== */
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-action-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.quick-action-btn:hover {
+  background: rgba(255, 107, 53, 0.2);
+  border-color: #ff6b35;
+}
+
+.action-icon {
+  font-size: 20px;
+}
 /* ===== 프로필 폼 ===== */
 .profile-form {
   max-width: 600px;
@@ -348,7 +383,9 @@
   margin-top: 30px;
 }
 
-/* ===== 버튼 ===== */
+/* ===== 버튼 공통 ===== */
+
+
 .btn-primary,
 .btn-secondary,
 .btn-danger {
@@ -362,6 +399,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  pointer-events: auto;
 }
 
 .btn-primary {

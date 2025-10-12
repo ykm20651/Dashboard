@@ -8,10 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ 상태 변환 함수 추가
   function getStatusText(status) {
     const map = {
-      OPEN: "처리 전",
-      INVESTIGATING: "조사 중",
-      RESOLVED: "조치 완료",
-      CLOSED: "종결"
+      open: "처리 전",
+      report_generated: "조사 중",
+      closed: "종결"
+
     };
     return map[status] || status; // 혹시 서버에서 다른 값이 와도 그대로 표시
   }
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
+      const res = await fetch(`http://52.79.99.132/evidence-files/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });

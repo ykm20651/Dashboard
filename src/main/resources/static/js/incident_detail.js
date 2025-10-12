@@ -24,10 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let deletedEvidenceIds = new Set();
 
   const statusTextMap = {
-    OPEN: "처리 전",
-    INVESTIGATING: "조사 중",
-    RESOLVED: "조치 완료",
-    CLOSED: "종결",
+    open: "처리 전",
+    report_generated: "조사 중",
+    closed: "종결"
   };
 
   async function loadIncident() {

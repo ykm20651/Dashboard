@@ -9,32 +9,31 @@ document.addEventListener("DOMContentLoaded", () => {
   loadDashboardData();
   setupEventListeners();
 
-  document.getElementById("newIncidentBtn")?.addEventListener("click", () => {
-    window.location.href = "incident_register.html";
-  });
-  document.getElementById("analysisBtn")?.addEventListener("click", () => {
-    showMessage("아직 준비 중입니다.", "info");
-  });
-  document
-    .getElementById("generateReportQuickBtn")
-    ?.addEventListener("click", generateReport);
+
+  bindQuickActionHandlers();
+  document.addEventListener("click", delegatedClickHandler);
+
 
   showSection("dashboard");
 });
 
 /** 사용자 정보 로드 */
 async function loadUserInfo() {
-  const userEmail = getUserEmail();
-  const userRole = getUserRole();
-  const userName = userEmail.split("@")[0];
+  try {
+    const userEmail = getUserEmail();
+    const userRole = getUserRole();
+    const userName = userEmail.split("@")[0];
 
-  document.getElementById("avatarName").textContent = `${userName}님`;
-  document.getElementById("userEmailSidebar").textContent = userEmail;
-  document.getElementById("userRoleBadge").textContent =
-    userRole === "OWNER" ? "선주" : "선원";
-  document.getElementById("profileEmail").value = userEmail;
-  document.getElementById("profileRole").value =
-    userRole === "OWNER" ? "선주" : "선원";
+    document.getElementById("avatarName").textContent = `${userName}님`;
+    document.getElementById("userEmailSidebar").textContent = userEmail;
+    document.getElementById("userRoleBadge").textContent =
+      userRole === "OWNER" ? "선주" : "선원";
+    document.getElementById("profileEmail").value = userEmail;
+    document.getElementById("profileRole").value =
+      userRole === "OWNER" ? "선주" : "선원";
+  } catch {
+    showMessage("사용자 정보를 불러오지 못했습니다.", "error");
+  }
 }
 
 /** 대시보드 데이터 로드 */
@@ -75,9 +74,8 @@ async function loadReports() {
 function updateDashboardStats() {
   document.getElementById("totalIncidents").textContent = currentIncidents.length;
   document.getElementById("completedIncidents").textContent =
-    currentIncidents.filter(
-      (i) => i.status === "RESOLVED" || i.status === "CLOSED"
-    ).length;
+
+  currentIncidents.filter((i) => i.status === "closed").length;
   document.getElementById("totalReports").textContent = currentReports.length;
 }
 
@@ -98,8 +96,8 @@ function displayRecentIncidents() {
       <div class="incident-summary">
         <div class="summary-header">
           <h4>${i.title}</h4>
-          <span class="status-badge status-${i.status.toLowerCase()}">
-            ${getStatusText(i.status)}
+          <span class="status-badge status-${(i.status || "open").toLowerCase()}">
+            ${getStatusText(i.status || "open")}
           </span>
         </div>
         <p class="summary-meta">
@@ -110,36 +108,42 @@ function displayRecentIncidents() {
     `
     )
     .join("");
+}
 
-  container.insertAdjacentHTML(
-    "beforeend",
-    `<button class="btn-view-all" id="viewAllIncidentsBtn">전체 보기</button>`
-  );
+/** 보고서 생성 */
+function generateReport() {
+  if (currentIncidents.length === 0) {
+    showMessage("생성할 사고가 없습니다. 먼저 사고를 등록해주세요.", "error");
+    return;
+  }
 
-  document
-    .getElementById("viewAllIncidentsBtn")
-    .addEventListener("click", () => (window.location.href = "incidents.html"));
+  showMessage("보고서 생성 중...", "info");
+
+  setTimeout(() => {
+    const newReport = {
+      id: Date.now().toString(),
+      title: `사고 보고서 - ${new Date().toLocaleDateString()}`,
+      incidentTitle: currentIncidents[0].title,
+      status: "완료",
+      generatedAt: new Date().toISOString(),
+    };
+
+    currentReports.unshift(newReport);
+    updateDashboardStats();
+    showSection("reports");
+    displayReports();
+    showMessage("보고서가 생성되었습니다.", "success");
+  }, 600);
 }
 
 /** 상태 한글 변환 */
 function getStatusText(status) {
   const map = {
-    OPEN: "처리 전",
-    INVESTIGATING: "조사 중",
-    RESOLVED: "조치 완료",
-    CLOSED: "종결",
+    open: "처리 전",
+    report_generated: "조사 중",
+    closed: "종결",
   };
-  return map[status] || status;
-}
-
-/** 메시지 표시 */
-function showMessage(msg, type = "info") {
-  const area = document.getElementById("messageArea");
-  const el = document.createElement("div");
-  el.className = `message ${type}`;
-  el.textContent = msg;
-  area.appendChild(el);
-  setTimeout(() => el.remove(), 4000);
+  return map[status] || "처리 전";
 }
 
 /** 더미 데이터 */
@@ -151,7 +155,7 @@ function generateDummyIncidents() {
       incidentType: "충돌",
       location: "부산항 신항",
       happenedAt: new Date().toISOString(),
-      status: "OPEN",
+      status: "open",
     },
     {
       id: "2",
@@ -159,10 +163,11 @@ function generateDummyIncidents() {
       incidentType: "화재",
       location: "인천 북항",
       happenedAt: new Date().toISOString(),
-      status: "RESOLVED",
+      status: "closed",
     },
   ];
 }
+
 function generateDummyReports() {
   return [
     {
