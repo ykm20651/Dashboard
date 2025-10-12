@@ -28,7 +28,7 @@ body::before {
   display: flex;
   justify-content: center;
   margin-bottom: 40px;
-  margin-top : -5%
+  margin-top: -5%;
 }
 .logo {
   height: 80px;
@@ -40,7 +40,7 @@ body::before {
   background: rgba(0, 0, 0, 0.65);
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
   margin-bottom: 30px;
 }
 .section-box h2,
@@ -64,7 +64,7 @@ body::before {
   margin-top: 5px;
   border-radius: 6px;
   border: none;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
   font-size: 0.95rem;
 }
@@ -75,7 +75,7 @@ body::before {
 /* 상태 select 다크 테마 */
 .detail-form select {
   appearance: none;
-  background: rgba(255,255,255,0.1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   color: #fff !important;
   border: 1px solid #666;
   cursor: pointer;
@@ -119,12 +119,12 @@ body::before {
   margin-top: 15px;
 }
 .evidence-card {
-  background: rgba(26,26,26,0.9);
+  background: rgba(26, 26, 26, 0.9);
   border-radius: 8px;
   padding: 10px;
   text-align: center;
   position: relative;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
 }
 .evidence-card .select-check {
   position: absolute;
@@ -134,13 +134,17 @@ body::before {
   accent-color: #ff6b35;
   cursor: pointer;
 }
+
+/* ✅ 썸네일 미리보기 (작게 표시 + 확대 효과) */
 .thumb {
   max-width: 100%;
-  max-height: 120px;
+  max-height: 80px;
   border-radius: 6px;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 .thumb:hover { transform: scale(1.05); }
+
 .file-link { color: #ffb347; text-decoration: underline; }
 .evidence-card .desc { font-size: 0.85rem; margin: 4px 0; }
 .evidence-card .time { font-size: 0.75rem; color: #aaa; margin-bottom: 6px; }
@@ -167,4 +171,44 @@ body::before {
 }
 
 /* 메시지 */
-#msg { margin-top: 15px; text-align: center; font-size: 0.95rem; }
+#msg {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* ✅ 이미지 팝업 */
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+.image-viewer img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+}
+.image-viewer-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.image-viewer-close:hover {
+  color: #ff6b35;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
