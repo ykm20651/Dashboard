@@ -58,11 +58,22 @@ async function loadIncidents() {
 /** 보고서 목록 */
 async function loadReports() {
   try {
-    const res = await fetch("http://52.79.99.132/reports", {
-      headers: getAuthHeaders(),
-    });
-    if (!res.ok) throw new Error("보고서 불러오기 실패");
-    currentReports = await res.json();
+    // 사고별로 보고서를 가져오는 방식으로 변경
+    const reports = [];
+    for (const incident of currentIncidents) {
+      try {
+        const res = await fetch(`http://52.79.99.132/incidents/${incident.id}/reports`, {
+          headers: getAuthHeaders(),
+        });
+        if (res.ok) {
+          const incidentReports = await res.json();
+          reports.push(...incidentReports);
+        }
+      } catch (error) {
+        console.warn(`사고 ${incident.id}의 보고서 로드 실패:`, error);
+      }
+    }
+    currentReports = reports;
   } catch {
     currentReports = generateDummyReports();
   }
