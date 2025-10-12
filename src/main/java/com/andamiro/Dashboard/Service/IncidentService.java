@@ -68,19 +68,36 @@ public class IncidentService {
             throw new IllegalArgumentException("인증이 필요합니다.");
         }
         
-        // ✅ SecurityContext에서 현재 로그인한 사용자 ID 가져오기
-        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        // UUID userId = (UUID) auth.getPrincipal();
+        // 요청 데이터 검증
+        if (request.title() == null || request.title().trim().isEmpty()) {
+            throw new IllegalArgumentException("사고 제목을 입력해주세요.");
+        }
+        if (request.incidentType() == null || request.incidentType().trim().isEmpty()) {
+            throw new IllegalArgumentException("사고 유형을 선택해주세요.");
+        }
+        if (request.location() == null || request.location().trim().isEmpty()) {
+            throw new IllegalArgumentException("사고 장소를 입력해주세요.");
+        }
+        if (request.happenedAt() == null) {
+            throw new IllegalArgumentException("사고 발생 시각을 입력해주세요.");
+        }
 
-        //Service 레이어에서 DTO로 데이터 넘어온걸 실제 [1] 엔티티 클래스의 객체를 만들고 [2] (repository.save)저장하고, [3]응답 DTO로 반환하구나.
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // 사고 유형 변환 (안전한 방식)
+        Incident.IncidentType incidentType;
+        try {
+            incidentType = Incident.IncidentType.valueOf(request.incidentType().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("올바르지 않은 사고 유형입니다: " + request.incidentType());
+        }
+
         Incident incident = Incident.create(
-                creator, // 나중에 creator(User) 넣어줄 부분
+                creator,
                 request.title(),
                 request.description(),
-                Incident.IncidentType.valueOf(request.incidentType().toUpperCase()),
+                incidentType,
                 request.location(),
                 request.happenedAt()
         );
@@ -196,11 +213,15 @@ public class IncidentService {
             throw new IllegalArgumentException("인증이 필요합니다.");
         }
         
+        if (incidentId == null) {
+            throw new IllegalArgumentException("사고 ID가 필요합니다.");
+        }
+        
         Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 사고 없음"));
+                .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
 
         if (!incident.getCreator().getId().equals(userId)) {
-            throw new AccessDeniedException("본인 소유 사건만 삭제할 수 있습니다.");
+            throw new AccessDeniedException("본인 소유 사고만 삭제할 수 있습니다.");
         }
 
         incidentRepository.delete(incident);
