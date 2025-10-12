@@ -34,7 +34,13 @@ public class IncidentController {
     public ResponseEntity<IncidentResponse> createIncident(
             @AuthenticationPrincipal UUID userId,
             @RequestBody IncidentCreateRequest request) {
-        return ResponseEntity.status(201).body(incidentService.createIncident(userId, request));
+        try {
+            return ResponseEntity.status(201).body(incidentService.createIncident(userId, request));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 
     /* 01-03 API 사고 상세 조회 매핑 */
@@ -62,7 +68,17 @@ public class IncidentController {
     public ResponseEntity<Void> deleteIncident(
             @AuthenticationPrincipal UUID userId,
             @PathVariable UUID id) {
-        incidentService.deleteIncident(userId, id);
-        return ResponseEntity.noContent().build();
+        try {
+            incidentService.deleteIncident(userId, id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            return ResponseEntity.status(403).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 }

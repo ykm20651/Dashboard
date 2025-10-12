@@ -81,6 +81,11 @@ public class IncidentService {
         if (request.happenedAt() == null) {
             throw new IllegalArgumentException("사고 발생 시각을 입력해주세요.");
         }
+        
+        // 날짜 유효성 검증
+        if (request.happenedAt().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("사고 발생 시각은 현재 시각보다 이전이어야 합니다.");
+        }
 
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -88,7 +93,9 @@ public class IncidentService {
         // 사고 유형 변환 (안전한 방식)
         Incident.IncidentType incidentType;
         try {
-            incidentType = Incident.IncidentType.valueOf(request.incidentType().toUpperCase());
+            // 입력값이 이미 대문자일 수도 있으므로 안전하게 처리
+            String typeStr = request.incidentType().toUpperCase().replace("_", "_");
+            incidentType = Incident.IncidentType.valueOf(typeStr);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("올바르지 않은 사고 유형입니다: " + request.incidentType());
         }
@@ -217,14 +224,29 @@ public class IncidentService {
             throw new IllegalArgumentException("사고 ID가 필요합니다.");
         }
         
-        Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
+        try {
+            Incident incident = incidentRepository.findById(incidentId)
+                    .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
 
-        if (!incident.getCreator().getId().equals(userId)) {
+            if (!incident.getCreator().getId().equals(userId)) {
+                throw new AccessDeniedException("본인 소유 사고만 삭제할 수 있습니다.");
+            }
+
+            // 연관된 파일들이 있는지 확인 (선택적)
+            if (!incident.getEvidenceFiles().isEmpty()) {
+                // 증거 파일이 있더라도 삭제는 가능하도록 함
+                // 필요시 파일도 함께 삭제하는 로직 추가 가능
+            }
+
+            incidentRepository.delete(incident);
+            
+        } catch (EntityNotFoundException e) {
+            throw new EntityNotFoundException("해당 사고를 찾을 수 없습니다.");
+        } catch (AccessDeniedException e) {
             throw new AccessDeniedException("본인 소유 사고만 삭제할 수 있습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException("사고 삭제 중 오류가 발생했습니다: " + e.getMessage(), e);
         }
-
-        incidentRepository.delete(incident);
     }
 
 
