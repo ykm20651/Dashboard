@@ -63,24 +63,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         //  4. JWT 검증
-        if (jwtTokenProvider.validateToken(token)) {
-            UUID userId = jwtTokenProvider.getUserId(token);
-            User.Role role = jwtTokenProvider.getRole(token);
+        try {
+            System.out.println("🔍 [JWT 필터] 토큰 검증 시작: " + token.substring(0, Math.min(20, token.length())) + "...");
+            
+            if (jwtTokenProvider.validateToken(token)) {
+                UUID userId = jwtTokenProvider.getUserId(token);
+                User.Role role = jwtTokenProvider.getRole(token);
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
-                    );
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
+                        );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("✅ [JWT 필터] 인증 성공: userId=" + userId + ", role=" + role);
-        } else {
-            System.out.println("❌ [JWT 필터] 잘못된 또는 만료된 JWT 토큰");
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("✅ [JWT 필터] 인증 성공: userId=" + userId + ", role=" + role);
+            } else {
+                System.out.println("❌ [JWT 필터] 토큰 검증 실패 - 유효하지 않은 토큰");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"유효하지 않은 토큰입니다.\"}");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("❌ [JWT 필터] 토큰 처리 중 예외 발생: " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"유효하지 않은 토큰입니다.\"}");
+            response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"토큰 처리 중 오류가 발생했습니다.\"}");
             return;
         }
 

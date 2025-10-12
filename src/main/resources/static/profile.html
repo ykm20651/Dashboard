@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 정보 | OASIS</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mypage.css">
+  <link rel="stylesheet" href="/css/profile.css">
+  <script defer src="/js/auth.js"></script>
+  <script defer src="/js/main.js"></script>
+  <script defer src="/js/profile.js"></script>
+</head>
+<body>
+  <!-- ===== 상단 고정 헤더 ===== -->
+  <header class="topbar blackbar">
+    <div class="brand">
+      <a href="index.html">
+        <img src="images/오아시스 로고.png" alt="OASIS 로고" class="logo" />
+      </a>
+    </div>
+    
+    <nav class="gnb">
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="product.html">Product</a></li>
+        <li><a href="index.html#analysis">Service</a></li>
+        <li><a href="bm.html">BM</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="auth" id="authSection"></div>
+  </header>
+
+  <main class="profile-container">
+    <!-- ===== 사이드바 ===== -->
+    <aside class="profile-sidebar">
+      <div class="user-profile-card">
+        <div class="profile-avatar">
+          <span id="avatarName" class="avatar-name">OASIS</span>
+        </div>
+        <div class="profile-info">
+          <h3>환영합니다</h3>
+          <p id="userEmailSidebar">user@example.com</p>
+          <span id="userRoleBadge" class="role-badge">선주</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="mypage.html" class="nav-item">
+            <span class="nav-icon">📊</span> 대시보드
+          </a></li>
+          <li><a href="profile.html" class="nav-item active">
+            <span class="nav-icon">👤</span> 내 정보
+          </a></li>
+          <li><a href="report.html" class="nav-item">
+            <span class="nav-icon">📋</span> 보고서
+          </a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- ===== 메인 콘텐츠 ===== -->
+    <section class="profile-content">
+      <div class="section-header">
+        <h2>내 정보</h2>
+        <p>계정 정보를 확인하고 수정하세요</p>
+      </div>
+      
+      <div class="profile-form">
+        <div class="form-group">
+          <label for="profileEmail">이메일</label>
+          <input type="email" id="profileEmail" readonly>
+        </div>
+        <div class="form-group">
+          <label for="profileName">이름</label>
+          <input type="text" id="profileName" placeholder="이름을 입력하세요">
+        </div>
+        <div class="form-group">
+          <label for="profileRole">역할</label>
+          <input type="text" id="profileRole" readonly>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">비밀번호 변경</label>
+          <input type="password" id="newPassword" placeholder="새 비밀번호">
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">비밀번호 확인</label>
+          <input type="password" id="confirmPassword" placeholder="비밀번호 확인">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-primary" id="updateProfileBtn">정보 업데이트</button>
+          <button type="button" class="btn-danger" id="deleteAccountBtn">계정 삭제</button>
+        </div>
+      </div>
+      
+      <div id="messageArea" class="message-area"></div>
+    </section>
+  </main>
+</body>
+</html>
