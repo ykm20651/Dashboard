@@ -12,7 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const description = document.getElementById("description").value;
     const incidentType = document.getElementById("incidentType").value;
     const location = document.getElementById("location").value;
-    const happenedAt = document.getElementById("happenedAt").value;
+    const happenedAtValue = document.getElementById("happenedAt").value;
+    
+    // 날짜를 ISO 8601 형식으로 변환
+    const happenedAt = happenedAtValue ? new Date(happenedAtValue).toISOString() : new Date().toISOString();
 
     try {
       const res = await fetch("http://52.79.99.132/incidents", {

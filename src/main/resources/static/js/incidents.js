@@ -69,19 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirm("정말 이 사고를 삭제하시겠습니까?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
         method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: getAuthHeaders()
       });
 
-      if (res.status === 401 || res.status === 403) {
-        msg.innerText = "❌ 삭제 권한이 없습니다.";
-        msg.style.color = "red";
-        return;
-      }
-
-      if (!res.ok) throw new Error("사고 삭제 실패");
+      await handleApiError(res, "사고 삭제에 실패했습니다.");
 
       msg.innerText = "✅ 사고가 삭제되었습니다.";
       msg.style.color = "green";
