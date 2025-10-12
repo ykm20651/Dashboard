@@ -5,6 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const incidentList = document.getElementById("incidentList");
   const msg = document.getElementById("msg");
 
+  // ✅ 상태 변환 함수 추가
+  function getStatusText(status) {
+    const map = {
+      OPEN: "처리 전",
+      INVESTIGATING: "조사 중",
+      RESOLVED: "조치 완료",
+      CLOSED: "종결"
+    };
+    return map[status] || status; // 혹시 서버에서 다른 값이 와도 그대로 표시
+  }
+
   // 사고 목록 불러오기
   async function loadIncidents() {
     try {
@@ -29,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${incident.incidentType}</td>
           <td>${incident.location}</td>
           <td>${new Date(incident.happenedAt).toLocaleString()}</td>
-          <td>${incident.status}</td>
+          <td>${getStatusText(incident.status)}</td>
           <td>
             <button class="btn tiny" onclick="viewDetail('${incident.id}')">상세</button>
             <button class="btn tiny" onclick="viewReport('${incident.id}')">보고서</button>

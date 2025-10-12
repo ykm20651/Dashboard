@@ -30,8 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // ✅ 이메일 앞부분 추출 → "OOO님, 환영합니다!" 문구 표시
       const userName = data.email.split("@")[0];
-      msg.innerText = `${userName}님, 환영합니다!`;
-      msg.style.color = "#ff6b35"; // 주황색 포인트 색상
+      msg.innerText = ` ${userName}님, 환영합니다!`;
+      msg.style.color = "#ffffffff"; 
 
       // 1.5초 뒤 메인으로 이동
       setTimeout(() => {

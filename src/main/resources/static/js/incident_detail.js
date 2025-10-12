@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 로그인 상태 확인
   if (!requireAuth()) return;
-  
+
   const params = new URLSearchParams(window.location.search);
   const incidentId = params.get("id");
 
@@ -22,13 +21,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const evidenceForm = document.getElementById("evidenceForm");
 
   let editMode = false;
+  let deletedEvidenceIds = new Set();
 
-  // 사고 상세 불러오기
+  const statusTextMap = {
+    OPEN: "처리 전",
+    INVESTIGATING: "조사 중",
+    RESOLVED: "조치 완료",
+    CLOSED: "종결",
+  };
+
   async function loadIncident() {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`http://52.79.99.132/incidents/${incidentId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("사고 불러오기 실패");
 
@@ -37,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       descInput.value = data.description;
       locationInput.value = data.location;
       typeInput.value = data.incidentType;
-      timeInput.value = data.happenedAt;
+      timeInput.value = new Date(data.happenedAt).toLocaleString();
       statusSelect.value = data.status;
     } catch (err) {
       msg.innerText = "❌ " + err.message;
@@ -45,12 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 증거자료 불러오기
   async function loadEvidence(editMode = false) {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files`, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const files = await res.json();
 
@@ -60,14 +65,15 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      files.forEach(file => {
+      files.forEach((file) => {
+        if (deletedEvidenceIds.has(file.id)) return;
         const card = document.createElement("div");
         card.className = "evidence-card";
         card.innerHTML = `
           ${editMode ? `<input type="checkbox" class="select-check" value="${file.id}">` : ""}
           <div class="preview">${renderFilePreview(file)}</div>
           <p class="desc">${file.description}</p>
-          <p class="time">${file.createdAt}</p>
+          <p class="time">${new Date(file.createdAt).toLocaleString()}</p>
         `;
         evidenceGrid.appendChild(card);
       });
@@ -78,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderFilePreview(file) {
     if (file.fileType.startsWith("image")) {
-      return `<img src="${file.fileUrl}" alt="evidence" class="thumb">`;
+      return `<img src="${file.fileUrl}" alt="evidence" class="thumb" onclick="openImageViewer('${file.fileUrl}')">`;
     } else if (file.fileType.startsWith("video")) {
       return `<video src="${file.fileUrl}" class="thumb" controls></video>`;
     } else {
@@ -86,54 +92,83 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ✅ 이미지 클릭 시 팝업 열기
+  window.openImageViewer = function (imageUrl) {
+    if (document.querySelector(".image-viewer")) return;
+    const viewer = document.createElement("div");
+    viewer.className = "image-viewer";
+    viewer.innerHTML = `
+      <span class="image-viewer-close" onclick="closeImageViewer()">×</span>
+      <img src="${imageUrl}" alt="Preview Image">
+    `;
+    document.body.appendChild(viewer);
+  };
+
+  window.closeImageViewer = function () {
+    const viewer = document.querySelector(".image-viewer");
+    if (viewer) viewer.remove();
+  };
+
   function toggleForm(state) {
     editMode = state;
-    [titleInput, descInput, locationInput, typeInput, timeInput, statusSelect]
-      .forEach(input => input.disabled = !state);
-
+    [titleInput, descInput, locationInput, typeInput, statusSelect].forEach(
+      (input) => (input.disabled = !state)
+    );
     editBtn.style.display = state ? "none" : "inline-block";
     saveEditBtn.style.display = state ? "inline-block" : "none";
     cancelEditBtn.style.display = state ? "inline-block" : "none";
-
-    // 증거자료 삭제 버튼 표시
     deleteSelectedBtn.style.display = state ? "inline-block" : "none";
-
-    // 증거자료 다시 로드
     loadEvidence(state);
   }
 
   editBtn.addEventListener("click", () => toggleForm(true));
   cancelEditBtn.addEventListener("click", () => {
     toggleForm(false);
+    deletedEvidenceIds.clear();
     loadIncident();
   });
 
   saveEditBtn.addEventListener("click", async () => {
     try {
       const token = localStorage.getItem("token");
+
+      for (let id of deletedEvidenceIds) {
+        await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
       const body = {
         title: titleInput.value,
         description: descInput.value,
         location: locationInput.value,
         incidentType: typeInput.value,
-        happenedAt: timeInput.value,
-        status: statusSelect.value
+        status: statusSelect.value,
       };
 
       const res = await fetch(`http://52.79.99.132/incidents/${incidentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
+
       if (!res.ok) throw new Error("수정 실패");
 
-      msg.innerText = "✅ 수정 완료";
+      msg.innerText = "✅ 수정 완료되었습니다.";
       msg.style.color = "green";
+      deletedEvidenceIds.clear();
+
       toggleForm(false);
-      loadIncident();
+      await loadIncident();
+      await loadEvidence(false);
+
+      setTimeout(() => {
+        window.location.href = "incidents.html";
+      }, 1000);
     } catch (err) {
       msg.innerText = "❌ " + err.message;
       msg.style.color = "red";
@@ -143,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
   evidenceForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-
     const fileInput = document.getElementById("fileInput");
     const descInput = document.getElementById("fileDesc");
 
@@ -154,8 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files`, {
         method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: formData
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
       });
       if (!res.ok) throw new Error("증거자료 업로드 실패");
 
@@ -170,14 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  deleteSelectedBtn.addEventListener("click", async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      msg.innerText = "⚠️ 권한이 없습니다. 로그인 후 이용하세요.";
-      msg.style.color = "orange";
-      return;
-    }
-
+  deleteSelectedBtn.addEventListener("click", () => {
     const checked = document.querySelectorAll(".select-check:checked");
     if (checked.length === 0) {
       msg.innerText = "⚠️ 삭제할 증거자료를 선택하세요.";
@@ -185,22 +212,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    for (let box of checked) {
-      const res = await fetch(`http://52.79.99.132/incidents/${incidentId}/evidence-files/${box.value}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+    checked.forEach((box) => {
+      deletedEvidenceIds.add(box.value);
+    });
 
-      if (res.status === 401 || res.status === 403) {
-        msg.innerText = "❌ 삭제 권한이 없습니다.";
-        msg.style.color = "red";
-        return;
-      }
-    }
+    msg.innerText = "🗑️ 선택한 증거자료가 삭제 예정입니다. 저장 시 반영됩니다.";
+    msg.style.color = "#ffb347";
 
-    msg.innerText = "✅ 선택한 증거자료가 삭제되었습니다.";
-    msg.style.color = "green";
-    loadEvidence(true);
+    checked.forEach((box) => {
+      box.closest(".evidence-card").remove();
+    });
   });
 
   loadIncident();
