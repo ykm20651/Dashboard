@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 화이트리스트 경로 설정
-     * 회원가입(/users [POST]), 로그인(/users/login [POST]), Swagger, 정적 리소스
+     * 회원가입(/users [POST]), 로그인(/users/login [POST]), 추가 정보 등록, Swagger, 정적 리소스
      */
     private boolean isWhitelisted(String uri, String method) {
 
@@ -98,6 +98,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (uri.equals("/users") && method.equalsIgnoreCase("POST")) return true;
         // 로그인
         if (uri.equals("/users/login") && method.equalsIgnoreCase("POST")) return true;
+        
+        // 추가 정보 등록 (회원가입 과정의 일부)
+        if (uri.matches("/users/[^/]+/owner-info") && method.equalsIgnoreCase("POST")) return true;
+        if (uri.matches("/users/[^/]+/crew-info") && method.equalsIgnoreCase("POST")) return true;
 
         // Swagger
         if (uri.startsWith("/swagger-ui")) return true;
