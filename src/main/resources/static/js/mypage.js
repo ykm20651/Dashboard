@@ -195,19 +195,19 @@ function setupNavigationHandlers() {
   const profileLink = document.querySelector('a[data-section="profile"]');
   const reportsLink = document.querySelector('a[data-section="reports"]');
 
-  // 내 정보 클릭 시 정보 수정란으로 이동
+  // 내 정보 클릭 시 별도 페이지로 이동
   if (profileLink) {
     profileLink.addEventListener('click', (e) => {
       e.preventDefault();
-      showSection('profile');
+      window.location.href = 'profile.html'; // 별도 페이지로 이동
     });
   }
 
-  // 보고서 클릭 시 보고서 관리란으로 이동
+  // 보고서 클릭 시 보고서 페이지로 이동
   if (reportsLink) {
     reportsLink.addEventListener('click', (e) => {
       e.preventDefault();
-      showSection('reports');
+      window.location.href = 'report.html'; // 별도 페이지로 이동
     });
   }
 
@@ -230,10 +230,10 @@ function setupNavigationHandlers() {
     });
   }
 
-  // 보고서 생성 클릭 시 보고서 관리란으로 이동
+  // 보고서 생성 클릭 시 보고서 페이지로 이동
   if (generateReportBtn) {
     generateReportBtn.addEventListener('click', () => {
-      showSection('reports');
+      window.location.href = 'report.html'; // 별도 페이지로 이동
     });
   }
 

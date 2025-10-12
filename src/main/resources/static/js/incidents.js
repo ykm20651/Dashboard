@@ -18,13 +18,48 @@ document.addEventListener("DOMContentLoaded", () => {
   // 사고 목록 불러오기
   async function loadIncidents() {
     try {
+      // 토큰 확인
+      const token = localStorage.getItem("token");
+      if (!token) {
+        msg.innerText = "❌ 로그인이 필요합니다.";
+        msg.style.color = "red";
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+        return;
+      }
+
+      console.log("사고 목록 로드 중...");
+
       const res = await fetch("http://52.79.99.132/incidents", {
         method: "GET",
-        headers: getAuthHeaders()
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       });
-      await handleApiError(res, "사고 목록을 불러올 수 없습니다.");
+
+      console.log("사고 목록 응답 상태:", res.status);
+
+      if (res.status === 401) {
+        msg.innerText = "❌ 로그인이 만료되었습니다. 다시 로그인해주세요.";
+        msg.style.color = "red";
+        localStorage.clear();
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+        return;
+      }
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("사고 목록 로드 실패:", errorText);
+        throw new Error("사고 목록을 불러올 수 없습니다: " + res.status);
+      }
 
       const incidents = await res.json();
+      console.log("로드된 사고 개수:", incidents.length);
+      
       incidentList.innerHTML = "";
 
       if (incidents.length === 0) {
@@ -49,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         incidentList.appendChild(tr);
       });
     } catch (err) {
+      console.error("사고 목록 로드 에러:", err);
       msg.innerText = "❌ " + err.message;
       msg.style.color = "red";
     }
@@ -69,17 +105,63 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirm("정말 이 사고를 삭제하시겠습니까?")) return;
 
     try {
+      // 토큰 확인
+      const token = localStorage.getItem("token");
+      if (!token) {
+        msg.innerText = "❌ 로그인이 필요합니다.";
+        msg.style.color = "red";
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+        return;
+      }
+
+      console.log("삭제 요청 - 사고 ID:", id);
+      console.log("사용 중인 토큰:", token.substring(0, 20) + "...");
+
       const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
         method: "DELETE",
-        headers: getAuthHeaders()
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       });
 
-      await handleApiError(res, "사고 삭제에 실패했습니다.");
+      console.log("삭제 응답 상태:", res.status);
+
+      if (res.status === 401) {
+        msg.innerText = "❌ 로그인이 만료되었습니다. 다시 로그인해주세요.";
+        msg.style.color = "red";
+        localStorage.clear();
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+        return;
+      }
+
+      if (res.status === 403) {
+        msg.innerText = "❌ 삭제 권한이 없습니다.";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (res.status === 404) {
+        msg.innerText = "❌ 해당 사고를 찾을 수 없습니다.";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("삭제 실패 응답:", errorText);
+        throw new Error("사고 삭제 실패: " + res.status);
+      }
 
       msg.innerText = "✅ 사고가 삭제되었습니다.";
       msg.style.color = "green";
       loadIncidents();
     } catch (err) {
+      console.error("삭제 에러:", err);
       msg.innerText = "❌ " + err.message;
       msg.style.color = "red";
     }
