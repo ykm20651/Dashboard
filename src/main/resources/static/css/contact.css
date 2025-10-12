@@ -93,3 +93,33 @@ body {
     flex: 1 1 100%;
   }
 }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  color: #555;
+  font-size: 0.9rem;
+  margin: 80px 0 40px;
+  line-height: 1.6;
+}
+
+.footer-links {
+  margin-top: 4px;
+}
+
+.footer-links a {
+  color: #525757;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* 비활성 링크 스타일 */
+.disabled-link {
+  color: #999;
+  cursor: default;
+  user-select: none;
+}

@@ -5,6 +5,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const incidentList = document.getElementById("incidentList");
   const msg = document.getElementById("msg");
 
+  // ✅ 상태 변환 함수 추가
+  function getStatusText(status) {
+    const map = {
+      open: "처리 전",
+      report_generated: "조사 중",
+      closed: "종결"
+    };
+    return map[status] || status; // 혹시 서버에서 다른 값이 와도 그대로 표시
+  }
+
   // 사고 목록 불러오기
   async function loadIncidents() {
     try {
@@ -29,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${incident.incidentType}</td>
           <td>${incident.location}</td>
           <td>${new Date(incident.happenedAt).toLocaleString()}</td>
-          <td>${incident.status}</td>
+          <td>${getStatusText(incident.status)}</td>
           <td>
             <button class="btn tiny" onclick="viewDetail('${incident.id}')">상세</button>
             <button class="btn tiny" onclick="viewReport('${incident.id}')">보고서</button>
@@ -60,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
+      const res = await fetch(`http://52.79.99.132/evidence-files/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });

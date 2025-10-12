@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Contact | OASIS 안다미로</title>
-  <!-- 메인 헤더/공통 스타일 -->
-  <link rel="stylesheet" href="/css/styles.css">
-  <!-- Contact 전용 스타일 -->
-  <link rel="stylesheet" href="/css/contact.css">
-
-  
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/contact.css">
+  <!-- ✅ EmailJS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 
 <body>
@@ -39,13 +37,12 @@
     <!-- 좌측 : 회사 정보 + 지도 -->
     <section class="contact-info">
       <h1>Contact</h1>
-      <p><strong>영업지원부 :</strong> +82 (0)70 8693 1262</p>
-      <p><strong>경영지원부 :</strong> +82 (0)70 4006 1531</p>
-      <p>contact@andamiro.co</p>
+      <p><strong>영업지원부 :</strong> +82 010 7670 6558</p>
+      <p><strong>경영지원부 :</strong> +82 010 4023 2347</p>
+      <p>mingi4226@naver.com</p>
       <p>부산광역시 남구 신선로 365 (주식회사 오아시스)</p>
 
       <div class="map-area">
-        <!-- 아래 src를 원하는 구글 지도 퍼가기 주소로 교체하세요 -->
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d3263.5975138265203!2d129.09010472235806!3d35.116759869573535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1z67aA6rK964yAIOyaqeuLuey6oO2NvOyKpA!5e0!3m2!1sko!2skr!4v1758394966606!5m2!1sko!2skr"
           width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"
@@ -56,19 +53,66 @@
 
     <!-- 우측 : 문의 폼 -->
     <section class="contact-form">
-      <form>
+      <form id="contact-form">
         <label for="name">Name *</label>
-        <input type="text" id="name" name="name" required>
+        <input type="text" id="name" name="user_name" required>
 
         <label for="email">Email Address *</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="user_email" required>
 
         <label for="message">Message *</label>
         <textarea id="message" name="message" rows="10" required></textarea>
 
-        <button type="submit" class="submit-btn">SUBMIT</button>
+        <button type="submit" class="submit-btn" id="submitBtn">SUBMIT</button>
+        <p id="form-status" class="form-status" aria-live="polite"></p>
       </form>
     </section>
   </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <p>© 2025 <strong>OASIS 안다미로</strong>. All rights reserved.</p>
+    <p class="footer-links">
+      <span class="disabled-link">Privacy Policy</span> |
+      <span class="disabled-link">Terms of Service</span> |
+      <a href="mailto:mingi4226@naver.com">Contact Us</a>
+    </p>
+  </footer>
+
+  <!-- ===== EmailJS 스크립트 ===== -->
+  <script>
+    (function() {
+      // 🔹 여기에 EmailJS Public Key 붙여넣기
+      emailjs.init("KEi8ybhlbzH7dPJbC");
+    })();
+
+    const form = document.getElementById("contact-form");
+    const btn = document.getElementById("submitBtn");
+    const statusEl = document.getElementById("form-status");
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      btn.disabled = true;
+      const oldText = btn.textContent;
+      btn.textContent = "SENDING...";
+      statusEl.textContent = "메일 전송 중입니다...";
+
+      // 🔹 여기에 EmailJS Service ID, Template ID 붙여넣기
+      emailjs.sendForm("oasis", "template_s3o2c8r", form)
+        .then(() => {
+          statusEl.textContent = "🌊 문의가 접수되었습니다. OASIS 팀이 빠르게 답변드리겠습니다!";
+          form.reset();
+        })
+        .catch((error) => {
+          console.error("메일 전송 오류:", error);
+          statusEl.textContent = "❌ 전송 실패. 잠시 후 다시 시도해주세요.";
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = oldText;
+        });
+    });
+  </script>
 </body>
 </html>

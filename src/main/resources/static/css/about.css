@@ -3,15 +3,16 @@
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  background: #111;
+  background: linear-gradient(180deg, #000 0%, #0b0b0b 50%, #111 100%);
   color: #fff;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: none;
+  overflow-x: hidden;
 }
 
-/* ===== 상단 고정 헤더 (메인·BM과 동일) ===== */
+/* ===== 상단 고정 헤더 ===== */
 .topbar.blackbar {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -26,10 +27,7 @@ body {
   z-index: 1000;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-}
+.brand { display: flex; align-items: center; }
 
 .logo {
   height: 40px;
@@ -56,11 +54,8 @@ body {
 }
 .gnb a:hover { color: #ccc; }
 
-/* 로그인 / 회원가입 버튼 */
-.auth {
-  display: flex;
-  gap: 4px;
-}
+/* 로그인 / 회원가입 */
+.auth { display: flex; gap: 4px; }
 .btn-auth {
   padding: 10px 10px;
   border-radius: 15px;
@@ -73,19 +68,52 @@ body {
 /* ===== About 본문 ===== */
 .about-container {
   padding-top: 100px; /* 헤더 높이 확보 */
+  background: linear-gradient(180deg, #000 0%, #0b0b0b 40%, #111 100%);
 }
 
+/* 공통 섹션 */
 .about-section {
   min-height: 100vh;
-  padding: 4rem 2rem;
+  padding: 6rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;   
-  background: #111;
+  text-align: center;
+  background: transparent; /* 개별 섹션은 투명 */
+  position: relative;
 }
 
+/* ===== 회사 소개 섹션 (배경 이미지) ===== */
+.about-company {
+  position: relative;
+  background: url("../images/회사소개.png") center 8% / cover no-repeat;
+  color: #fff;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.about-company::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* 어두운 오버레이 */
+  z-index: -1;
+}
+
+.about-company h2,
+.about-company p {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== 나머지 섹션: 배경 자연스럽게 연결 ===== */
+.about-meaning,
+.about-history {
+  background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(10,10,10,0.95) 100%);
+}
+
+/* ===== 제목 / 문단 ===== */
 .about-section h2 {
   font-size: 4rem;
   font-weight: 800;
@@ -115,40 +143,53 @@ body {
   margin-bottom: 2rem;
 }
 
-.intro{
-    max-width: 1000px;
+.intro, .intro2, .brand2 {
+  max-width: 1000px;
   font-size: 1.4rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
-.intro2{
-    max-width: 1000px;
+.intro2 {
+  max-width: 1000px;
   font-size: 1.4rem;
-  margin-bottom: 40px !important;
+  margin-bottom: 5px !important; /* 🔹 기존보다 살짝 더 띄움 */
 }
 
-.brand2{
-  max-width: 900px;
+.brand2 {
+  max-width: 1000px;
   font-size: 1.4rem;
-  margin-bottom: -1%;
+  margin-top: 15px;  /* 🔹 위 문장과 간격 확보 */
+  margin-bottom: 0;
+  line-height: 1.8;  /* 🔹 가독성 향상 */
 }
 
-/* 이미지(공통) */
+/* ===== 이미지 공통 ===== */
 .about-image {
-  max-width: 1200px;       /* 필요시 크기 조절 */
+  max-width: 1200px;
   width: 100%;
   margin-top: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.7);
   background: #111;
-  margin-bottom: -10%
+  margin-bottom: -10%;
 }
 
-.ours{ 
-  max-width: 1200px;       /* 필요시 크기 조절 */
+.ours { 
+  max-width: 1200px;
   width: 100%;
-  margin-top : 20px;
-  margin-bottom : -5%
+  margin-top: 20px;
+  margin-bottom: -5%;
+}
+
+/* ===== 부드러운 전환 효과 ===== */
+.about-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #0b0b0b 100%);
+  z-index: -1;
 }
 
 /* ===== 반응형 ===== */
@@ -157,4 +198,5 @@ body {
   .about-section p { font-size: 1.1rem; }
   .about-logo { width: 80%; max-width: 400px; }
   .about-image { width: 95%; max-width: 95%; }
+  .about-company { background-position: center 55%; }
 }
