@@ -8,8 +8,6 @@ import com.andamiro.Dashboard.Repository.IncidentRepository;
 import com.andamiro.Dashboard.Repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,13 +33,14 @@ public class IncidentService {
     /* 01-01 API 사고 목록 조회 매핑 */
     @Transactional(readOnly = true) //여기도 DTO에 담고
     public List<IncidentResponse> getListIncidents(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         List<Incident> incidents; //실제 엔티티(ERD설계한 테이블에 매핑하도록) 객체를 여기서 만들고
 
-        if( id == null ){ //특정 사용자가 없으면, 그냥 등록된 사고 목록 조회. . .
-            incidents = incidentRepository.findAll();
-        }else{ //id가 있으면 특정 사용자 (userId, 즉, creatorId)가 등록한 사고만 List에 답기.
-            incidents = incidentRepository.findByCreatorId(id);
-        }
+        // id가 있으면 특정 사용자 (userId, 즉, creatorId)가 등록한 사고만 List에 답기.
+        incidents = incidentRepository.findByCreatorId(id);
 
         return incidents.stream()//여기서 만든 엔티티 객체에 정보를 넣고 반환. 마지막에 List -> stream으로 바꿔서 좀더
                 //데이터 변형하고 순회하기 좋은게 stream객체라 이거 써서 데이터 넣고 해서, List로 마지막에 반환함
@@ -65,6 +64,10 @@ public class IncidentService {
     /* 01-02 API 사고 등록 매핑 */
     @Transactional
     public IncidentResponse createIncident(UUID userId, IncidentCreateRequest request) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         // ✅ SecurityContext에서 현재 로그인한 사용자 ID 가져오기
         // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // UUID userId = (UUID) auth.getPrincipal();
@@ -103,6 +106,10 @@ public class IncidentService {
     /* 01-03 사고 상세 조회 (Owner 전용, 본인 소유만) */
     @Transactional(readOnly = true)
     public IncidentDetailResponse getDetailIncident(UUID userId, UUID incidentId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         // evidenceFiles, reports 를 fetch join 으로 가져오기
         Incident incident = incidentRepository.findByIdWithDetails(incidentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사고 없음"));
@@ -157,6 +164,10 @@ public class IncidentService {
     /* 01-04 사고 수정 (Owner 전용, 본인 소유만) */
     @Transactional
     public IncidentUpdateResponse updateIncident(UUID userId, UUID incidentId, IncidentUpdateRequest request) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사고 없음"));
 
@@ -181,6 +192,10 @@ public class IncidentService {
     /* 01-05 사고 삭제 (Owner 전용, 본인 소유만) */
     @Transactional
     public void deleteIncident(UUID userId, UUID incidentId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사고 없음"));
 

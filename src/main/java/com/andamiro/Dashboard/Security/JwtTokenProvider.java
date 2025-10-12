@@ -55,7 +55,7 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return UUID.fromString(claims.getSubject()); // ✅ 이렇게 돼야 함
+        return UUID.fromString(claims.getSubject()); 
     }
 
     public User.Role getRole(String token) {

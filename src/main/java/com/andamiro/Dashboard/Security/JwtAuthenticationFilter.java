@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +24,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         String method = request.getMethod();
@@ -33,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("🔍 [JWT 필터] 요청 감지: " + method + " " + requestURI);
 
-        // ✅ 1. Preflight OPTIONS 요청은 즉시 통과
+        //  1. Preflight OPTIONS 요청은 즉시 통과
         if (method.equalsIgnoreCase("OPTIONS")) {
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -44,22 +45,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // ✅ 2. 화이트리스트 경로는 JWT 검사 생략
+        //  2. 화이트리스트 경로는 JWT 검사 생략
         if (isWhitelisted(requestURI, method)) {
             System.out.println("🟢 [JWT 필터] 화이트리스트 경로 통과 → " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ✅ 3. Authorization 헤더 추출
+        //  3. Authorization 헤더 추출
         String token = resolveToken(request);
         if (token == null) {
             System.out.println("⚠️ [JWT 필터] 토큰 없음 → 인증 불가");
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"토큰이 없습니다.\"}");
             return;
         }
 
-        // ✅ 4. JWT 검증
+        //  4. JWT 검증
         if (jwtTokenProvider.validateToken(token)) {
             UUID userId = jwtTokenProvider.getUserId(token);
             User.Role role = jwtTokenProvider.getRole(token);
@@ -75,14 +78,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("✅ [JWT 필터] 인증 성공: userId=" + userId + ", role=" + role);
         } else {
             System.out.println("❌ [JWT 필터] 잘못된 또는 만료된 JWT 토큰");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"유효하지 않은 토큰입니다.\"}");
+            return;
         }
 
-        // ✅ 5. 다음 필터로 이동
+        // 5. 다음 필터로 이동
         filterChain.doFilter(request, response);
     }
 
     /**
-     * ✅ 화이트리스트 경로 설정
+     * 화이트리스트 경로 설정
      * 회원가입(/users [POST]), 로그인(/users/login [POST]), Swagger, 정적 리소스
      */
     private boolean isWhitelisted(String uri, String method) {
@@ -105,7 +112,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * ✅ Authorization 헤더에서 Bearer 토큰 추출
+     * Authorization 헤더에서 Bearer 토큰 추출
      */
     private String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
