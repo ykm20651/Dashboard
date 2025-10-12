@@ -29,7 +29,7 @@ public class ReportService {
     private final IncidentRepository incidentRepository;
     private final UserRepository userRepository;
 
-    // ✅ 로컬에서는 프로젝트 루트 기준 uploads/reports/
+    // 로컬에서는 프로젝트 루트 기준 uploads/reports/
     // 운영 서버에서는 /var/app/uploads/reports/ 같은 절대경로로 잡는 게 안전함
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/reports/";
 
