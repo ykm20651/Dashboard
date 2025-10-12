@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
       open: "처리 전",
       report_generated: "조사 중",
       closed: "종결"
-
     };
     return map[status] || status; // 혹시 서버에서 다른 값이 와도 그대로 표시
   }
