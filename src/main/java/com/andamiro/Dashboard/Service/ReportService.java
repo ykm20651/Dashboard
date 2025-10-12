@@ -36,6 +36,9 @@ public class ReportService {
     /* 03-01 보고서 생성 (Owner 전용, 본인 소유 Incident에 한해서) */
     @Transactional
     public ReportResponse createReport(UUID userId, UUID incidentId, MultipartFile file) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
 
         //1. 파일을 서버 로컬 디렉토리(uploads/reports/) 에 저장 (지금 구현한 방식).
         //2. 파일을 AWS S3 같은 외부 스토리지 에 업로드 후 URL 저장.
@@ -80,6 +83,10 @@ public class ReportService {
     /* 03-02 보고서 조회 (Owner 전용, 본인 소유 Incident에 한해서) */
     @Transactional
     public List<ReportResponse> getReports(UUID userId, UUID incidentId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
 

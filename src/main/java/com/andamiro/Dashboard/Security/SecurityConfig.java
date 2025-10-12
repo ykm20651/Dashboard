@@ -36,22 +36,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ 회원가입 / 로그인 허용
+                        // 회원가입 / 로그인 허용
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/*/owner-info").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/*/crew-info").permitAll()
 
-                        // ✅ Swagger UI
+                        // Swagger UI
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // ✅ 정적 리소스
+                        // 정적 리소스
                         .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
 
-                        // ✅ 에러 페이지 접근 허용 (추가)
+                        // 에러 페이지 접근 허용 (추가)
                         .requestMatchers("/error").permitAll()
 
-                        // ✅ 나머지는 인증 필요
+                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
 
@@ -65,13 +65,13 @@ public class SecurityConfig {
                         })
                 );
 
-        // ✅ JWT 필터 추가
+        // JWT 필터 추가
         http.addFilterBefore(
                 new JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
         );
 
-        System.out.println("✅ [SecurityConfig] SecurityFilterChain 초기화 완료");
+        System.out.println("[SecurityConfig] SecurityFilterChain 초기화 완료");
 
         return http.build();
     }

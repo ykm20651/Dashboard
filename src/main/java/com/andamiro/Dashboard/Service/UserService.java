@@ -83,6 +83,10 @@ public class UserService {
     /* 00-02 API 건 매핑 */
     @Transactional
     public void addOwnerInfo(UUID userId, OwnerInfoRequest request) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -99,6 +103,10 @@ public class UserService {
     /* 00-03 API 건 매핑 */
     @Transactional
     public void addCrewInfo(UUID userId, CrewInfoRequest request) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -122,6 +130,10 @@ public class UserService {
     /* 00-05 API 건 매핑 */
     @Transactional
     public UserResponse updateUser(UUID userId, UUID id, UpdateUserRequest request) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         // 보안 체크: 로그인한 사용자와 PathVariable이 일치하는지 검증
         if (!userId.equals(id)) {
             throw new IllegalArgumentException("본인만 수정할 수 있습니다.");
@@ -144,6 +156,10 @@ public class UserService {
     /* 00-06 API 건 매핑 */
     @Transactional
     public UserResponse getUser(UUID userId, UUID id) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         if (!userId.equals(id)) {
             throw new IllegalArgumentException("본인만 조회할 수 있습니다.");
         }
@@ -158,6 +174,10 @@ public class UserService {
     /* 00-07 API 건 매핑 */
     @Transactional
     public void deleteUser(UUID userId, UUID id) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+        
         if (!userId.equals(id)) {
             throw new IllegalArgumentException("본인만 삭제할 수 있습니다.");
         }
