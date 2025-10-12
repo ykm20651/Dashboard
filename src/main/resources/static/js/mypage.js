@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadUserInfo();
   loadDashboardData();
   setupEventListeners();
+  setupNavigationHandlers();
 
   bindQuickActionHandlers();
   document.addEventListener("click", delegatedClickHandler);
@@ -186,4 +187,129 @@ function generateDummyReports() {
       generatedAt: new Date().toISOString(),
     },
   ];
+}
+
+/** 네비게이션 핸들러 설정 */
+function setupNavigationHandlers() {
+  // 왼쪽 사이드바 네비게이션 - 정확한 선택자 사용
+  const profileLink = document.querySelector('a[data-section="profile"]');
+  const reportsLink = document.querySelector('a[data-section="reports"]');
+
+  // 내 정보 클릭 시 정보 수정란으로 이동
+  if (profileLink) {
+    profileLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('profile');
+    });
+  }
+
+  // 보고서 클릭 시 보고서 관리란으로 이동
+  if (reportsLink) {
+    reportsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('reports');
+    });
+  }
+
+  // 오른쪽 빠른 작업 바 - 정확한 ID 사용
+  const newIncidentBtn = document.getElementById('newIncidentBtn');
+  const analyzeBtn = document.getElementById('analysisBtn');
+  const generateReportBtn = document.getElementById('generateReportQuickBtn');
+
+  // 새 사고 등록 클릭 시 incident_register.html로 이동
+  if (newIncidentBtn) {
+    newIncidentBtn.addEventListener('click', () => {
+      window.location.href = 'incident_register.html';
+    });
+  }
+
+  // 사고 분석 클릭 시 준비중 메시지 표시
+  if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', () => {
+      showMessage('아직 준비중, 개발단계입니다', 'info');
+    });
+  }
+
+  // 보고서 생성 클릭 시 보고서 관리란으로 이동
+  if (generateReportBtn) {
+    generateReportBtn.addEventListener('click', () => {
+      showSection('reports');
+    });
+  }
+
+  // 대시보드 하단 전체 보기 버튼
+  const viewAllBtn = document.getElementById('viewAllIncidentsBtn');
+
+  if (viewAllBtn) {
+    viewAllBtn.addEventListener('click', () => {
+      window.location.href = 'incidents.html';
+    });
+  }
+}
+
+/** 메시지 표시 함수 */
+function showMessage(message, type = 'info') {
+  // 토스트 메시지 스타일로 표시
+  const toast = document.createElement('div');
+  toast.className = `toast-message toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <span class="toast-icon">${getToastIcon(type)}</span>
+      <span class="toast-text">${message}</span>
+    </div>
+  `;
+  
+  // 스타일 추가
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    word-wrap: break-word;
+  `;
+  
+  // 타입별 색상 설정
+  const colors = {
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FF9800',
+    error: '#F44336'
+  };
+  toast.style.backgroundColor = colors[type] || colors.info;
+  
+  document.body.appendChild(toast);
+  
+  // 애니메이션으로 나타나기
+  setTimeout(() => {
+    toast.style.transform = 'translateX(0)';
+  }, 100);
+  
+  // 3초 후 사라지기
+  setTimeout(() => {
+    toast.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+/** 토스트 아이콘 반환 */
+function getToastIcon(type) {
+  const icons = {
+    info: 'ℹ️',
+    success: '✅',
+    warning: '⚠️',
+    error: '❌'
+  };
+  return icons[type] || icons.info;
 }
