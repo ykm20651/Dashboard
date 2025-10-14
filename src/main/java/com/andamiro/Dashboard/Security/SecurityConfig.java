@@ -58,7 +58,7 @@ public class SecurityConfig {
 
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
-                            System.out.println("🚫 [SecurityConfig] 인증 실패: " + req.getRequestURI());
+                            System.out.println("[SecurityConfig] 인증 실패: " + req.getRequestURI());
                             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             res.setContentType("application/json;charset=UTF-8");
                             res.getWriter().write("{\"error\": \"인증이 필요합니다.\"}");

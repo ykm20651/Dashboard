@@ -216,38 +216,34 @@ public class IncidentService {
     /* 01-05 사고 삭제 (Owner 전용, 본인 소유만) */
     @Transactional
     public void deleteIncident(UUID userId, UUID incidentId) {
+        // 인증 확인
         if (userId == null) {
             throw new IllegalArgumentException("인증이 필요합니다.");
         }
-        
+
+        // 사고 ID 유효성 확인
         if (incidentId == null) {
             throw new IllegalArgumentException("사고 ID가 필요합니다.");
         }
-        
-        try {
-            Incident incident = incidentRepository.findById(incidentId)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
 
-            if (!incident.getCreator().getId().equals(userId)) {
-                throw new AccessDeniedException("본인 소유 사고만 삭제할 수 있습니다.");
-            }
+        // 해당 사고 조회 (없으면 404)
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 사고가 존재하지 않습니다."));
 
-            // 연관된 파일들이 있는지 확인 (선택적)
-            if (!incident.getEvidenceFiles().isEmpty()) {
-                // 증거 파일이 있더라도 삭제는 가능하도록 함
-                // 필요시 파일도 함께 삭제하는 로직 추가 가능
-            }
-
-            incidentRepository.delete(incident);
-            
-        } catch (EntityNotFoundException e) {
-            throw new EntityNotFoundException("해당 사고를 찾을 수 없습니다.");
-        } catch (AccessDeniedException e) {
-            throw new AccessDeniedException("본인 소유 사고만 삭제할 수 있습니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("사고 삭제 중 오류가 발생했습니다: " + e.getMessage(), e);
+        // 생성자 정보 확인
+        if (incident.getCreator() == null) {
+            throw new IllegalStateException("해당 사고의 등록자 정보가 존재하지 않습니다.");
         }
+
+        // 본인 소유 확인
+        if (!incident.getCreator().getId().equals(userId)) {
+            throw new AccessDeniedException("본인 소유 사고만 삭제할 수 있습니다.");
+        }
+
+
+        incidentRepository.delete(incident);
     }
+
 
 
 }

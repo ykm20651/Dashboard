@@ -1,6 +1,7 @@
 package com.andamiro.Dashboard.Controller;
 
 import com.andamiro.Dashboard.Dto.EvidenceFileDTO.*;
+import com.andamiro.Dashboard.Security.CustomPrincipal;
 import com.andamiro.Dashboard.Service.EvidenceFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,13 +32,13 @@ public class EvidenceFileController {
     @Operation(summary = "증거자료 업로드", description = "사고에 대한 증거자료(이미지/영상)를 업로드합니다.")
     @PostMapping(value = "/incidents/{id}/evidence-files", consumes = {"multipart/form-data"})
     public ResponseEntity<EvidenceFileCreateResponse> uploadEvidenceFile(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable UUID id,
             @RequestPart("file") MultipartFile file,
             @RequestPart("description") String description
     ) {
         return ResponseEntity.status(201).body(
-                evidenceFileService.uploadEvidenceFile(id, userId, file, description)
+                evidenceFileService.uploadEvidenceFile(id, principal.getId(), file, description)
         );
     }
 
@@ -45,9 +46,9 @@ public class EvidenceFileController {
     @Operation(summary = "증거자료 삭제", description = "증거자료를 삭제합니다.")
     @DeleteMapping("/evidence-files/{id}")
     public ResponseEntity<Void> deleteEvidenceFile(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable UUID id) {
-        evidenceFileService.deleteEvidenceFile(userId, id);
+        evidenceFileService.deleteEvidenceFile(principal.getId(), id);
         return ResponseEntity.noContent().build();
     }
 
@@ -55,9 +56,9 @@ public class EvidenceFileController {
     @Operation(summary = "증거자료 수정", description = "증거자료 설명을 수정합니다.")
     @PutMapping("/evidence-files/{id}")
     public ResponseEntity<EvidenceFileUpdateResponse> updateEvidenceFile(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable UUID id,
             @RequestBody EvidenceFileUpdateRequest request) {
-        return ResponseEntity.ok(evidenceFileService.updateEvidenceFile(userId, id, request));
+        return ResponseEntity.ok(evidenceFileService.updateEvidenceFile(principal.getId(), id, request));
     }
 }

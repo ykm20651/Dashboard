@@ -1,59 +1,63 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>사고 등록 | OASIS</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/incident_register.css">
-  <script defer src="js/incident_register.js"></script>
+    <meta charset="UTF-8">
+    <title>사고 등록 | OASIS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/incident_register.css">
+    <script src="js/auth.js"></script>
+    <script src="js/utils.js"></script>
+    <script defer src="js/incident_register.js"></script>
 </head>
 <body>
-  <main class="incident-container">
+<main class="incident-container">
     <!-- 로고 -->
     <a href="index.html" class="logo-link">
-      <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo">
+        <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo">
     </a>
 
     <!-- 등록 박스 -->
     <section class="section-box">
-      <h2>사고 등록</h2>
-      <form id="incidentForm" class="incident-form">
-        <div class="form-row">
-          <label for="title">사고 제목</label>
-          <input type="text" id="title" required>
-        </div>
+        <h2>사고 등록</h2>
+        <form id="incidentForm" class="incident-form">
+            <div class="form-row">
+                <label for="title">사고 제목</label>
+                <input type="text" id="title" required>
+            </div>
 
-        <div class="form-row">
-          <label for="description">사고 설명</label>
-          <input type="text" id="description" required>
-        </div>
+            <div class="form-row">
+                <label for="description">사고 설명</label>
+                <input type="text" id="description" required>
+            </div>
 
-        <!-- ✅ 사고 유형: select로 변경 -->
-        <div class="form-row">
-          <label for="incidentType">사고 유형</label>
-          <select id="incidentType" required>
-            <option value="">선택하세요</option>
-            <option value="collision">collision (충돌)</option>
-            <option value="oil_spill">oil_spill (유류 유출)</option>
-            <option value="fire">fire (화재)</option>
-            <option value="crew_injury">crew_injury (선원 부상)</option>
-          </select>
-        </div>
+            <div class="form-row">
+                <label for="incidentType">사고 유형</label>
+                <select id="incidentType" required>
+                    <option value="">선택하세요</option>
+                    <option value="collision">collision (충돌)</option>
+                    <option value="oil_spill">oil_spill (유류 유출)</option>
+                    <option value="fire">fire (화재)</option>
+                    <option value="crew_injury">crew_injury (선원 부상)</option>
+                </select>
+            </div>
 
-        <div class="form-row">
-          <label for="location">사고 장소</label>
-          <input type="text" id="location" required>
-        </div>
+            <div class="form-row">
+                <label for="location">사고 장소</label>
+                <input type="text" id="location" required>
+            </div>
 
-        <div class="form-row">
-          <label for="happenedAt">발생 시각</label>
-          <input type="datetime-local" id="happenedAt" required>
-        </div>
+            <div class="form-row">
+                <label for="happenedAt">발생 시각</label>
+                <input type="datetime-local" id="happenedAt" required>
+            </div>
 
-        <button type="submit" class="save-btn">저장</button>
-      </form>
-      <p id="msg"></p>
+            <button type="submit" class="save-btn">저장</button>
+        </form>
+        <p id="msg"></p>
     </section>
-  </main>
+</main>
+
+<!-- ✅ 공통 토스트 알림 -->
+<div id="toast" class="toast"></div>
 </body>
 </html>

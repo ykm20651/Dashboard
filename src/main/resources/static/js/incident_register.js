@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 로그인 상태 확인
-  if (!requireAuth()) return;
-  
+  if (!requireAuth()) return; // 로그인 여부 확인
+
   const form = document.getElementById("incidentForm");
   const msg = document.getElementById("msg");
 
@@ -18,23 +17,37 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("http://52.79.99.132/incidents", {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ title, description, incidentType, location, happenedAt })
+        body: JSON.stringify({
+          title,
+          description,
+          incidentType,
+          location,
+          happenedAt
+        }),
       });
 
-      await handleApiError(res, "사고 등록에 실패했습니다.");
+      if (res.status === 401) {
+        showToast("❌ 로그인 세션이 만료되었습니다. 다시 로그인해주세요.", "error");
+        setTimeout(() => (window.location.href = "login.html"), 1500);
+        return;
+      }
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err || "사고 등록에 실패했습니다.");
+      }
 
       const data = await res.json();
-      console.log("사고 등록 성공:", data);
+      console.log("✅ 사고 등록 성공:", data);
 
-      msg.innerText = "✅ 사고가 성공적으로 등록되었습니다!";
-      msg.style.color = "green";
+      showToast("✅ 사고가 성공적으로 등록되었습니다!", "success");
 
       setTimeout(() => {
         window.location.href = "incidents.html";
       }, 1500);
-
     } catch (err) {
-      msg.innerText = "❌ " + err.message;
+      showToast("❌ " + err.message, "error");
+      msg.innerText = err.message;
       msg.style.color = "red";
     }
   });

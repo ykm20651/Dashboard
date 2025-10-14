@@ -1,6 +1,7 @@
 package com.andamiro.Dashboard.Controller;
 
 import com.andamiro.Dashboard.Dto.IncidentDTO.*;
+import com.andamiro.Dashboard.Security.CustomPrincipal;
 import com.andamiro.Dashboard.Service.IncidentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,18 +25,18 @@ public class IncidentController {
     @Operation(summary ="사고 목록 조회", description = "선원/선주 본인이 소속된 사고의 리스트 조회")
     @GetMapping
     public ResponseEntity<List<IncidentResponse>> getIncidents(
-            @AuthenticationPrincipal UUID userId) {
-        return ResponseEntity.ok(incidentService.getListIncidents(userId));
+            @AuthenticationPrincipal CustomPrincipal principal) {
+        return ResponseEntity.ok(incidentService.getListIncidents(principal.getId()));
     }
 
     /* 01-02 API 사고 등록 매핑 */
     @Operation(summary = "사고 등록", description = "선원/선주가 새로운 사고 정보를 등록합니다.")
     @PostMapping
     public ResponseEntity<IncidentResponse> createIncident(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestBody IncidentCreateRequest request) {
         try {
-            return ResponseEntity.status(201).body(incidentService.createIncident(userId, request));
+            return ResponseEntity.status(201).body(incidentService.createIncident(principal.getId(), request));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
@@ -47,29 +48,29 @@ public class IncidentController {
     @Operation(summary = "사고 상세 조회", description = "특정 사고의 상세 정보를 조회합니다. (Owner 전용, 본인 소유만)")
     @GetMapping("/{id}")
     public ResponseEntity<IncidentDetailResponse> getDetailIncident(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable UUID id) {
-        return ResponseEntity.ok(incidentService.getDetailIncident(userId, id));
+        return ResponseEntity.ok(incidentService.getDetailIncident(principal.getId(), id));
     }
 
     /* 01-04 API 사고 수정 매핑 */
     @Operation(summary = "사고 수정", description = "사고 정보를 수정합니다. (Owner 전용, 본인 소유만)")
     @PutMapping("/{id}")
     public ResponseEntity<IncidentUpdateResponse> updateIncident(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable UUID id,
             @RequestBody IncidentUpdateRequest request) {
-        return ResponseEntity.ok(incidentService.updateIncident(userId, id, request));
+        return ResponseEntity.ok(incidentService.updateIncident(principal.getId(), id, request));
     }
 
     /* 01-05 API 사고 삭제 매핑 */
     @Operation(summary = "사고 삭제", description = "사고를 삭제합니다. (Owner 전용, 본인 소유만)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIncident(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable UUID id) {
         try {
-            incidentService.deleteIncident(userId, id);
+            incidentService.deleteIncident(principal.getId(), id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
