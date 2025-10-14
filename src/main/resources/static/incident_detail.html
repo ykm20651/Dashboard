@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>사고 상세 | OASIS</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/incident_detail.css">
-  <script defer src="/js/auth.js"></script>
-  <script defer src="/js/incident_detail.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/incident_detail.css">
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/incident_detail.js"></script>
 </head>
 <body>
   <main class="detail-container">
@@ -38,10 +38,9 @@
 
         <label>상태</label>
         <select id="editStatus" disabled>
-          <option value="open">처리 전</option>
-          <option value="in_progress">조사 중</option>
-          <option value="resolved">조치 완료</option>
-          <option value="closed">종결</option>
+          <option value="등록 완료">등록 완료</option>
+          <option value="보고서 생성 완료">보고서 생성 완료</option>
+          <option value="종결">종결</option>
         </select>
 
         <div class="action-btns">
@@ -56,7 +55,10 @@
     <section class="section-box evidence-section">
       <div class="evidence-header">
         <h3>증거자료</h3>
-        <button id="deleteSelected" class="btn danger" style="display:none;">삭제</button>
+        <div>
+          <button id="openEvidenceModal" class="btn primary">전체보기</button>
+          <button id="deleteSelected" class="btn danger" style="display:none;">삭제</button>
+        </div>
       </div>
 
       <div id="evidenceGrid" class="evidence-grid">
@@ -64,21 +66,41 @@
       </div>
 
       <form id="evidenceForm" enctype="multipart/form-data">
-        <div class="form-row">
-          <label for="fileInput">파일 선택</label>
-          <input type="file" id="fileInput" accept="image/*,video/*,.txt,.log,.pdf,.doc,.docx" required>
-          <small class="help-text">이미지, 동영상, 텍스트 파일, PDF, 문서 파일을 업로드할 수 있습니다 (최대 10MB)</small>
-        </div>
-        <div class="form-row">
-          <label for="fileDesc">파일 설명</label>
-          <input type="text" id="fileDesc" placeholder="예: 사고 현장 사진, 선박 손상 부분" required>
-          <small class="help-text">업로드할 파일에 대한 간단한 설명을 입력해주세요</small>
-        </div>
+        <input type="file" id="fileInput" accept="image/*,video/*,.txt,.log" required>
+        <input type="text" id="fileDesc" placeholder="설명 입력" required>
         <button type="submit" class="btn primary">업로드</button>
       </form>
     </section>
 
     <p id="msg"></p>
   </main>
-</body>
-</html>
+
+  <!-- ✅ 증거자료 전체보기 팝업 (PRO 버전) -->
+<div id="evidenceModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close-btn" id="closeEvidenceModal">&times;</span>
+    <h3>증거자료 목록</h3>
+
+    <!-- 🔍 검색 + 정렬 바 -->
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="검색 (설명 또는 파일유형)">
+      <select id="sortSelect">
+        <option value="latest">최신순</option>
+        <option value="oldest">오래된순</option>
+        <option value="image">이미지</option>
+        <option value="video">비디오</option>
+      </select>
+    </div>
+
+    <!-- 📄 목록 -->
+    <div id="evidenceListContainer" class="modal-grid"></div>
+
+    <!-- 🔢 페이지네이션 -->
+    <div class="pagination">
+      <button id="prevPage" class="btn small">◀ 이전</button>
+      <span id="pageIndicator">1 / 1</span>
+      <button id="nextPage" class="btn small">다음 ▶</button>
+    </div>
+  </div>
+</div>
+

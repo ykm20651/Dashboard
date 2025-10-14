@@ -126,9 +126,3 @@ body::before {
 .signup-link a:hover {
   color: #e5e5e5;
 }
-
-/* Placeholder 스타일 */
-input::placeholder {
-  color: #888;
-  opacity: 1;
-}

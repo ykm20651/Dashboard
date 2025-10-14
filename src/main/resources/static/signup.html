@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>회원가입 | OASIS</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/signup.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/signup.css">
   <script defer src="js/signup.js"></script>
 </head>
 <body>
@@ -21,56 +21,43 @@
       <h1>회원가입</h1>
       <form id="signupForm" class="signup-form">
         <label for="email">이메일</label>
-        <input type="email" id="email" placeholder="example@domain.com" required>
-        <small class="help-text">로그인에 사용할 이메일 주소를 입력하세요</small>
+        <input type="email" id="email" required>
 
         <label for="password">비밀번호</label>
-        <input type="password" id="password" placeholder="8자 이상의 비밀번호" required>
-        <small class="help-text">8자 이상의 안전한 비밀번호를 입력하세요</small>
+        <input type="password" id="password" required>
 
         <div class="row">
           <div class="col">
             <label for="name">이름</label>
-            <input type="text" id="name" placeholder="홍길동" required>
+            <input type="text" id="name" required>
           </div>
           <div class="col">
             <label for="role">역할</label>
             <select id="role" required>
-              <option value="">역할을 선택하세요</option>
+              <option value="">선택</option>
               <option value="OWNER">선주</option>
               <option value="CREW">선원</option>
             </select>
           </div>
         </div>
-        <small class="help-text">선주 또는 선원 역할을 선택하세요</small>
 
         <!-- 추가 정보 영역 -->
         <div id="owner-extra" style="display:none;">
           <label for="companyName">회사명</label>
-          <input type="text" id="companyName" placeholder="예: 부산해운주식회사">
-          <small class="help-text">소속 회사명을 입력하세요</small>
-          
+          <input type="text" id="companyName">
           <label for="shipRegId">선박 등록번호</label>
-          <input type="text" id="shipRegId" placeholder="예: KOR123456">
-          <small class="help-text">소유하고 있는 선박의 등록번호를 입력하세요</small>
-          
+          <input type="text" id="shipRegId">
           <label for="contactNumber">연락처</label>
-          <input type="text" id="contactNumber" placeholder="예: 010-1234-5678">
-          <small class="help-text">연락 가능한 전화번호를 입력하세요</small>
-          
+          <input type="text" id="contactNumber">
           <label for="businessNumber">사업자등록번호</label>
-          <input type="text" id="businessNumber" placeholder="예: 123-45-67890">
-          <small class="help-text">사업자등록번호를 입력하세요 (선택사항)</small>
+          <input type="text" id="businessNumber">
         </div>
 
         <div id="crew-extra" style="display:none;">
           <label for="ownerBusinessNumber">소속 선주 사업자등록번호</label>
-          <input type="text" id="ownerBusinessNumber" placeholder="예: 123-45-67890">
-          <small class="help-text">소속된 선주의 사업자등록번호를 입력하세요</small>
-          
+          <input type="text" id="ownerBusinessNumber">
           <label for="position">직책</label>
-          <input type="text" id="position" placeholder="예: 선장, 기관장, 갑판부">
-          <small class="help-text">현재 직책을 입력하세요</small>
+          <input type="text" id="position">
         </div>
 
         <button type="submit" class="signup-btn">가입하기</button>

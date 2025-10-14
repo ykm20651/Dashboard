@@ -3,32 +3,6 @@
 let currentReports = [];
 let currentIncidents = [];
 
-/** 모든 사고의 보고서를 수집 */
-async function loadAllReports() {
-  const allReports = [];
-  for (const incident of currentIncidents) {
-    try {
-      const response = await fetch(`http://52.79.99.132/incidents/${incident.id}/reports`, {
-        method: "GET",
-        headers: getAuthHeaders()
-      });
-      if (response.ok) {
-        const incidentReports = await response.json();
-        // 각 보고서에 사고 정보 추가
-        const reportsWithIncidentInfo = incidentReports.map(report => ({
-          ...report,
-          incidentTitle: incident.title,
-          incidentId: incident.id
-        }));
-        allReports.push(...reportsWithIncidentInfo);
-      }
-    } catch (error) {
-      console.warn(`사고 ${incident.id}의 보고서 로드 실패:`, error);
-    }
-  }
-  return allReports;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   // 로그인 상태 확인
   if (!requireAuth()) return;
@@ -87,7 +61,14 @@ async function loadIncidents() {
  */
 async function loadReports() {
   try {
-    currentReports = await loadAllReports();
+    const response = await fetch("http://52.79.99.132/reports", {
+      method: "GET",
+      headers: getAuthHeaders()
+    });
+    
+    await handleApiError(response, "보고서 목록을 불러올 수 없습니다.");
+    
+    currentReports = await response.json();
     return currentReports;
   } catch (error) {
     console.error("보고서 목록 로드 실패:", error);
@@ -238,13 +219,13 @@ async function generateReport() {
   try {
     showMessage('보고서를 생성하는 중...', 'info');
     
-    // 실제 API 호출 - 선택된 첫 번째 사고에 대한 보고서 생성
-    const selectedIncidentId = selectedIncidents[0];
-    const response = await fetch(`http://52.79.99.132/incidents/${selectedIncidentId}/reports`, {
+    // 실제 API 호출
+    const response = await fetch("http://52.79.99.132/reports", {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({
         title,
+        incidentIds: selectedIncidents,
         type,
         description
       })

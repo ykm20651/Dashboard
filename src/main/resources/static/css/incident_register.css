@@ -76,8 +76,7 @@ body::before {
   color: #ddd;
 }
 .form-row input,
-.form-row select,
-.form-row textarea {
+.form-row select {
   padding: 12px;
   border-radius: 8px;
   border: none;
@@ -86,33 +85,10 @@ body::before {
   font-size: 1rem;
   outline: none;
   transition: background 0.3s ease;
-  font-family: inherit;
-}
-
-.form-row textarea {
-  min-height: 100px;
-  resize: vertical;
 }
 .form-row input:focus,
-.form-row select:focus,
-.form-row textarea:focus {
+.form-row select:focus {
   background: rgba(255,255,255,0.2);
-}
-
-/* 도움말 텍스트 스타일 */
-.help-text {
-  font-size: 0.85rem;
-  color: #aaa;
-  margin-top: 6px;
-  line-height: 1.4;
-  font-style: italic;
-}
-
-/* Placeholder 스타일 */
-.form-row input::placeholder,
-.form-row textarea::placeholder {
-  color: #888;
-  opacity: 1;
 }
 
 /* ===== 저장 버튼 ===== */

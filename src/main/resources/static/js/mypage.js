@@ -1,26 +1,33 @@
+/* =======================================
+   OASIS | MyPage 통합 스크립트 (최종 확정)
+   ======================================= */
+
 let currentIncidents = [];
 let currentReports = [];
 let currentUser = null;
 
+/* ---------------------------------------
+   ✅ 초기 실행
+--------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ OASIS MyPage Loaded");
+
   if (!requireAuth()) return;
 
   loadUserInfo();
   loadDashboardData();
-  setupEventListeners();
-  setupNavigationHandlers();
-
   bindQuickActionHandlers();
-  document.addEventListener("click", delegatedClickHandler);
 
   showSection("dashboard");
 });
 
-/** 사용자 정보 로드 */
+/* ---------------------------------------
+   ✅ 사용자 정보 로드
+--------------------------------------- */
 async function loadUserInfo() {
   try {
-    const userEmail = getUserEmail();
-    const userRole = getUserRole();
+    const userEmail = getUserEmail ? getUserEmail() : "user@example.com";
+    const userRole = getUserRole ? getUserRole() : "OWNER";
     const userName = userEmail.split("@")[0];
 
     document.getElementById("avatarName").textContent = `${userName}님`;
@@ -31,11 +38,13 @@ async function loadUserInfo() {
     document.getElementById("profileRole").value =
       userRole === "OWNER" ? "선주" : "선원";
   } catch {
-    showMessage("사용자 정보를 불러오지 못했습니다.", "error");
+    showToast("사용자 정보를 불러오지 못했습니다.", "error");
   }
 }
 
-/** 대시보드 데이터 로드 */
+/* ---------------------------------------
+   ✅ 대시보드 데이터 로드
+--------------------------------------- */
 async function loadDashboardData() {
   await loadIncidents();
   await loadReports();
@@ -43,11 +52,11 @@ async function loadDashboardData() {
   displayRecentIncidents();
 }
 
-/** 사고 목록 */
+/* 사고 목록 불러오기 */
 async function loadIncidents() {
   try {
     const res = await fetch("http://52.79.99.132/incidents", {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders ? getAuthHeaders() : {},
     });
     if (!res.ok) throw new Error("사고 불러오기 실패");
     currentIncidents = await res.json();
@@ -56,39 +65,28 @@ async function loadIncidents() {
   }
 }
 
-/** 보고서 목록 */
+/* 보고서 목록 불러오기 */
 async function loadReports() {
   try {
-    // 사고별로 보고서를 가져오는 방식으로 변경
-    const reports = [];
-    for (const incident of currentIncidents) {
-      try {
-        const res = await fetch(`http://52.79.99.132/incidents/${incident.id}/reports`, {
-          headers: getAuthHeaders(),
-        });
-        if (res.ok) {
-          const incidentReports = await res.json();
-          reports.push(...incidentReports);
-        }
-      } catch (error) {
-        console.warn(`사고 ${incident.id}의 보고서 로드 실패:`, error);
-      }
-    }
-    currentReports = reports;
+    const res = await fetch("http://52.79.99.132/reports", {
+      headers: getAuthHeaders ? getAuthHeaders() : {},
+    });
+    if (!res.ok) throw new Error("보고서 불러오기 실패");
+    currentReports = await res.json();
   } catch {
     currentReports = generateDummyReports();
   }
 }
 
-/** 통계 업데이트 */
+/* 통계 업데이트 */
 function updateDashboardStats() {
   document.getElementById("totalIncidents").textContent = currentIncidents.length;
   document.getElementById("completedIncidents").textContent =
-    currentIncidents.filter((i) => i.status === "closed").length;
+    currentIncidents.filter((i) => i.status === "CLOSED").length; // ✅ 명세서: CLOSED
   document.getElementById("totalReports").textContent = currentReports.length;
 }
 
-/** 최근 사고 표시 */
+/* 최근 사고 표시 */
 function displayRecentIncidents() {
   const container = document.getElementById("recentIncidents");
   if (!container) return;
@@ -105,8 +103,8 @@ function displayRecentIncidents() {
       <div class="incident-summary">
         <div class="summary-header">
           <h4>${i.title}</h4>
-          <span class="status-badge status-${(i.status || "open").toLowerCase()}">
-            ${getStatusText(i.status || "open")}
+          <span class="status-badge status-${(i.status || "OPEN").toLowerCase()}">
+            ${getStatusText(i.status || "OPEN")}
           </span>
         </div>
         <p class="summary-meta">
@@ -119,43 +117,23 @@ function displayRecentIncidents() {
     .join("");
 }
 
-/** 보고서 생성 */
-function generateReport() {
-  if (currentIncidents.length === 0) {
-    showMessage("생성할 사고가 없습니다. 먼저 사고를 등록해주세요.", "error");
-    return;
-  }
+/* ✅ 상태 한글 변환 (명세서 기준: OPEN / REPORT_GENERATED / CLOSED) */
+function getStatusText(status = "") {
+  // 1️⃣ 들어온 status를 전부 대문자로 변환
+  const key = status.toUpperCase();
 
-  showMessage("보고서 생성 중...", "info");
-
-  setTimeout(() => {
-    const newReport = {
-      id: Date.now().toString(),
-      title: `사고 보고서 - ${new Date().toLocaleDateString()}`,
-      incidentTitle: currentIncidents[0].title,
-      status: "완료",
-      generatedAt: new Date().toISOString(),
-    };
-
-    currentReports.unshift(newReport);
-    updateDashboardStats();
-    showSection("reports");
-    displayReports();
-    showMessage("보고서가 생성되었습니다.", "success");
-  }, 600);
-}
-
-/** 상태 한글 변환 */
-function getStatusText(status) {
+  // 2️⃣ 대문자 기준으로 매핑 테이블 생성
   const map = {
-    open: "처리 전",
-    report_generated: "조사 중",
-    closed: "종결",
+    OPEN: "등록 완료",
+    REPORT_GENERATED: "보고서 생성 완료",
+    CLOSED: "종결"
   };
-  return map[status] || "처리 전";
+
+  // 3️⃣ 매핑된 값 반환 (없으면 원본 그대로)
+  return map[key] || status;
 }
 
-/** 더미 데이터 */
+/* 더미 데이터 */
 function generateDummyIncidents() {
   return [
     {
@@ -164,7 +142,7 @@ function generateDummyIncidents() {
       incidentType: "충돌",
       location: "부산항 신항",
       happenedAt: new Date().toISOString(),
-      status: "open",
+      status: "OPEN",
     },
     {
       id: "2",
@@ -172,7 +150,7 @@ function generateDummyIncidents() {
       incidentType: "화재",
       location: "인천 북항",
       happenedAt: new Date().toISOString(),
-      status: "closed",
+      status: "CLOSED",
     },
   ];
 }
@@ -189,127 +167,107 @@ function generateDummyReports() {
   ];
 }
 
-/** 네비게이션 핸들러 설정 */
-function setupNavigationHandlers() {
-  // 왼쪽 사이드바 네비게이션 - 정확한 선택자 사용
-  const profileLink = document.querySelector('a[data-section="profile"]');
-  const reportsLink = document.querySelector('a[data-section="reports"]');
+/* ---------------------------------------
+   ✅ 버튼 및 메뉴 동작
+--------------------------------------- */
+function bindQuickActionHandlers() {
+  console.log("🔧 버튼 및 메뉴 이벤트 바인딩됨");
 
-  // 내 정보 클릭 시 별도 페이지로 이동
-  if (profileLink) {
-    profileLink.addEventListener('click', (e) => {
+  /* 새 사고 등록 */
+  document.getElementById("newIncidentBtn")?.addEventListener("click", () => {
+    window.location.href = "incident_register.html";
+  });
+
+  /* 사고 분석 */
+  document.getElementById("analysisBtn")?.addEventListener("click", () => {
+    showToast("아직 서비스 개발 중입니다.", "info");
+  });
+
+  /* 전체 보기 */
+  document.getElementById("viewAllIncidentsBtn")?.addEventListener("click", () => {
+    window.location.href = "incidents.html";
+  });
+
+  /* 사이드바 - 내 정보 */
+  document
+    .querySelector('a[data-section="profile"]')
+    ?.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.href = 'profile.html'; // 별도 페이지로 이동
+      showSection("profile");
+      document.querySelectorAll(".sidebar-nav a").forEach((a) => a.classList.remove("active"));
+      e.currentTarget.classList.add("active");
     });
-  }
 
-  // 보고서 클릭 시 보고서 페이지로 이동
-  if (reportsLink) {
-    reportsLink.addEventListener('click', (e) => {
+  /* 사이드바 - 보고서 */
+  document
+    .querySelector('a[data-section="reports"]')
+    ?.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.href = 'report.html'; // 별도 페이지로 이동
+      window.location.href = "report.html";
     });
-  }
 
-  // 오른쪽 빠른 작업 바 - 정확한 ID 사용
-  const newIncidentBtn = document.getElementById('newIncidentBtn');
-  const analyzeBtn = document.getElementById('analysisBtn');
-  const generateReportBtn = document.getElementById('generateReportQuickBtn');
-
-  // 새 사고 등록 클릭 시 incident_register.html로 이동
-  if (newIncidentBtn) {
-    newIncidentBtn.addEventListener('click', () => {
-      window.location.href = 'incident_register.html';
+  /* 사이드바 - 대시보드 */
+  document
+    .querySelector('a[data-section="dashboard"]')
+    ?.addEventListener("click", (e) => {
+      e.preventDefault();
+      showSection("dashboard");
+      document.querySelectorAll(".sidebar-nav a").forEach((a) => a.classList.remove("active"));
+      e.currentTarget.classList.add("active");
     });
-  }
-
-  // 사고 분석 클릭 시 준비중 메시지 표시
-  if (analyzeBtn) {
-    analyzeBtn.addEventListener('click', () => {
-      showMessage('아직 준비중, 개발단계입니다', 'info');
-    });
-  }
-
-  // 보고서 생성 클릭 시 보고서 페이지로 이동
-  if (generateReportBtn) {
-    generateReportBtn.addEventListener('click', () => {
-      window.location.href = 'report.html'; // 별도 페이지로 이동
-    });
-  }
-
-  // 대시보드 하단 전체 보기 버튼
-  const viewAllBtn = document.getElementById('viewAllIncidentsBtn');
-
-  if (viewAllBtn) {
-    viewAllBtn.addEventListener('click', () => {
-      window.location.href = 'incidents.html';
-    });
-  }
 }
 
-/** 메시지 표시 함수 */
-function showMessage(message, type = 'info') {
-  // 토스트 메시지 스타일로 표시
-  const toast = document.createElement('div');
-  toast.className = `toast-message toast-${type}`;
-  toast.innerHTML = `
-    <div class="toast-content">
-      <span class="toast-icon">${getToastIcon(type)}</span>
-      <span class="toast-text">${message}</span>
-    </div>
-  `;
-  
-  // 스타일 추가
-  toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10000;
-    padding: 12px 16px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    max-width: 300px;
-    word-wrap: break-word;
-  `;
-  
-  // 타입별 색상 설정
-  const colors = {
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FF9800',
-    error: '#F44336'
-  };
-  toast.style.backgroundColor = colors[type] || colors.info;
-  
+/* ---------------------------------------
+   ✅ 예쁜 토스트 메시지
+--------------------------------------- */
+function showToast(text, type = "info") {
+  const existingToast = document.querySelector(".toast-message");
+  if (existingToast) existingToast.remove();
+
+  const toast = document.createElement("div");
+  toast.className = `toast-message ${type}`;
+  toast.textContent = text;
   document.body.appendChild(toast);
-  
-  // 애니메이션으로 나타나기
+
+  setTimeout(() => toast.classList.add("show"), 100);
   setTimeout(() => {
-    toast.style.transform = 'translateX(0)';
-  }, 100);
-  
-  // 3초 후 사라지기
-  setTimeout(() => {
-    toast.style.transform = 'translateX(100%)';
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 300);
-  }, 3000);
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
 }
 
-/** 토스트 아이콘 반환 */
-function getToastIcon(type) {
-  const icons = {
-    info: 'ℹ️',
-    success: '✅',
-    warning: '⚠️',
-    error: '❌'
-  };
-  return icons[type] || icons.info;
+/* ✅ 토스트 스타일 자동 삽입 */
+const style = document.createElement("style");
+style.innerHTML = `
+.toast-message {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #333;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  font-size: 15px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+.toast-message.show { opacity: 1; transform: translateY(0); }
+.toast-message.info { background: #4b9fff; }
+.toast-message.success { background: #4caf50; }
+.toast-message.error { background: #f44336; }
+`;
+document.head.appendChild(style);
+
+/* ---------------------------------------
+   ✅ 섹션 전환
+--------------------------------------- */
+function showSection(sectionId) {
+  document.querySelectorAll(".content-section").forEach((sec) => {
+    sec.classList.remove("active");
+  });
+  const target = document.getElementById(sectionId);
+  if (target) target.classList.add("active");
 }
