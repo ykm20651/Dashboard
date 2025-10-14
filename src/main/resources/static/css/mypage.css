@@ -142,7 +142,6 @@
   color: #ff6b35; /* 기본 단색 */
 }
 
-/* 그라데이션 텍스트 지원 시 */
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .section-header h2 {
     background: linear-gradient(135deg, #ff6b35, #ff9b62);
@@ -231,6 +230,7 @@
   padding: 15px 20px;
   margin-bottom: 15px;
   transition: all 0.3s ease;
+
 }
 
 .incident-summary:hover {
@@ -336,7 +336,6 @@
 .action-icon {
   font-size: 20px;
 }
-
 /* ===== 프로필 폼 ===== */
 .profile-form {
   max-width: 600px;
@@ -385,6 +384,8 @@
 }
 
 /* ===== 버튼 공통 ===== */
+
+
 .btn-primary,
 .btn-secondary,
 .btn-danger {

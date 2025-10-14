@@ -208,35 +208,123 @@ body::before {
   color: #ff6b35;
 }
 
+/* ------------------------------
+   ✅ 증거자료 전체보기 모달
+------------------------------ */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: rgba(20, 20, 20, 0.95);
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 900px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 26px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close-btn:hover {
+  color: #ff6b35;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 25px;
+}
+.modal-grid .evidence-item {
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.modal-grid img,
+.modal-grid video {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.modal-grid .desc {
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: #ffb347;
+}
+.modal-grid .time {
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+/* ------------------------------
+   ✅ PRO 버전: 검색 / 정렬 / 페이지네이션
+------------------------------ */
+.filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid #555;
+}
+#sortSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid #555;
+  cursor: pointer;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+.pagination .btn.small {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+#pageIndicator {
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* 도움말 텍스트 스타일 */
-.help-text {
-  font-size: 0.85rem;
-  color: #aaa;
-  margin-top: 6px;
-  line-height: 1.4;
-  font-style: italic;
-}
-
-/* 폼 행 스타일 */
-.form-row {
-  margin-bottom: 15px;
-}
-
-.form-row label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #ddd;
-}
-
-/* Placeholder 스타일 */
-input::placeholder,
-textarea::placeholder {
-  color: #888;
-  opacity: 1;
-}
