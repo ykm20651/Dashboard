@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        System.out.println("🔍 [JWT 필터] 요청 감지: " + method + " " + requestURI);
+        System.out.println("[JWT 필터] 요청 감지: " + method + " " + requestURI);
 
         //  1. Preflight OPTIONS 요청은 즉시 통과
         if (method.equalsIgnoreCase("OPTIONS")) {
@@ -41,13 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
             response.setHeader("Access-Control-Allow-Credentials", "false");
             response.setStatus(HttpServletResponse.SC_OK);
-            System.out.println("🟢 [JWT 필터] OPTIONS 요청 통과 (CORS)");
+            System.out.println("[JWT 필터] OPTIONS 요청 통과 (CORS)");
             return;
         }
 
         //  2. 화이트리스트 경로는 JWT 검사 생략
         if (isWhitelisted(requestURI, method)) {
-            System.out.println("🟢 [JWT 필터] 화이트리스트 경로 통과 → " + requestURI);
+            System.out.println("[JWT 필터] 화이트리스트 경로 통과 → " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //  3. Authorization 헤더 추출
         String token = resolveToken(request);
         if (token == null) {
-            System.out.println("⚠️ [JWT 필터] 토큰 없음 → 인증 불가");
+            System.out.println("[JWT 필터] 토큰 없음 → 인증 불가");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"토큰이 없습니다.\"}");
@@ -64,30 +64,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         //  4. JWT 검증
         try {
-            System.out.println("🔍 [JWT 필터] 토큰 검증 시작: " + token.substring(0, Math.min(20, token.length())) + "...");
+            System.out.println("[JWT 필터] 토큰 검증 시작: " + token.substring(0, Math.min(20, token.length())) + "...");
             
             if (jwtTokenProvider.validateToken(token)) {
                 UUID userId = jwtTokenProvider.getUserId(token);
                 User.Role role = jwtTokenProvider.getRole(token);
 
+                CustomPrincipal principal = new CustomPrincipal(userId, role.name());
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,
+                                principal,
                                 null,
                                 List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("✅ [JWT 필터] 인증 성공: userId=" + userId + ", role=" + role);
+                System.out.println("[JWT 필터] 인증 성공: userId=" + userId + ", role=" + role);
             } else {
-                System.out.println("❌ [JWT 필터] 토큰 검증 실패 - 유효하지 않은 토큰");
+                System.out.println("[JWT 필터] 토큰 검증 실패 - 유효하지 않은 토큰");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"message\": \"유효하지 않은 토큰입니다.\"}");
                 return;
             }
         } catch (Exception e) {
-            System.out.println("❌ [JWT 필터] 토큰 처리 중 예외 발생: " + e.getMessage());
+            System.out.println("[JWT 필터] 토큰 처리 중 예외 발생: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");

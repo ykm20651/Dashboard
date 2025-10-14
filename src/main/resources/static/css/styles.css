@@ -497,3 +497,35 @@ html, body {
   justify-content: center;
   min-height: calc(100vh - 100px); /* 헤더 높이만큼 여백 확보 */
 }
+
+/* ===== 토스트 알림 ===== */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -20px);
+}
+
+.toast.success {
+  background: rgba(46, 204, 113, 0.9); /* 초록 */
+}
+.toast.error {
+  background: rgba(231, 76, 60, 0.9); /* 빨강 */
+}
+.toast.warning {
+  background: rgba(241, 196, 15, 0.9); /* 노랑 */
+}

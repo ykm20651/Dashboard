@@ -44,7 +44,7 @@ public class JwtTokenProvider {
             parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("❌ JWT 검증 실패: " + e.getMessage());
+            System.out.println("JWT 검증 실패: " + e.getMessage());
             return false;
         }
     }

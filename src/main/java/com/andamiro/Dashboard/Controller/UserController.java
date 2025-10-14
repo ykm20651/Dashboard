@@ -2,6 +2,7 @@ package com.andamiro.Dashboard.Controller;
 
 import com.andamiro.Dashboard.Dto.*;
 import com.andamiro.Dashboard.Dto.UserDTO.*;
+import com.andamiro.Dashboard.Security.CustomPrincipal;
 import com.andamiro.Dashboard.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,23 +66,23 @@ public class UserController {
     @Operation(summary = "내 정보 수정", description = "현재 로그인한 사용자 정보 수정")
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponse> updateCurrentUser(
-            @AuthenticationPrincipal UUID userId, @PathVariable UUID id,
+            @AuthenticationPrincipal CustomPrincipal principal, @PathVariable UUID id,
             @RequestBody UpdateUserRequest request) {
-        return ResponseEntity.ok(userService.updateUser(userId, id, request));
+        return ResponseEntity.ok(userService.updateUser(principal.getId(), id, request));
     }
 
     /* 00-06 본인 정보 조회 */
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자 정보 반환")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal UUID userId, @PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getUser(userId,id));
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal CustomPrincipal principal, @PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getUser(principal.getId(),id));
     }
 
     /* 00-07 본인 삭제 (회원 탈퇴) */
     @Operation(summary = "회원 탈퇴", description = "현재 로그인한 사용자 계정 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCurrentUser(@AuthenticationPrincipal UUID userId, @PathVariable UUID id) {
-        userService.deleteUser(userId, id);
+    public ResponseEntity<Void> deleteCurrentUser(@AuthenticationPrincipal CustomPrincipal principal, @PathVariable UUID id) {
+        userService.deleteUser(principal.getId(), id);
         return ResponseEntity.noContent().build();
     }
 }
