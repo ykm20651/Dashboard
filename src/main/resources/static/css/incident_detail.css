@@ -328,3 +328,73 @@ body::before {
   to { opacity: 1; }
 }
 
+/* ✅ 비디오 썸네일 크기 통일 (리스트 보기 편하게) */
+.evidence-card video.thumb {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.evidence-card video.thumb:hover {
+  transform: scale(1.05);
+}
+
+/* ✅ 프리뷰 컨테이너 공통 */
+.preview-container {
+  position: relative;
+  text-align: center;
+}
+.preview-container img.thumb,
+.preview-container video.thumb {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.preview-container img.thumb:hover,
+.preview-container video.thumb:hover {
+  transform: scale(1.05);
+}
+.download-link {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #ffb347;
+  text-decoration: underline;
+}
+
+/* ✅ 비디오 모달 */
+.video-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+.video-viewer video {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+}
+.video-viewer-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.video-viewer-close:hover {
+  color: #ff6b35;
+}

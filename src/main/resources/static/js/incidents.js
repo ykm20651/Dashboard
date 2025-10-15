@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  if (!requireAuth()) return;
+  
+  if (!requireAuth()) return; // 로그인 여부 확인
 
   const incidentList = document.getElementById("incidentList");
   const msg = document.getElementById("msg");
@@ -59,36 +60,38 @@ document.addEventListener("DOMContentLoaded", () => {
     (window.location.href = `report.html?incidentId=${id}`);
 
   // ✅ 사고 삭제
-  window.deleteIncident = async (id) => {
-    if (!confirm("정말 이 사고를 삭제하시겠습니까?")) return;
+window.deleteIncident = async (id) => {
+  if (!confirm("정말 이 사고를 삭제하시겠습니까?")) return;
 
-    try {
-      const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
-        method: "DELETE",
-        headers: getAuthHeaders(),
-      });
+  try {
+    const res = await fetch(`http://52.79.99.132/incidents/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
 
-      if (res.status === 401 || res.status === 403) {
-        showToast("❌ 삭제 권한이 없습니다.", "error");
-        return;
-      }
-
-      if (res.status === 404) {
-        showToast("⚠️ 이미 삭제된 사고입니다.", "warning");
-        return;
-      }
-
-      if (!res.ok) {
-        throw new Error("사고 삭제 실패");
-      }
-
-      showToast("✅ 사고가 삭제되었습니다.", "success");
-
-      setTimeout(loadIncidents, 1000);
-    } catch (err) {
-      showToast("❌ " + err.message, "error");
+    if (res.status === 401 || res.status === 403) {
+      showToast("❌ 삭제 권한이 없습니다.", "error");
+      return;
     }
-  };
+
+    if (res.status === 404) {
+      showToast("⚠️ 이미 삭제된 사고입니다.", "warning");
+      return;
+    }
+
+    if (!res.ok) throw new Error("사고 삭제 실패");
+
+    // ✅ 삭제 성공 시: 즉시 행 제거
+    const row = document.querySelector(`button[onclick="deleteIncident('${id}')"]`)?.closest("tr");
+    if (row) row.remove();
+
+    // ✅ 깔끔한 성공 메시지
+    showToast("🗑️ 사고가 성공적으로 삭제되었어요.", "success");
+  } catch (err) {
+    showToast("❌ " + err.message, "error");
+  }
+};
+
 
   loadIncidents();
 });
