@@ -1,5 +1,5 @@
 /* =======================================
-   OASIS | MyPage 통합 스크립트 (최종 확정)
+   OASIS | MyPage 통합 스크립트 (DB 연동 버전)
    ======================================= */
 
 let currentIncidents = [];
@@ -52,7 +52,7 @@ async function loadDashboardData() {
   displayRecentIncidents();
 }
 
-/* 사고 목록 불러오기 */
+/* ✅ 사고 목록 불러오기 (실제 DB) */
 async function loadIncidents() {
   try {
     const res = await fetch("http://52.79.99.132/incidents", {
@@ -60,12 +60,13 @@ async function loadIncidents() {
     });
     if (!res.ok) throw new Error("사고 불러오기 실패");
     currentIncidents = await res.json();
-  } catch {
-    currentIncidents = generateDummyIncidents();
+  } catch (err) {
+    showToast("❌ 사고 데이터를 불러올 수 없습니다.", "error");
+    currentIncidents = [];
   }
 }
 
-/* 보고서 목록 불러오기 */
+/* ✅ 보고서 목록 불러오기 (실제 DB) */
 async function loadReports() {
   try {
     const res = await fetch("http://52.79.99.132/reports", {
@@ -73,20 +74,21 @@ async function loadReports() {
     });
     if (!res.ok) throw new Error("보고서 불러오기 실패");
     currentReports = await res.json();
-  } catch {
-    currentReports = generateDummyReports();
+  } catch (err) {
+    showToast("❌ 보고서 데이터를 불러올 수 없습니다.", "error");
+    currentReports = [];
   }
 }
 
-/* 통계 업데이트 */
+/* ✅ 통계 업데이트 */
 function updateDashboardStats() {
   document.getElementById("totalIncidents").textContent = currentIncidents.length;
   document.getElementById("completedIncidents").textContent =
-    currentIncidents.filter((i) => i.status === "CLOSED").length; // ✅ 명세서: CLOSED
+    currentIncidents.filter((i) => i.status === "CLOSED").length;
   document.getElementById("totalReports").textContent = currentReports.length;
 }
 
-/* 최근 사고 표시 */
+/* ✅ 최근 사고 표시 */
 function displayRecentIncidents() {
   const container = document.getElementById("recentIncidents");
   if (!container) return;
@@ -102,7 +104,7 @@ function displayRecentIncidents() {
       (i) => `
       <div class="incident-summary">
         <div class="summary-header">
-          <h4>${i.title}</h4>
+          <h4>${i.title || "제목 없음"}</h4>
           <span class="status-badge status-${(i.status || "OPEN").toLowerCase()}">
             ${getStatusText(i.status || "OPEN")}
           </span>
@@ -117,54 +119,15 @@ function displayRecentIncidents() {
     .join("");
 }
 
-/* ✅ 상태 한글 변환 (명세서 기준: OPEN / REPORT_GENERATED / CLOSED) */
+/* ✅ 상태 한글 변환 (명세서 기준) */
 function getStatusText(status = "") {
-  // 1️⃣ 들어온 status를 전부 대문자로 변환
   const key = status.toUpperCase();
-
-  // 2️⃣ 대문자 기준으로 매핑 테이블 생성
   const map = {
     OPEN: "등록 완료",
     REPORT_GENERATED: "보고서 생성 완료",
-    CLOSED: "종결"
+    CLOSED: "종결",
   };
-
-  // 3️⃣ 매핑된 값 반환 (없으면 원본 그대로)
   return map[key] || status;
-}
-
-/* 더미 데이터 */
-function generateDummyIncidents() {
-  return [
-    {
-      id: "1",
-      title: "선박 충돌 사고",
-      incidentType: "충돌",
-      location: "부산항 신항",
-      happenedAt: new Date().toISOString(),
-      status: "OPEN",
-    },
-    {
-      id: "2",
-      title: "화재 사고",
-      incidentType: "화재",
-      location: "인천 북항",
-      happenedAt: new Date().toISOString(),
-      status: "CLOSED",
-    },
-  ];
-}
-
-function generateDummyReports() {
-  return [
-    {
-      id: "1",
-      title: "선박 충돌 사고 보고서",
-      incidentTitle: "선박 충돌 사고",
-      status: "완료",
-      generatedAt: new Date().toISOString(),
-    },
-  ];
 }
 
 /* ---------------------------------------
@@ -173,22 +136,18 @@ function generateDummyReports() {
 function bindQuickActionHandlers() {
   console.log("🔧 버튼 및 메뉴 이벤트 바인딩됨");
 
-  /* 새 사고 등록 */
   document.getElementById("newIncidentBtn")?.addEventListener("click", () => {
     window.location.href = "incident_register.html";
   });
 
-  /* 사고 분석 */
   document.getElementById("analysisBtn")?.addEventListener("click", () => {
     showToast("아직 서비스 개발 중입니다.", "info");
   });
 
-  /* 전체 보기 */
   document.getElementById("viewAllIncidentsBtn")?.addEventListener("click", () => {
     window.location.href = "incidents.html";
   });
 
-  /* 사이드바 - 내 정보 */
   document
     .querySelector('a[data-section="profile"]')
     ?.addEventListener("click", (e) => {
@@ -198,7 +157,6 @@ function bindQuickActionHandlers() {
       e.currentTarget.classList.add("active");
     });
 
-  /* 사이드바 - 보고서 */
   document
     .querySelector('a[data-section="reports"]')
     ?.addEventListener("click", (e) => {
@@ -206,7 +164,6 @@ function bindQuickActionHandlers() {
       window.location.href = "report.html";
     });
 
-  /* 사이드바 - 대시보드 */
   document
     .querySelector('a[data-section="dashboard"]')
     ?.addEventListener("click", (e) => {

@@ -31,10 +31,16 @@
         <input type="text" id="editLocation" disabled>
 
         <label>유형</label>
-        <input type="text" id="editType" disabled>
+        <select id="editType" disabled>
+        <option value="OIL_SPILL">기름 유출</option>
+        <option value="COLLISION">충돌</option>
+        <option value="FIRE">화재</option>
+        <option value="CREW_INJURY">승무원 부상</option>
+        </select>
 
         <label>발생시각</label>
-        <input type="text" id="editTime" disabled>
+        <input type="datetime-local" id="editTime" disabled>
+
 
         <label>상태</label>
         <select id="editStatus" disabled>

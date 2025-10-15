@@ -87,3 +87,87 @@ body::before {
   font-size: 0.95rem;
   text-align: center;
 }
+
+/* ✨ 토스트 기본 스타일 */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUp 0.4s ease forwards;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ 성공 알림 (부드러운 초록) */
+.toast.success {
+  background-color: #4caf50;
+}
+
+/* ⚠️ 경고 */
+.toast.warning {
+  background-color: #ffa500;
+}
+
+/* ❌ 에러 */
+.toast.error {
+  background-color: #f44336;
+}
+
+/* ✨ 애니메이션 효과 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ 사고 목록 상단 제목 + 버튼 */
+.incident-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+/* 제목 */
+.incident-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+/* 🍊 추가 버튼 (주황톤, 깔끔한 스타일) */
+#addIncidentBtn {
+  font-size: 15px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  background-color: #947255;      /* 기본 주황 */
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 0 8px rgba(255, 123, 0, 0.25); /* 은은한 주황빛 그림자 */
+}
+
+#addIncidentBtn:hover {
+  background-color: #ff914d;      /* 호버 시 살짝 밝게 */
+  transform: translateY(-1px);
+}
+
+/* 버튼 클릭 시 살짝 눌림 효과 */
+#addIncidentBtn:active {
+  transform: scale(0.97);
+}
+
