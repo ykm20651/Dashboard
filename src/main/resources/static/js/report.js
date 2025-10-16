@@ -13,6 +13,19 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ========================================
    ✅ 데이터 로드
 ======================================== */
+
+function showMessage(message, type = "info") {
+  const messageArea = document.getElementById("messageArea");
+  messageArea.textContent = message;
+  messageArea.className = `message-area ${type}`;
+  messageArea.style.display = "block";
+  setTimeout(() => {
+    messageArea.style.display = "none";
+  }, 3000);
+}
+
+
+
 async function loadData() {
   try {
     await Promise.all([loadIncidents(), loadReports()]);
