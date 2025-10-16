@@ -69,7 +69,7 @@ public class ReportService {
             );
 
             String taskId = fastApiClient.generateReport(fastApiRequest);
-            byte[] reportBytes = fastApiClient.downloadReport(taskId);
+            byte[] reportBytes = retryDownloadReport(taskId);
 
             // 보고서 저장
             String fileName = UUID.randomUUID() + "_AI_Report.pdf";
@@ -163,6 +163,19 @@ public class ReportService {
         log.info("보고서 {} 삭제 완료 (incident: {})", reportId, incidentId);
 
 
+    }
+
+    public byte[] retryDownloadReport(String taskId) throws InterruptedException {
+        int attempts = 5;
+        for (int i = 0; i < attempts; i++) {
+            try {
+                return fastApiClient.downloadReport(taskId);
+            } catch (Exception e) {
+                log.warn("다운로드 실패, 재시도 중... ({} / {})", i + 1, attempts);
+                Thread.sleep(1000L); // 1초 대기 후 재시도
+            }
+        }
+        throw new RuntimeException("다운로드 실패: 최대 재시도 횟수 초과");
     }
 
 }
