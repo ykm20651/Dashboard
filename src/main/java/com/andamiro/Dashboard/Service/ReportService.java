@@ -166,7 +166,7 @@ public class ReportService {
     }
 
     public byte[] retryDownloadReport(String taskId) throws InterruptedException {
-        int attempts = 5;
+        int attempts = 15;
         for (int i = 0; i < attempts; i++) {
             try {
                 return fastApiClient.downloadReport(taskId);
