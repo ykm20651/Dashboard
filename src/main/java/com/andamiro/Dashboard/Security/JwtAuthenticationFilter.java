@@ -116,6 +116,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (uri.matches("/users/[^/]+/owner-info") && method.equalsIgnoreCase("POST")) return true;
         if (uri.matches("/users/[^/]+/crew-info") && method.equalsIgnoreCase("POST")) return true;
 
+        // 보고서 다운로드 (AI PDF 파일)
+        if (uri.startsWith("/files/")) return true;
+
         // Swagger
         if (uri.startsWith("/swagger-ui")) return true;
         if (uri.startsWith("/v3/api-docs")) return true;
