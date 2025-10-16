@@ -47,7 +47,8 @@ public class SecurityConfig {
 
                         // 정적 리소스
                         .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
-
+                        .requestMatchers("/files/**").permitAll() //FastAPI에서 PDF를 바이트로 받아서 저장하지 않음.
+                        
                         // 에러 페이지 접근 허용 (추가)
                         .requestMatchers("/error").permitAll()
 
