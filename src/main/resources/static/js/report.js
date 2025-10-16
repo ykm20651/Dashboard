@@ -3,14 +3,10 @@
 let currentReports = [];
 let currentIncidents = [];
 
+// 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", () => {
-  // 로그인 상태 확인
   if (!requireAuth()) return;
-
-  // 데이터 로드
   loadData();
-
-  // 이벤트 리스너 설정
   setupEventListeners();
 });
 
@@ -28,18 +24,13 @@ async function loadData() {
   }
 }
 
-/* ========================================
-   ✅ 사고 목록 로드
-======================================== */
 async function loadIncidents() {
   try {
     const response = await fetch("http://52.79.99.132/incidents", {
       method: "GET",
       headers: getAuthHeaders(),
     });
-
     await handleApiError(response, "사고 목록을 불러올 수 없습니다.");
-
     currentIncidents = await response.json();
     return currentIncidents;
   } catch (error) {
@@ -49,19 +40,15 @@ async function loadIncidents() {
   }
 }
 
-/* ========================================
-   ✅ 보고서 목록 로드
-======================================== */
 async function loadReports() {
   try {
     const incidentId = getCurrentIncidentId();
+    if (!incidentId) return;
     const response = await fetch(`http://52.79.99.132/incidents/${incidentId}/reports`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
-
     await handleApiError(response, "보고서 목록을 불러올 수 없습니다.");
-
     currentReports = await response.json();
     return currentReports;
   } catch (error) {
@@ -94,8 +81,8 @@ async function generateReport() {
 
   try {
     showMessage("보고서를 생성하는 중...", "info");
-
     const incidentId = selectedIncidents[0];
+
     const response = await fetch(`http://52.79.99.132/incidents/${incidentId}/reports`, {
       method: "POST",
       headers: getAuthHeaders(),
@@ -116,4 +103,53 @@ async function generateReport() {
 function getCurrentIncidentId() {
   const params = new URLSearchParams(window.location.search);
   return params.get("incidentId") || "";
+}
+
+function populateIncidentSelect() {
+  const select = document.getElementById("selectedIncidents");
+  select.innerHTML = "";
+  currentIncidents.forEach((incident) => {
+    const option = document.createElement("option");
+    option.value = incident.id;
+    option.textContent = incident.title;
+    select.appendChild(option);
+  });
+}
+
+function setupEventListeners() {
+  document.getElementById("confirmGenerate").addEventListener("click", generateReport);
+  document.getElementById("generateNewReport").addEventListener("click", () => {
+    document.getElementById("generateModal").style.display = "block";
+  });
+  document.getElementById("refreshBtn").addEventListener("click", loadData);
+}
+
+function closeGenerateModal() {
+  document.getElementById("generateModal").style.display = "none";
+}
+
+function updateStats() {
+  document.getElementById("totalReports").textContent = currentReports.length;
+  const completed = currentReports.filter((r) => r.status === "완료").length;
+  const pending = currentReports.length - completed;
+  document.getElementById("completedReports").textContent = completed;
+  document.getElementById("pendingReports").textContent = pending;
+}
+
+function displayReports() {
+  const list = document.getElementById("reportsList");
+  list.innerHTML = "";
+  if (currentReports.length === 0) {
+    list.innerHTML = "<p class='empty-text'>등록된 보고서가 없습니다.</p>";
+    return;
+  }
+  currentReports.forEach((report) => {
+    const div = document.createElement("div");
+    div.className = "report-card";
+    div.innerHTML = `
+      <p><strong>보고서:</strong> <a href="${report.pdfUrl}" target="_blank">다운로드</a></p>
+      <p><strong>생성일:</strong> ${new Date(report.generatedAt).toLocaleString()}</p>
+    `;
+    list.appendChild(div);
+  });
 }
