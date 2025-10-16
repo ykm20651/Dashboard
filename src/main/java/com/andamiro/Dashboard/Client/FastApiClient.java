@@ -22,7 +22,7 @@ public class FastApiClient {
 
     private final RestTemplate restTemplate;
     
-    @Value("${fastapi.base-url:http://localhost:8000}")
+    @Value("${fastapi.base-url:https://unfertilising-uncontaminative-kristofer.ngrok-free.dev}")
     private String fastApiBaseUrl;
 
     /**
