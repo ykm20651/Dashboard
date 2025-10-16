@@ -54,7 +54,7 @@ async function loadIncidents() {
 ======================================== */
 async function loadReports() {
   try {
-    const response = await fetch("http://52.79.99.132/reports", {
+    const response = await fetch("http://52.79.99.132/incidents/${id}/reports", {
       method: "GET",
       headers: getAuthHeaders(),
     });

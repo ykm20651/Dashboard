@@ -30,7 +30,7 @@ public class FastApiClient {
      */
     public String generateReport(FastApiReportRequest request) {
         try {
-            String url = fastApiBaseUrl + "/generate-report"; //FastAPI 서버의 보고서 생성 url
+            String url = fastApiBaseUrl + "/generate/insurance"; //FastAPI 서버의 보고서 생성 url
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

@@ -12,9 +12,10 @@ import com.andamiro.Dashboard.Client.FastApiClient;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -38,47 +40,44 @@ public class ReportService {
 
     /* 03-01 보고서 생성 (Owner 전용, 본인 소유 Incident에 한해서) */
     @Transactional
-    public ReportResponse createReport(UUID userId, UUID incidentId, MultipartFile file) {
-        if (userId == null) {
-            throw new IllegalArgumentException("인증이 필요합니다.");
-        }
+    public ReportResponse createReport(UUID userId, UUID incidentId) {
+        if (userId == null) throw new IllegalArgumentException("인증이 필요합니다.");
 
-        // Incident 조회
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
 
-        // 본인 소유 사건인지 확인
         if (!incident.getCreator().getId().equals(userId)) {
             throw new AccessDeniedException("본인 소유 사건에 대해서만 보고서를 생성할 수 있습니다.");
         }
 
-        // 사용자 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다."));
 
         try {
-            // FastAPI 서버로 AI 보고서 생성 요청
+            // * FastAPI 요청 DTO 생성
             FastApiReportRequest fastApiRequest = new FastApiReportRequest(
-                incident.getIncidentType().toString(),
-                incident.getDescription(),
-                incident.getLocation(),
-                "INITIAL",  // 기본 보고서 유형
-                "ko"        // 기본 언어
+                    incident.getIncidentType().toString(),
+                    incident.getDescription(),
+                    incident.getLocation(),
+                    "INITIAL",
+                    "ko",  // or Locale 기반 언어
+                    true,
+                    "marine_laws",
+                    5,
+                    "gpt-4o-mini",
+                    "해양 보험 청구 보고서"
             );
 
             String taskId = fastApiClient.generateReport(fastApiRequest);
-            
-            // AI가 생성한 보고서 다운로드
             byte[] reportBytes = fastApiClient.downloadReport(taskId);
-            
-            // 파일 저장
+
+            // 보고서 저장
             String fileName = UUID.randomUUID() + "_AI_Report.pdf";
             Path filePath = Paths.get(UPLOAD_DIR, fileName);
 
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, reportBytes);
 
-            // DB 저장
             String pdfUrl = "/files/reports/" + fileName;
             Report report = Report.create(incident, user, pdfUrl);
             Report saved = reportRepository.save(report);
@@ -90,32 +89,13 @@ public class ReportService {
                     saved.getGeneratedBy().getId(),
                     saved.getGeneratedAt()
             );
-            
+
         } catch (Exception e) {
-            // FastAPI 서버 연결 실패 시 기존 파일 업로드 방식으로 폴백
-            try {
-                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                Path filePath = Paths.get(UPLOAD_DIR, fileName);
-
-                Files.createDirectories(filePath.getParent());
-                file.transferTo(filePath.toFile());
-
-                String pdfUrl = "/files/reports/" + fileName;
-                Report report = Report.create(incident, user, pdfUrl);
-                Report saved = reportRepository.save(report);
-
-                return new ReportResponse(
-                        saved.getId(),
-                        saved.getIncident().getId(),
-                        saved.getPdfUrl(),
-                        saved.getGeneratedBy().getId(),
-                        saved.getGeneratedAt()
-                );
-            } catch (IOException ioException) {
-                throw new RuntimeException("파일 저장 실패", ioException);
-            }
+            log.error("AI 보고서 생성 실패", e);
+            throw new RuntimeException("보고서 생성 실패: " + e.getMessage());
         }
     }
+
 
     /* 03-02 보고서 조회 (Owner 전용, 본인 소유 Incident에 한해서) */
     @Transactional
@@ -150,4 +130,39 @@ public class ReportService {
                 ))
                 .toList();
     }
+
+    /* 03-03 보고서 삭제 */
+    @Transactional
+    public void deleteReport(UUID userId, UUID incidentId, UUID reportId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("인증이 필요합니다.");
+        }
+
+        Incident incident = incidentRepository.findById((incidentId))
+                .orElseThrow(() -> new EntityNotFoundException("해당 사고를 찾을 수 없습니다."));
+
+        if (!incident.getCreator().getId().equals(userId)) {
+            throw new AccessDeniedException("본인 소유 사건에 대해서만 보고서를 삭제할 수 있습니다.");
+        }
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 보고서를 찾을 수 없습니다."));
+
+
+        // 경로 기반 파일 삭제
+        try {
+            String fileName = Paths.get(report.getPdfUrl()).getFileName().toString();
+            Path filePath = Paths.get(System.getProperty("user.dir"), "uploads", "reports", fileName);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            log.warn("파일 삭제 실패: {}", e.getMessage());
+        }
+
+        // DB 삭제
+        reportRepository.delete(report);
+        log.info("보고서 {} 삭제 완료 (incident: {})", reportId, incidentId);
+
+
+    }
+
 }
