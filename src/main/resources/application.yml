@@ -40,8 +40,8 @@ jwt:
   validity-ms: 3600000            # 1시간 (1000ms * 60 * 60)
 
 # FastAPI 서버 설정
-fastapi:
-  base-url: ${FASTAPI_BASE_URL:http://localhost:8000}  # 로컬 개발용 기본값
+#fastapi:
+#  base-url: ${FASTAPI_BASE_URL:http://localhost:8000}  # 로컬 개발용 기본값
 
 logging:
   level:
