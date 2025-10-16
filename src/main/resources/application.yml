@@ -48,3 +48,5 @@ logging:
     root: INFO
     org.hibernate.SQL: DEBUG      # SQL 쿼리 로그 표시
     org.hibernate.type: TRACE     # 파라미터 값까지 출력 (디버깅용)
+
+
