@@ -99,12 +99,6 @@ async function generateReport() {
     const response = await fetch(`http://52.79.99.132/incidents/${incidentId}/reports`, {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({
-        title,
-        incidentIds: selectedIncidents,
-        type,
-        description,
-      }),
     });
 
     await handleApiError(response, "보고서 생성 실패");
