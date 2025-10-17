@@ -4,23 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>보고서 관리 | OASIS</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/mypage.css">
   <link rel="stylesheet" href="css/report.css">
+
+  <!-- JS -->
   <script defer src="js/auth.js"></script>
   <script defer src="js/main.js"></script>
   <script defer src="js/report.js"></script>
 </head>
+
 <body>
-  <!-- ===== 상단 고정 헤더 ===== -->
   <header class="topbar blackbar">
     <div class="brand">
       <a href="index.html">
         <img src="images/오아시스 로고.png" alt="OASIS 로고" class="logo" />
       </a>
     </div>
-    
-    <!-- 중앙 네비게이션 -->
     <nav class="gnb">
       <ul>
         <li><a href="about.html">About</a></li>
@@ -30,56 +32,36 @@
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </nav>
-
-    <!-- 로그인 상태에 따른 헤더 변경 -->
-    <div class="auth" id="authSection">
-      <!-- 동적으로 로드됨 -->
-    </div>
+    <div class="auth" id="authSection"></div>
   </header>
 
   <main class="reports-container">
+    <!-- 상단 헤더 -->
     <div class="reports-header">
-      
       <h1>보고서 관리</h1>
       <p>사고 보고서를 생성하고 관리하세요</p>
-      
       <div class="header-actions">
-        <button class="btn-primary" id="generateNewReport">
-          <span class="btn-icon">📋</span>
-          새 보고서 생성
-        </button>
-        <button class="btn-secondary" onclick="window.location.href='incidents.html'">
-          <span class="btn-icon">🚨</span>
-          사고 관리
-        </button>
+        <button class="btn-primary" id="generateNewReport">새 보고서 생성</button>
+        <button class="btn-secondary" onclick="window.location.href='incidents.html'">사고 관리</button>
       </div>
     </div>
 
-    <!-- 필터 및 검색 -->
+    <!-- 필터 -->
     <div class="filter-section">
       <div class="filter-bar">
-        <select id="statusFilter" class="filter-select">
-          <option value="">전체 상태</option>
-          <option value="완료">완료</option>
-          <option value="진행중">진행중</option>
-          <option value="대기">대기</option>
-        </select>
-        
         <select id="typeFilter" class="filter-select">
           <option value="">전체 유형</option>
-          <option value="충돌">충돌</option>
-          <option value="화재">화재</option>
-          <option value="유출">유출</option>
-          <option value="좌초">좌초</option>
+          <option value="OIL_SPILL">유류 유출</option>
+          <option value="COLLISION">충돌</option>
+          <option value="FIRE">화재</option>
+          <option value="CREW_INJURY">선원 인명피해</option>
         </select>
-        
         <input type="text" id="searchInput" placeholder="보고서 제목 검색..." class="search-input">
-        
         <button class="btn-secondary" id="refreshBtn">새로고침</button>
       </div>
     </div>
 
-    <!-- 보고서 통계 -->
+    <!-- 통계 -->
     <div class="reports-stats">
       <div class="stat-item">
         <div class="stat-number" id="totalReports">0</div>
@@ -97,49 +79,39 @@
 
     <!-- 보고서 목록 -->
     <div class="reports-list-section">
-      <div id="reportsList" class="reports-list">
-        <!-- 보고서 목록이 여기에 로드됩니다 -->
-      </div>
+      <div id="reportsList" class="reports-list"></div>
     </div>
 
-    <!-- 보고서 생성 모달 -->
+    <!-- ✅ 보고서 생성 모달 -->
     <div id="generateModal" class="modal" style="display: none;">
       <div class="modal-content">
         <div class="modal-header">
           <h2>새 보고서 생성</h2>
           <button class="modal-close" onclick="closeGenerateModal()">&times;</button>
         </div>
-        
+
         <div class="modal-body">
           <div class="form-group">
-            <label for="reportTitle">보고서 제목</label>
-            <input type="text" id="reportTitle" placeholder="보고서 제목을 입력하세요">
-          </div>
-          
-          <div class="form-group">
-            <label for="selectedIncidents">관련 사고 선택</label>
-            <select id="selectedIncidents" multiple>
-              <!-- 사고 목록이 여기에 로드됩니다 -->
-            </select>
-            <small>Ctrl+클릭으로 여러 사고를 선택할 수 있습니다</small>
-          </div>
-          
-          <div class="form-group">
-            <label for="reportType">보고서 유형</label>
-            <select id="reportType">
-              <option value="insurance">보험 보고서</option>
-              <option value="official">공식 보고서</option>
-              <option value="internal">내부 보고서</option>
-              <option value="custom">커스텀 보고서</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="reportDescription">추가 설명</label>
-            <textarea id="reportDescription" rows="4" placeholder="보고서에 대한 추가 설명을 입력하세요"></textarea>
+            <!-- ✅ 테이블로 변경됨 -->
+            <div class="incident-table-wrapper">
+              <table id="incidentTable" class="incident-table">
+                <thead>
+                  <tr>
+                    <th>제목</th>
+                    <th>유형</th>
+                    <th>지역</th>
+                    <th>날짜</th>
+                  </tr>
+                </thead>
+                <tbody id="incidentTableBody">
+                  <!-- JS에서 동적 추가 -->
+                </tbody>
+              </table>
+            </div>
+            <small>사고를 클릭하여 선택하고 ‘보고서 생성’을 누르세요</small>
           </div>
         </div>
-        
+
         <div class="modal-footer">
           <button class="btn-secondary" onclick="closeGenerateModal()">취소</button>
           <button class="btn-primary" id="confirmGenerate">보고서 생성</button>
@@ -148,7 +120,7 @@
     </div>
   </main>
 
-  <!-- 메시지 표시 영역 -->
-  <div id="messageArea" class="message-area"></div>
+  <!-- ✅ 알림(Toast) 컨테이너 -->
+  <div id="toastContainer" class="toast-container"></div>
 </body>
 </html>

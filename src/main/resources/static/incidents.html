@@ -1,19 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>사고 목록 | OASIS</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/incidents.css">
-  <script defer src="js/auth.js"></script> 
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/incidents.css" />
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/util.js"></script>
   <script defer src="js/incidents.js"></script>
-  <script defer src="js/utils.js"></script>
 </head>
 <body>
   <main class="incidents-container">
     <!-- 로고 -->
     <a href="index.html" class="logo-link">
-      <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo">
+      <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo" />
     </a>
 
     <section class="section-box">
@@ -23,21 +23,28 @@
         <button id="addIncidentBtn" class="btn primary">사고 등록</button>
       </div>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th>제목</th>
-            <th>유형</th>
-            <th>위치</th>
-            <th>발생일시</th>
-            <th>상태</th>
-            <th>액션</th>
-          </tr>
-        </thead>
-        <tbody id="incidentList">
-          <tr><td colspan="6">사고가 없습니다.</td></tr>
-        </tbody>
-      </table>
+      <!-- ✅ 테이블을 감싸는 스크롤/페이징 컨테이너 -->
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>제목</th>
+              <th>유형</th>
+              <th>위치</th>
+              <th>발생일시</th>
+              <th>상태</th>
+              <th>액션</th>
+            </tr>
+          </thead>
+          <tbody id="incidentList">
+            <tr><td colspan="6">사고가 없습니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ✅ 페이지네이션 -->
+      <div class="pagination" id="pagination"></div>
+
       <p id="msg"></p>
     </section>
   </main>
