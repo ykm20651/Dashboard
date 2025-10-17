@@ -36,4 +36,12 @@ public class ResponseGuideController {
         List<ResponseGuideResponse> response = responseGuideService.getGuides(principal.getId(), id);
         return ResponseEntity.ok(response);
     }
+
+    /* 04-03: 맞춤형 대응 가이드 삭제 */
+    @Operation(summary = "맞춤형 대응 가이드 삭제", description = "사고에 대한 대응 가이드를 삭제합니다.")
+    @DeleteMapping("/{guideId}")
+    public ResponseEntity<Void> deleteGuide(@AuthenticationPrincipal CustomPrincipal principal, @PathVariable UUID incidentId, @PathVariable UUID guideId) {
+        responseGuideService.deleteGuide(principal.getId(), incidentId, guideId);
+        return ResponseEntity.noContent().build();
+    }
 }

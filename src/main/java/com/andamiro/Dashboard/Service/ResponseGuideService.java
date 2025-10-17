@@ -146,4 +146,23 @@ public class ResponseGuideService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    /* 04-03 API 맞춤형 대응 가이드 삭제 (Owner 전용, 본인 소유 사건만 가능) */
+    @Transactional
+    public void deleteGuide(UUID userId, UUID incidentId, UUID guideId) {
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사고를 찾을 수 없습니다."));
+        
+        ResponseGuide guide = responseGuideRepository.findById(guideId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 대응 가이드를 찾을 수 없습니다."));
+        
+        if (!incident.getCreator().getId().equals(userId)) {
+            throw new AccessDeniedException("본인 소유 사건의 대응 가이드만 삭제할 수 있습니다.");
+        }
+                
+        
+        responseGuideRepository.delete(guide);
+
+
+    }
 }

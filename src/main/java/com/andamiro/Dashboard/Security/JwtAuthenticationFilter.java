@@ -123,6 +123,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (uri.startsWith("/swagger-ui")) return true;
         if (uri.startsWith("/v3/api-docs")) return true;
 
+        if (uri.equals("/favicon.ico")) return true;
+
+
         // 정적 리소스
         if (uri.startsWith("/static/") || uri.startsWith("/css/") ||
                 uri.startsWith("/js/") || uri.startsWith("/images/")) return true;
