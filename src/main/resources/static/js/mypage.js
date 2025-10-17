@@ -12,7 +12,7 @@ let currentUser = null;
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ OASIS MyPage Loaded");
 
-  if (!requireAuth()) return;
+  if (!requireAuth()) return; // 로그인 여부 확인
 
   loadUserInfo();
   loadDashboardData();
@@ -61,7 +61,7 @@ async function loadIncidents() {
     if (!res.ok) throw new Error("사고 불러오기 실패");
     currentIncidents = await res.json();
   } catch (err) {
-    showToast("❌ 사고 데이터를 불러올 수 없습니다.", "error");
+    showToast("사고 데이터를 불러올 수 없습니다.", "error");
     currentIncidents = [];
   }
 }
@@ -75,7 +75,7 @@ async function loadReports() {
     if (!res.ok) throw new Error("보고서 불러오기 실패");
     currentReports = await res.json();
   } catch (err) {
-    showToast("❌ 보고서 데이터를 불러올 수 없습니다.", "error");
+    showToast("보고서 데이터를 불러올 수 없습니다.", "error");
     currentReports = [];
   }
 }
@@ -145,7 +145,11 @@ function bindQuickActionHandlers() {
   });
 
   document.getElementById("viewAllIncidentsBtn")?.addEventListener("click", () => {
-    window.location.href = "incidents.html";
+    window.open(
+    "incidents.html",
+    "IncidentsWindow",
+    "width=1200,height=800,resizable=yes,scrollbars=yes"
+  );
   });
 
   document
@@ -228,3 +232,158 @@ function showSection(sectionId) {
   const target = document.getElementById(sectionId);
   if (target) target.classList.add("active");
 }
+
+/* ---------------------------------------
+   ✅ 내 정보(프로필) 기능 (비밀번호 선택적 변경)
+   ✅ 서버 명세: { "name": "...", "password": "..." }
+--------------------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const updateBtn = document.getElementById("updateProfileBtn");
+  const deleteBtn = document.getElementById("deleteAccountBtn");
+
+  /* ✅ 정보 업데이트 버튼 */
+  updateBtn?.addEventListener("click", async () => {
+    const name = document.getElementById("profileName").value.trim();
+    const newPassword = document.getElementById("newPassword").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+    // 🔸 비밀번호 입력 시 일치 여부 검사
+    if (newPassword && newPassword !== confirmPassword) {
+      showToast("비밀번호가 일치하지 않습니다", "error");
+      return;
+    }
+
+    // 🔸 전송할 데이터 구성 (입력된 항목만)
+    const bodyData = {};
+    if (name) bodyData.name = name;
+    if (newPassword) bodyData.password = newPassword;
+
+    // 아무것도 입력 안 하면 중단
+    if (Object.keys(bodyData).length === 0) {
+      showToast("변경할 정보가 없습니다.", "info");
+      return;
+    }
+
+    try {
+      const userId = getUserId ? getUserId() : null;
+      if (!userId) throw new Error("사용자 ID를 찾을 수 없습니다.");
+
+      const res = await fetch(`http://52.79.99.132/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(getAuthHeaders ? getAuthHeaders() : {}),
+        },
+        body: JSON.stringify(bodyData), // ✅ {"name": "...", "password": "..."}
+      });
+
+      if (!res.ok) throw new Error("정보 업데이트 실패");
+
+      // ✅ 성공 처리
+      showToast("정보가 변경되었습니다", "info");
+
+      // 입력칸 초기화
+      document.getElementById("profileName").value = "";
+      document.getElementById("newPassword").value = "";
+      document.getElementById("confirmPassword").value = "";
+    } catch (err) {
+      showToast("❌ " + err.message, "error");
+    }
+  });
+
+  /* ✅ 계정 삭제 버튼 */
+  deleteBtn?.addEventListener("click", () => {
+    const overlay = document.createElement("div");
+    overlay.className = "confirm-overlay";
+    overlay.innerHTML = `
+      <div class="confirm-box">
+        <h3>⚠️ 정말로 삭제하시겠습니까?</h3>
+        <p>이 작업은 되돌릴 수 없습니다.</p>
+        <div class="confirm-actions">
+          <button id="confirmYes" class="btn-danger">예</button>
+          <button id="confirmNo" class="btn-secondary">아니오</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    document.getElementById("confirmNo").addEventListener("click", () => overlay.remove());
+
+    document.getElementById("confirmYes").addEventListener("click", async () => {
+      try {
+        const userId = getUserId ? getUserId() : null;
+        if (!userId) throw new Error("사용자 ID를 찾을 수 없습니다.");
+
+        const res = await fetch(`http://52.79.99.132/users/${userId}`, {
+          method: "DELETE",
+          headers: getAuthHeaders ? getAuthHeaders() : {},
+        });
+
+        if (!res.ok) throw new Error("계정 삭제 실패");
+
+        overlay.remove();
+
+        // ✅ 로그아웃 (토큰 제거)
+        localStorage.removeItem("token");
+
+        showToast("계정이 삭제되었습니다", "info");
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500);
+      } catch (err) {
+        showToast("❌ " + err.message, "error");
+      }
+    });
+  });
+});
+
+/* ✅ 경고창 스타일 */
+const confirmStyle = document.createElement("style");
+confirmStyle.innerHTML = `
+.confirm-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.confirm-box {
+  background: #fff;
+  padding: 24px 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  text-align: center;
+  max-width: 320px;
+}
+.confirm-box h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.confirm-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+.btn-danger {
+  background: #f44336;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-secondary {
+  background: #ccc;
+  color: #000;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-danger:hover { background: #d32f2f; }
+.btn-secondary:hover { background: #b0b0b0; }
+`;
+document.head.appendChild(confirmStyle);
