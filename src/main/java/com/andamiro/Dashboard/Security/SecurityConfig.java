@@ -35,6 +35,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/favicon.ico").permitAll()
 
                         // 회원가입 / 로그인 허용
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
