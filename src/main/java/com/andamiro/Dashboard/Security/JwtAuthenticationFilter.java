@@ -33,6 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         System.out.println("[JWT 필터] 요청 감지: " + method + " " + requestURI);
+        if (requestURI.equals("/favicon.ico")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         //  1. Preflight OPTIONS 요청은 즉시 통과
         if (method.equalsIgnoreCase("OPTIONS")) {
