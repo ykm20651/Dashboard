@@ -113,12 +113,12 @@ function renderPagination(currentPage) {
       });
 
       if (res.status === 401 || res.status === 403) {
-        showToast("❌ 삭제 권한이 없습니다.", "error");
+        showToast("삭제 권한이 없습니다.", "error");
         return;
       }
 
       if (res.status === 404) {
-        showToast("⚠️ 이미 삭제된 사고입니다.", "warning");
+        showToast("이미 삭제된 사고입니다.", "warning");
         return;
       }
 
@@ -126,7 +126,7 @@ function renderPagination(currentPage) {
 
       allIncidents = allIncidents.filter((i) => i.id !== id);
       renderPage(1);
-      showToast("🗑️ 사고가 성공적으로 삭제되었어요.", "success");
+      showToast("사고가 성공적으로 삭제되었어요.", "success");
     } catch (err) {
       showToast("❌ " + err.message, "error");
     }

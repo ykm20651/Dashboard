@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         evidenceGrid.appendChild(card);
       }
     } catch (err) {
-      console.error("❌ 증거자료 로드 오류:", err);
+      console.error("증거자료 로드 오류:", err);
     }
   }
 
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
       }
     } catch (err) {
-      console.error("❌ 미리보기 로드 오류:", err);
+      console.error("미리보기 로드 오류:", err);
       container.innerHTML = `<p style="color:#f66;">불러오기 실패</p>`;
     }
 
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (!res.ok) throw new Error("수정 실패");
 
-      showToast("✅ 수정 완료되었습니다.", "success");
+      showToast("수정 완료되었습니다.", "success");
       deletedEvidenceIds.clear();
       toggleForm(false);
       await loadIncident();
@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
   deleteSelectedBtn.addEventListener("click", () => {
     const checked = document.querySelectorAll(".select-check:checked");
     if (!checked.length) {
-      showToast("⚠️ 삭제할 증거자료를 선택하세요.", "warning");
+      showToast("삭제할 증거자료를 선택하세요.", "warning");
       return;
     }
 
@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
       box.closest(".evidence-card").remove();
     });
 
-    showToast("🗑️ 선택한 증거자료가 삭제 예정입니다. 저장 시 반영됩니다.", "warning");
+    showToast("선택한 증거자료가 삭제 예정입니다. 저장 시 반영됩니다.", "warning");
   });
 
   loadIncident();
