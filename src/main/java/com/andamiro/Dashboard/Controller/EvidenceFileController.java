@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,5 +62,19 @@ public class EvidenceFileController {
             @PathVariable UUID id,
             @RequestBody EvidenceFileUpdateRequest request) {
         return ResponseEntity.ok(evidenceFileService.updateEvidenceFile(principal.getId(), id, request));
+    }
+
+    /* 02-05 API 증거자료 다운로드 매핑 */
+    @Operation(summary = "증거자료 다운로드", description = "증거자료를 다운로드합니다.")
+    @GetMapping("/evidence-files/{id}")
+    public ResponseEntity<Resource> downloadEvidenceFile(
+        @AuthenticationPrincipal CustomPrincipal principal,
+        @PathVariable UUID id) {
+            Resource resource = evidenceFileService.downloadEvidenceFile(principal.getId(), id);
+    
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, 
+                            "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
     }
 }

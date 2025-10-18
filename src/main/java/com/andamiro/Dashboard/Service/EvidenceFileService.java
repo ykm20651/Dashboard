@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +28,7 @@ public class EvidenceFileService {
     private final EvidenceFileRepository evidenceFileRepository;
     private final IncidentRepository incidentRepository;
     private final UserRepository userRepository;
-    // ✅ 로컬에서는 프로젝트 루트 기준 uploads/reports/
+    // 로컬에서는 프로젝트 루트 기준 uploads/reports/
     // 운영 서버에서는 /var/app/uploads/reports/ 같은 절대경로로 잡는 게 안전함
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/evidence/";
 
@@ -63,7 +65,7 @@ public class EvidenceFileService {
 
         try {
             Files.createDirectories(filePath.getParent()); // 디렉토리 없으면 생성
-            file.transferTo(filePath.toFile());
+            file.transferTo(filePath.toFile()); //1. 실제 물리적으로 ec2 로컬 폴더에 파일을 저장하게 된다.
         } catch (IOException e) {
             throw new RuntimeException("증거 파일 저장 실패", e);
         }
@@ -75,7 +77,7 @@ public class EvidenceFileService {
                 : EvidenceFile.FileType.IMAGE;
 
         // DB 저장
-        String fileUrl = "/files/evidence/" + fileName; // static 매핑
+        String fileUrl = "/files/evidence/" + fileName; // 2. 여기서 실제 msyql DB에 evidence_files 테이블에 파일 정보가 저장된다.
         EvidenceFile evidenceFile = EvidenceFile.create(
                 incident,
                 uploader,
@@ -127,4 +129,33 @@ public class EvidenceFileService {
                 file.getDeletedAt() != null ? file.getDeletedAt() : file.getCreatedAt()
         );
     }
+
+    /* 02-05 API 증거자료 다운로드 */
+    //실제 ec2 로컬 물리적으로 저장된 파일을 다운로드 해주는 메서드
+    public Resource downloadEvidenceFile(UUID userId, UUID fileId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+        EvidenceFile file = evidenceFileRepository.findById(fileId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 증거자료를 찾을 수 없습니다."));
+        
+        String fileName = file.getFileUrl().replace("/files/evidence/", "");
+        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+        
+        try {
+            return new UrlResource(filePath.toUri());
+        } catch (IOException e) {
+            throw new RuntimeException("파일을 찾을 수 없습니다.", e);
+        }
+    }
+
+    /*
+    1. 물리적 파일 저장 경로 (EC2 서버):
+        ->증거자료: /home/ubuntu/Dashboard/uploads/evidence/
+        ->AI 보고서: /home/ubuntu/Dashboard/uploads/reports/
+        
+    2. DB 저장 경로 (URL 형태):
+        ->증거자료: /files/evidence/파일명
+        ->AI 보고서: /files/reports/파일명
+
+    */
 }
