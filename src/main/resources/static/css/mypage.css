@@ -235,7 +235,7 @@
   
   /* 기본(흰색) → hover(주황) */
   .stat-icon.accident { background-image: url('../images/icons/accident_w.png'); }
-  .stat-icon.check    { background-image: url('../images/icons/check_w.png'); }
+  .stat-icon.check    { background-image: url('../images/icons/check_W.png'); }
   .stat-icon.report   { background-image: url('../images/icons/report_w.png'); }
   
   .stat-card:hover .stat-icon.accident { background-image: url('../images/icons/accident_o.png'); }

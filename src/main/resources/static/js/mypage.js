@@ -30,6 +30,7 @@ async function loadUserInfo() {
     const userRole = getUserRole() || "OWNER";
     const userName = userEmail.split("@")[0];
 
+    // 🔹 프로필 정보 업데이트
     document.getElementById("avatarName").textContent = `${userName}님`;
     document.getElementById("userEmailSidebar").textContent = userEmail;
     document.getElementById("userRoleBadge").textContent =
@@ -41,7 +42,6 @@ async function loadUserInfo() {
     showToast("사용자 정보를 불러오지 못했습니다.", "error");
   }
 }
-
 /* ---------------------------------------
    ✅ 대시보드 데이터 로드
 --------------------------------------- */

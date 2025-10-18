@@ -18,21 +18,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ 사고 목록 로드
-  async function loadIncidents() {
-    try {
-      const res = await fetch(`http://52.79.99.132/incidents`, {
-        method: "GET",
-        headers: getAuthHeaders(),
-      });
+async function loadIncidents() {
+  try {
+    const res = await fetch(`http://52.79.99.132/incidents`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
 
-      if (!res.ok) throw new Error("사고 목록을 불러올 수 없습니다.");
+    if (!res.ok) throw new Error("사고 목록을 불러올 수 없습니다.");
 
-      allIncidents = await res.json();
-      renderPage(1);
-    } catch (err) {
-      showToast("❌ " + err.message, "error");
-    }
+    allIncidents = await res.json();
+
+    // 🔹 DB에 저장된 실제 UUID만 남기기
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    allIncidents = allIncidents.filter((i) => uuidRegex.test(i.id));
+
+    renderPage(1);
+  } catch (err) {
+    showToast("❌ " + err.message, "error");
   }
+}
+
 
   // ✅ 페이지 렌더링
   function renderPage(page) {

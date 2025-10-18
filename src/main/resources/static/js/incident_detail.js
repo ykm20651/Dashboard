@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const statusKey = (data.status || "").toUpperCase();
       const statusText = statusTextMap[statusKey] || "등록 완료";
-      statusSelect.value = statusText;
+      statusSelect.value = statusKey; // 👈 select에서 코드값으로 유지
     } catch (err) {
       msg.innerText = "❌ " + err.message;
       msg.style.color = "red";
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
   saveEditBtn.addEventListener("click", async () => {
     try {
       const token = localStorage.getItem("token");
-      const selectedStatus = reverseStatusMap[statusSelect.value] || "OPEN";
+      const selectedStatus = statusSelect.value.toUpperCase(); // ✅ 그대로 코드로 전송
       const happenedAtISO = timeInput.value ? new Date(timeInput.value).toISOString() : null;
 
       const body = {
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (!res.ok) throw new Error("수정 실패");
 
-      showToast("✅ 수정 완료", "success");
+      showToast("수정 완료", "success");
       toggleForm(false);
       await loadIncident();
       await loadEvidence(false);
@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (!res.ok) throw new Error("증거자료 업로드 실패");
 
-      showToast("✅ 업로드 성공", "success");
+      showToast("업로드 성공", "success");
       fileInput.value = "";
       descInput.value = "";
       loadEvidence(editMode);
@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ✅ 선택 삭제 (실시간 서버 반영) */
+  /* ✅ 선택 삭제 */
   deleteSelectedBtn.addEventListener("click", async () => {
     const checked = document.querySelectorAll(".select-check:checked");
     if (!checked.length) {
@@ -252,10 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      showToast("✅ 선택한 증거자료가 삭제되었습니다.", "success");
+      showToast("선택한 증거자료가 삭제되었습니다.", "success");
       loadEvidence(editMode);
     } catch (err) {
-      showToast("❌ 삭제 실패", "error");
+      showToast("삭제 실패", "error");
     }
   });
 
