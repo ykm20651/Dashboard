@@ -82,11 +82,22 @@ async function loadReports() {
 
 /* ✅ 통계 업데이트 */
 function updateDashboardStats() {
+  // 전체 사고 수
   document.getElementById("totalIncidents").textContent = currentIncidents.length;
-  document.getElementById("completedIncidents").textContent =
-    currentIncidents.filter((i) => i.status === "CLOSED").length;
-  document.getElementById("totalReports").textContent = currentReports.length;
+
+  // 처리 완료: CLOSED 상태
+  const closedCount = currentIncidents.filter(
+    (i) => (i.status || "").toUpperCase() === "CLOSED"
+  ).length;
+  document.getElementById("completedIncidents").textContent = closedCount;
+
+  // 생성된 보고서: REPORT_GENERATED 상태
+  const reportGeneratedCount = currentIncidents.filter(
+    (i) => (i.status || "").toUpperCase() === "REPORT_GENERATED"
+  ).length;
+  document.getElementById("totalReports").textContent = reportGeneratedCount;
 }
+
 
 /* ✅ 최근 사고 표시 */
 function displayRecentIncidents() {

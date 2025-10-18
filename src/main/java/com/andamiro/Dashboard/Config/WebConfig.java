@@ -20,6 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        /*docker-compose.yml - 도커 컨테이너 <-> ec2 환경에서 working_dir 여기조심해야 한다.
+        * 도커 내 프로젝트 복사 폴더랑 ec2환경 폴더랑 경로가 다르니 유의하며 정적 리소스 파일 경로 생각하기
+        *  */
         // 증거자료 파일 접근 허용
         registry.addResourceHandler("/files/evidence/**")
                 .addResourceLocations("file:/home/ec2-user/Dashboard/uploads/evidence/");
