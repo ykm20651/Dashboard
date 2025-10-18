@@ -20,7 +20,7 @@ body::before {
 .incidents-container {
   position: relative;
   z-index: 1;
-  max-width: 1000px;
+  max-width: 1300px;
   margin: 120px auto 60px auto;
   padding: 0 20px;
   text-align: center;
@@ -51,6 +51,7 @@ body::before {
 /* ===== 테이블 ===== */
 .table {
   width: 100%;
+  min-width: 950px;
   border-collapse: collapse;
   margin-top: 20px;
   font-size: 0.95rem;
@@ -72,21 +73,40 @@ body::before {
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* ✅ 테이블 래퍼: 5행만 표시되도록 */
+/* ✅ 스크롤 제거 (스크롤 대신 페이지 전환만) */
+/* ✅ 테이블을 가로로 넘치면 스크롤되게 */
 .table-wrapper {
-  max-height: 320px; /* 약 5행 정도 높이 */
-  overflow-y: auto;
+  max-height: none;              /* 세로 제한 제거 */
+  overflow-y: visible;
+  overflow-x: auto;              /* 가로 스크롤 허용 */
   border-radius: 8px;
   margin-top: 10px;
   background: rgba(255, 255, 255, 0.02);
 }
-
-/* 스크롤 시 헤더 고정 */
+/* 스크롤 시 헤더 고정 제거 */
 .table thead th {
-  position: sticky;
-  top: 0;
   background: rgba(41, 41, 41, 0.95);
   z-index: 2;
+}
+
+/* ✅ 액션 버튼 가로 정렬 */
+.table th:last-child,
+.table td:last-child {
+  width: 220px;
+  white-space: nowrap;
+}
+
+.table td:last-child {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.table td:last-child .btn {
+  min-width: 55px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* ===== 버튼 ===== */
@@ -114,58 +134,7 @@ body::before {
   color: #fff;
 }
 
-/* 메시지 */
-#msg {
-  margin-top: 15px;
-  font-size: 0.95rem;
-  text-align: center;
-}
-
-/* ✨ 토스트 기본 스타일 */
-.toast {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 14px 20px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  color: white;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: slideUp 0.4s ease forwards;
-  z-index: 1000;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* ✅ 성공 알림 */
-.toast.success {
-  background-color: #4caf50;
-}
-
-/* ⚠️ 경고 */
-.toast.warning {
-  background-color: #ffa500;
-}
-
-/* ❌ 에러 */
-.toast.error {
-  background-color: #f44336;
-}
-
-/* ✨ 애니메이션 효과 */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ✅ 사고 목록 상단 제목 + 버튼 */
+/* ✅ 상단 제목 + 버튼 */
 .incident-header {
   display: flex;
   justify-content: space-between;
@@ -181,12 +150,12 @@ body::before {
   color: #fff;
 }
 
-/* 🍊 추가 버튼 (주황톤, 깔끔한 스타일) */
+/* 🍊 추가 버튼 */
 #addIncidentBtn {
   font-size: 15px;
   padding: 7px 16px;
   border-radius: 6px;
-  background-color: #da6d0d; /* 기본 주황 */
+  background-color: #da6d0d;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -203,7 +172,7 @@ body::before {
   transform: scale(0.97);
 }
 
-/* ✅ 페이지네이션 스타일 */
+/* ✅ 페이지네이션 */
 .pagination {
   display: flex;
   justify-content: center;
@@ -256,7 +225,8 @@ body::before {
     gap: 10px;
   }
 
-  .table th, .table td {
+  .table th,
+  .table td {
     font-size: 0.85rem;
     padding: 8px;
   }
@@ -264,4 +234,16 @@ body::before {
   #addIncidentBtn {
     width: 100%;
   }
+
+  .table th:last-child,
+  .table td:last-child {
+    width: auto;
+  }
+}
+
+.table td {
+  white-space: nowrap;      /* 긴 텍스트 줄바꿈 방지 */
+  overflow: hidden;         /* 넘치는 부분 숨김 */
+  text-overflow: ellipsis;  /* ... 표시 */
+  max-width: 250px;         /* 셀 최대 너비 제한 */
 }

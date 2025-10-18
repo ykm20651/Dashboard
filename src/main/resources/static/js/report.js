@@ -3,10 +3,22 @@ let currentReports = [];
 let currentIncidents = [];
 let selectedIncidentId = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!requireAuth()) return; // 로그인 여부 확인
-  loadData(false);
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!requireAuth()) return; // 로그인 확인
+  
+  await loadData(false);
   setupEventListeners();
+
+  // ✅ URL 파라미터에 autoGenerate=true가 있을 때 자동으로 모달 열기
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("autoGenerate") === "true") {
+    await loadIncidents();
+    populateIncidentTable();
+
+    const modal = document.getElementById("generateModal");
+    modal.style.display = "flex";
+    modal.classList.add("window-mode");
+  }
 });
 
 /* ==============================
@@ -54,13 +66,12 @@ async function loadReports() {
             ...r,
             incidentId: incident.id,
             incidentTitle: incident.title,
-            incidentType: incident.incidentType,
-            downloadUrl: r.pdfUrl || (
-           r.fileName
-           ? `http://52.79.99.132/files/report/${encodeURIComponent(r.fileName)}`
-            : null
-            ),
-
+            incidentType: normalizeType(incident.incidentType), // ✅ 표준화된 유형 저장
+            downloadUrl:
+              r.pdfUrl ||
+              (r.fileName
+                ? `http://52.79.99.132/files/report/${encodeURIComponent(r.fileName)}`
+                : null),
           });
         });
       }
@@ -224,34 +235,21 @@ function selectIncident(row, id) {
 function setupEventListeners() {
   const modal = document.getElementById("generateModal");
 
-  // 🔹 검색창 입력 시 실시간 반영
   document.getElementById("searchInput").addEventListener("input", displayReports);
-
-  // 새로고침
   document.getElementById("refreshBtn").addEventListener("click", () => loadData(true));
-
-  // 새 보고서 생성 → 모달 열기
   document.getElementById("generateNewReport").addEventListener("click", async () => {
     await loadIncidents();
     populateIncidentTable();
     selectedIncidentId = null;
-
     modal.style.display = "flex";
     modal.classList.add("window-mode");
   });
-
-  // ✅ 유형 필터 변경 시 보고서 목록 즉시 갱신
   document.getElementById("typeFilter").addEventListener("change", displayReports);
-
-  // 보고서 생성 버튼
   document.getElementById("confirmGenerate").addEventListener("click", generateReport);
 
-  // ESC로 닫기
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeGenerateModal();
   });
-
-  // 배경 클릭 닫기
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeGenerateModal();
   });
@@ -260,6 +258,24 @@ function setupEventListeners() {
 /* ==============================
    🔹 공통 함수
 ============================== */
+function normalizeType(t) {
+  if (!t) return "";
+  if (typeof t === "object" && t.name) t = t.name;
+  return String(t).trim().toUpperCase().replace(/\s+/g, "_");
+}
+
+function convertType(t) {
+  if (!t) return "기타";
+  const key = normalizeType(t);
+  const map = {
+    OIL_SPILL: "유류 유출",
+    COLLISION: "충돌",
+    FIRE: "화재",
+    CREW_INJURY: "선원 인명피해",
+  };
+  return map[key] || "기타";
+}
+
 function updateStats() {
   document.getElementById("totalReports").textContent = currentReports.length;
   const completed = currentReports.filter(
@@ -280,17 +296,6 @@ function formatDate(iso) {
   const hh = String(d.getHours()).padStart(2, "0");
   const mi = String(d.getMinutes()).padStart(2, "0");
   return `${d.getFullYear()}. ${mm}. ${dd} ${hh}:${mi}`;
-}
-
-function convertType(t) {
-  return (
-    {
-      OIL_SPILL: "유류 유출",
-      COLLISION: "충돌",
-      FIRE: "화재",
-      CREW_INJURY: "선원 인명피해",
-    }[t] || "기타"
-  );
 }
 
 function escapeHtml(s) {

@@ -25,6 +25,26 @@ function getUserEmail() {
 }
 
 /**
+ * JWT 토큰에서 사용자 ID를 추출합니다
+ * @returns {string|null} 사용자 ID 또는 null
+ */
+function getUserId() {
+    const token = getToken();
+    if (!token) return null;
+
+    try {
+        // JWT 구조: header.payload.signature
+        const payload = JSON.parse(atob(token.split(".")[1]));
+
+        // 서버 JWT 구조에 따라 id/userId/sub 중 하나 반환
+        return payload.id || payload.userId || payload.sub || null;
+    } catch (e) {
+        console.error("❌ getUserId decoding error:", e);
+        return null;
+    }
+}
+
+/**
  * 로그인 상태를 확인합니다
  * @returns {boolean} 로그인 여부
  */
@@ -41,7 +61,7 @@ function getAuthHeaders() {
     if (!token) {
         throw new Error("로그인이 필요합니다.");
     }
-    
+
     return {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
@@ -81,7 +101,7 @@ function requireAuth(redirectTo = "login.html") {
 function hasRole(allowedRoles) {
     const userRole = getUserRole();
     if (!userRole) return false;
-    
+
     if (Array.isArray(allowedRoles)) {
         return allowedRoles.includes(userRole);
     }
@@ -96,7 +116,7 @@ function hasRole(allowedRoles) {
  */
 function requireRole(allowedRoles, redirectTo = "index.html") {
     if (!requireAuth()) return false;
-    
+
     if (!hasRole(allowedRoles)) {
         alert("접근 권한이 없습니다.");
         window.location.href = redirectTo;
@@ -115,11 +135,11 @@ async function fetchUserInfo(userId) {
         method: "GET",
         headers: getAuthHeaders()
     });
-    
+
     if (!response.ok) {
         throw new Error("사용자 정보를 가져올 수 없습니다.");
     }
-    
+
     return await response.json();
 }
 
@@ -135,7 +155,7 @@ async function handleApiError(response, defaultMessage = "요청 처리 중 오�
             logout();
             throw new Error("로그인이 만료되었습니다. 다시 로그인해주세요.");
         }
-        
+
         let errorMessage = defaultMessage;
         try {
             const errorData = await response.json();
@@ -143,7 +163,7 @@ async function handleApiError(response, defaultMessage = "요청 처리 중 오�
         } catch (e) {
             // JSON 파싱 실패 시 기본 메시지 사용
         }
-        
+
         throw new Error(errorMessage);
     }
 }

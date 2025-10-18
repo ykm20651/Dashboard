@@ -4,7 +4,6 @@
       licenseKey: 'gplv3-license',
       anchors: ['home', 'analysis', 'data', 'report'],
       navigation: true,
-      navigationTooltips: ['메인 화면', '유형 분석', '데이터 관리', '보고서 생성'],
       showActiveTooltip: true,
       paddingTop: '100px',
       fixedElements: '.topbar',
