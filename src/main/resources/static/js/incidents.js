@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   
-  if (!requireAuth()) return; // 로그인 여부 확인
+  if (!requireAuth()) return; // 로그인 확인
 
   const incidentList = document.getElementById("incidentList");
   const pagination = document.getElementById("pagination");

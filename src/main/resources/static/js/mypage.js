@@ -221,7 +221,7 @@ document.getElementById("updateProfileBtn")?.addEventListener("click", async () 
     // ✅ 폼 하단 안내문 표시
     const form = document.querySelector(".profile-form");
     const message = document.createElement("p");
-    message.textContent = "✅ 입력한 정보가 저장되었습니다.";
+    message.textContent = "입력한 정보가 저장되었습니다.";
     message.style.color = "#4CAF50";
     message.style.marginTop = "10px";
     message.style.fontWeight = "600";
