@@ -191,7 +191,7 @@ public class IncidentService {
         if (userId == null) {
             throw new IllegalArgumentException("인증이 필요합니다.");
         }
-        
+
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사고 없음"));
 
@@ -199,19 +199,50 @@ public class IncidentService {
             throw new AccessDeniedException("본인 소유 사건만 수정할 수 있습니다.");
         }
 
-        incident.update(request.title(), request.description(), request.location());
+        // Enum 변환
+        Incident.IncidentType newType = null;
+        if (request.incidentType() != null && !request.incidentType().isBlank()) {
+            try {
+                newType = Incident.IncidentType.valueOf(request.incidentType().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("유효하지 않은 사고 유형입니다: " + request.incidentType());
+            }
+        }
+
+        Incident.Status newStatus = null;
+        if (request.status() != null && !request.status().isBlank()) {
+            try {
+                newStatus = Incident.Status.valueOf(request.status().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("유효하지 않은 상태입니다: " + request.status());
+            }
+        }
+
+        incident.update(
+                request.title(),
+                request.description(),
+                request.location(),
+                newType,
+                request.happenedAt(),
+                newStatus
+        );
+
+
+        // updatedAt 자동 반영
         incidentRepository.save(incident);
 
         return new IncidentUpdateResponse(
                 incident.getId(),
                 incident.getTitle(),
                 incident.getDescription(),
-                incident.getIncidentType().name().toLowerCase(),
+                incident.getIncidentType().name(),
                 incident.getLocation(),
                 incident.getHappenedAt(),
-                LocalDateTime.now()
+                incident.getUpdatedAt(),
+                incident.getStatus().name()
         );
     }
+
 
     /* 01-05 사고 삭제 (Owner 전용, 본인 소유만) */
     @Transactional
