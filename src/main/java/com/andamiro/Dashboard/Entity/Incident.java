@@ -88,7 +88,14 @@ public class Incident {
         i.reportedAt = LocalDateTime.now();
         return i;
     }
-    public void update(String title, String description, String location) {
+    public void update(
+            String title,
+            String description,
+            String location,
+            IncidentType incidentType,
+            LocalDateTime happenedAt,
+            Status status
+    ) {
         if (title != null && !title.isBlank()) {
             this.title = title;
         }
@@ -98,8 +105,18 @@ public class Incident {
         if (location != null && !location.isBlank()) {
             this.location = location;
         }
+        if (incidentType != null) {
+            this.incidentType = incidentType;
+        }
+        if (happenedAt != null) {
+            this.happenedAt = happenedAt;
+        }
+        if (status != null) {
+            this.status = status;
+        }
         this.updatedAt = LocalDateTime.now();
     }
+
 
     public void close() { this.status = Status.CLOSED; }
     public void markReportGenerated() { this.status = Status.REPORT_GENERATED; }
