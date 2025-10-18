@@ -3,12 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>사고 상세 | OASIS</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/incident_detail.css">
-
-  <!-- JS (순서 중요) -->
   <script src="js/util.js" defer></script>
   <script src="js/auth.js" defer></script>
   <script src="js/incident_detail.js" defer></script>
@@ -16,14 +12,12 @@
 
 <body>
   <main class="detail-container">
-    <!-- 로고 -->
     <div class="logo-wrapper">
       <a href="index.html" class="logo-link">
         <img src="images/오아시스 로고2.png" alt="OASIS Logo" class="logo">
       </a>
     </div>
 
-    <!-- 사고 정보 -->
     <section class="section-box">
       <h2>사고 상세</h2>
       <form id="incidentForm" class="detail-form">
@@ -49,9 +43,9 @@
 
         <label>상태</label>
         <select id="editStatus" disabled>
-          <option value="등록 완료">등록 완료</option>
-          <option value="보고서 생성 완료">보고서 생성 완료</option>
-          <option value="종결">종결</option>
+          <option value="OPEN">등록 완료</option>
+          <option value="REPORT_GENERATED">보고서 생성 완료</option>
+          <option value="CLOSED">종결</option>
         </select>
 
         <div class="action-btns">
@@ -62,13 +56,12 @@
       </form>
     </section>
 
-    <!-- 증거자료 -->
     <section class="section-box evidence-section">
       <div class="evidence-header">
         <h3>증거자료</h3>
         <div>
           <button id="openEvidenceModal" class="btn primary">전체보기</button>
-          <button id="deleteSelected" class="btn danger" style="display:none;">삭제</button>
+          <button id="deleteSelected" class="btn danger">선택 삭제</button>
         </div>
       </div>
 
@@ -83,31 +76,15 @@
       </form>
     </section>
 
-    <p id="msg"></p>
     <div id="toastContainer"></div>
   </main>
 
-  <!-- ✅ 증거자료 전체보기 모달 -->
+  <!-- ✅ 전체보기 모달 -->
   <div id="evidenceModal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn" id="closeEvidenceModal">&times;</span>
       <h3>증거자료 목록</h3>
-
-      <!-- 🔍 검색 + 정렬 -->
-      <div class="filter-bar">
-        <input type="text" id="searchInput" placeholder="검색 (설명 또는 파일유형)">
-        <select id="sortSelect">
-          <option value="latest">최신순</option>
-          <option value="oldest">오래된순</option>
-          <option value="image">이미지</option>
-          <option value="video">비디오</option>
-        </select>
-      </div>
-
-      <!-- 📄 목록 -->
-      <div id="evidenceListContainer" class="modal-grid"></div>
-
-      <!-- 🔢 페이지네이션 -->
+      <div id="modalEvidenceGrid" class="modal-grid"></div>
       <div class="pagination">
         <button id="prevPage" class="btn small">◀ 이전</button>
         <span id="pageIndicator">1 / 1</span>
