@@ -33,12 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         System.out.println("[JWT 필터] 요청 감지: " + method + " " + requestURI);
-        if (requestURI.equals("/favicon.ico")) {
+
+        // favicon, 정적 리소스, 파일 다운로드 등은 바로 통과
+        if (isWhitelisted(requestURI, method)) {
+            System.out.println("[JWT 필터] 화이트리스트 경로 통과 → " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
 
-        //  1. Preflight OPTIONS 요청은 즉시 통과
+        // OPTIONS 프리플라이트 요청은 즉시 통과
         if (method.equalsIgnoreCase("OPTIONS")) {
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -46,13 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Credentials", "false");
             response.setStatus(HttpServletResponse.SC_OK);
             System.out.println("[JWT 필터] OPTIONS 요청 통과 (CORS)");
-            return;
-        }
-
-        //  2. 화이트리스트 경로는 JWT 검사 생략
-        if (isWhitelisted(requestURI, method)) {
-            System.out.println("[JWT 필터] 화이트리스트 경로 통과 → " + requestURI);
-            filterChain.doFilter(request, response);
             return;
         }
 
@@ -69,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //  4. JWT 검증
         try {
             System.out.println("[JWT 필터] 토큰 검증 시작: " + token.substring(0, Math.min(20, token.length())) + "...");
-            
+
             if (jwtTokenProvider.validateToken(token)) {
                 UUID userId = jwtTokenProvider.getUserId(token);
                 User.Role role = jwtTokenProvider.getRole(token);
@@ -107,7 +103,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * 화이트리스트 경로 설정
-     * 회원가입(/users [POST]), 로그인(/users/login [POST]), 추가 정보 등록, Swagger, 정적 리소스
+     * (기존보다 더 넓게 허용, 특히 /files/evidence/** 명시 추가)
      */
     private boolean isWhitelisted(String uri, String method) {
 
@@ -115,25 +111,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (uri.equals("/users") && method.equalsIgnoreCase("POST")) return true;
         // 로그인
         if (uri.equals("/users/login") && method.equalsIgnoreCase("POST")) return true;
-        
-        // 추가 정보 등록 (회원가입 과정의 일부)
+        // 추가 정보 등록
         if (uri.matches("/users/[^/]+/owner-info") && method.equalsIgnoreCase("POST")) return true;
         if (uri.matches("/users/[^/]+/crew-info") && method.equalsIgnoreCase("POST")) return true;
 
-        // 보고서 다운로드 (AI PDF 파일)
-        if (uri.startsWith("/files/")) return true;
-
-        // Swagger
-        if (uri.startsWith("/swagger-ui")) return true;
-        if (uri.startsWith("/v3/api-docs")) return true;
-
-        if (uri.equals("/favicon.ico")) return true;
-
-
-        // 정적 리소스
-        if (uri.startsWith("/static/") || uri.startsWith("/css/") ||
-                uri.startsWith("/js/") || uri.startsWith("/images/")) return true;
-        if (uri.equals("/") || uri.endsWith(".html")) return true;
+        // 정적 파일 및 보고서, 증거자료 경로 허용
+        if (uri.startsWith("/files/")
+                || uri.startsWith("/uploads/")
+                || uri.startsWith("/static/")
+                || uri.startsWith("/css/")
+                || uri.startsWith("/js/")
+                || uri.startsWith("/images/")
+                || uri.equals("/")
+                || uri.endsWith(".html")
+                || uri.equals("/favicon.ico")) {
+            return true;
+        }
+        if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs")) return true;
 
         return false;
     }
