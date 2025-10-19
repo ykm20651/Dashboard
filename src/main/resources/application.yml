@@ -26,8 +26,21 @@ spring:
       cache:
         period: 3600              # 정적 자원 캐시 1시간 유지
 
+  http: #한글 파일명이나 요청 인코딩 깨짐 방지
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 server:
   port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 springdoc:
   swagger-ui:
@@ -48,5 +61,3 @@ logging:
     root: INFO
     org.hibernate.SQL: DEBUG      # SQL 쿼리 로그 표시
     org.hibernate.type: TRACE     # 파라미터 값까지 출력 (디버깅용)
-
-
