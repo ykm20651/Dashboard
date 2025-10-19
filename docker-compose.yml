@@ -32,9 +32,7 @@ services:
     working_dir: /app
     volumes:
       - "/home/ec2-user/Dashboard/.env:/app/.env:ro"
-
-      # uploads 폴더를 EC2와 컨테이너 모두 동일 경로로 매핑
-      - /home/ec2-user/Dashboard/uploads:/home/ec2-user/Dashboard/uploads
+      - "/home/ec2-user/Dashboard/uploads:/app/uploads"
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=UTC&characterEncoding=UTF-8

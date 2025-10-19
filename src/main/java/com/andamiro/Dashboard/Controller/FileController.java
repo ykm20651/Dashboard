@@ -17,9 +17,8 @@ import java.nio.file.Paths;
 @RequestMapping("/files")
 public class FileController {
 
-    private static final String UPLOAD_DIR_REPORT = "/home/ec2-user/Dashboard/uploads/reports/";
-    private static final String UPLOAD_DIR_EVIDENCE = "/home/ec2-user/Dashboard/uploads/evidence/";
-
+    private static final String UPLOAD_DIR_REPORT = "/app/uploads/reports/";
+    private static final String UPLOAD_DIR_EVIDENCE = "/app/uploads/evidence/";
 
     /* 03-04 보고서 파일 반환 (inline 미리보기 or 다운로드) */
     @GetMapping("/reports/{fileName:.+}")
