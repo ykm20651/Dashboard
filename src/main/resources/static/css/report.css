@@ -19,7 +19,7 @@
   margin: 0 0 10px;
   font-size: 36px;
   font-weight: 700;
-  background: linear-gradient(135deg, #007bff, #00d4ff);
+  background: linear-gradient(135deg, #ff6b35, #ff6b35);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -129,7 +129,7 @@
 .stat-number {
   font-size: 36px;
   font-weight: 700;
-  color: #007bff;
+  color: #ff6b35;
   margin-bottom: 8px;
 }
 
@@ -343,7 +343,7 @@
 
 .modal-header h2 {
   margin: 0;
-  color: #007bff;
+  color: #ff6b35;
   font-size: 24px;
 }
 
