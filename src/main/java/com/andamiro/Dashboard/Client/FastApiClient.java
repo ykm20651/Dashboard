@@ -27,7 +27,7 @@ public class FastApiClient {
      * @return 생성된 task ID
      */
     public String generateReport(FastApiReportRequest request) {
-        String url = fastApiBaseUrl + "/generate/insurance";
+        String url = fastApiBaseUrl + "/generate/structured";
 
         try {
             HttpHeaders headers = new HttpHeaders();
