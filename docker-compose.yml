@@ -32,8 +32,16 @@ services:
     working_dir: /app
     volumes:
       - "/home/ec2-user/Dashboard/.env:/app/.env:ro"
-      - "/home/ec2-user/Dashboard/uploads:/app/uploads"
+      - "/home/ec2-user/Dashboard/uploads:/app/uploads" #EC2의 /home/ec2-user/Dashboard/uploads 폴더를 컨테이너 내부 /app/uploads에 ‘창문으로 연결’시켜줘
+    # EC2 호스트
+    #/home/ec2-user/Dashboard/uploads/
+    #├── evidence/
+    #└── reports/
 
+    # 컨테이너 내부 (마운트 후)
+    #/app/uploads/   ←== 여기서 보면 사실 EC2 폴더를 보고 있는 것
+    #├── evidence/
+    #└── reports/
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=UTC&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
