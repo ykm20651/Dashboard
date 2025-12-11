@@ -11,7 +11,6 @@ body {
   color: #fff;
 }
 
-
 /* ====== 상단 헤더 ====== */
 .topbar.blackbar {
   position: fixed;
@@ -72,31 +71,42 @@ body {
 /* ====== Hero ====== */
 .hero {
   height: 100vh;
-  background: url("../images/메인화면.png") center top / cover repeat-y;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
   position: relative;
-  animation: flowBg 15s linear infinite;
-}
-@keyframes flowBg {
-  from { background-position: center 0; }
-  to   { background-position: center 100%; }
+  overflow: hidden; /* ⭐ 영상 넘침 방지 */
 }
 
+/* 🔹 Hero 배경 영상 */
+.hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* 화면 꽉 채우기 */
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;       /* 클릭/스크롤 방해 제거 */
+}
+
+/* 어두운 오버레이 */
 .overlay {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.36);
-  pointer-events: none; /* fullPage 스크롤 방해 방지 */
+  pointer-events: none;
+  z-index: 1;
 }
 
+/* 텍스트 콘텐츠 */
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   max-width: 850px;
-  padding: 0 1.5rem;  
+  padding: 0 1.5rem;
 }
 
 .hero-title {
@@ -117,9 +127,8 @@ body {
   gap: 50px;
 }
 .cta-buttons a:first-child {
-  margin-right: 20px; 
+  margin-right: 20px;
 }
-
 
 .cta {
   padding: 15px 36px;
@@ -165,7 +174,6 @@ body {
   align-items: center;
   text-align: center;
   padding: 4rem 2rem;
-  /* fullPage.js가 높이를 관리하므로 min-height 제거 */
 }
 .section.service h2 {
   font-size: 2.3rem;
@@ -185,51 +193,47 @@ body {
 .section.data,
 .section.report {
   background: #111;
-
 }
-
 
 /* ===== 데이터 관리 섹션 ===== */
 .data-desc {
   max-width: 900px;
   font-size: 1.2rem;
   line-height: 1.8;
-  color: #ddd;                       /* 조금 더 밝은 회색으로 대비 확보 */
+  color: #ddd;
   margin-bottom: 3rem;
 }
 
 .data-visual {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;      /* 중앙 정렬 유지 */
+  justify-content: center;
   align-items: flex-start;
   gap: 40px;
-  width: 100%;                  /* 부모를 전체 폭으로 */
-  max-width: 1400px;            /* 최대 폭을 더 넉넉하게 */
-  margin: 0 auto 3rem auto;     /* 가운데 위치 */
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 3rem auto;
 }
 
 .data-image {
-  flex: 1 1 600px;              /* 최소 800px까지 확보 */
-  max-width: 800px;            /* 최대 폭을 화면 크기에 맞춰 확대 */
-  width: 100%;                  /* 컨테이너 안에서 가득 채우기 */
+  flex: 1 1 600px;
+  max-width: 800px;
+  width: 100%;
   border-radius: 12px;
-  
-  border: 1.5px solid rgba(255,255,255,0.15);   /* 은은한 밝은 테두리 */
-  box-shadow: 0 8px 20px rgba(0,0,0,0.8);     /* 기존보다 살짝 진한 그림자 */
+  border: 1.5px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);
 }
 
 .data-explain {
   flex: 1 1 250px;
   max-width: 450px;
-  background: rgba(34,34,34,0.9);   /* 기존 rgba(30,30,30,0.8) → 약간 더 진하고 선명 */
+  background: rgba(34,34,34,0.9);
   padding: 2rem;
   border-radius: 12px;
   color: #eee;
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
   border: 1.4px solid rgba(255,255,255,0.15);
 }
-
 
 .data-explain h3 {
   font-size: 1.6rem;
@@ -248,7 +252,7 @@ body {
 }
 
 .data-explain li strong {
-  color: #ff6b35; /* 포인트 색상 */
+  color: #ff6b35;
 }
 
 /* ===== 자동 클레임 보고서 섹션 ===== */
@@ -277,26 +281,22 @@ body {
   margin: 0 auto 3rem auto;
 }
 
-/* --- 이미지 절반 노출 컨테이너 --- */
 .report-image-half {
   flex: 1 1 55%;
   max-width: 700px;
   width: 100%;
-  height: 350px;                 /* 절반만 보이도록 높이 제한 */
-  overflow: hidden;              /* 나머지 절반 잘라냄 */
+  height: 350px;
+  overflow: hidden;
   border-radius: 12px;
   border: 1.5px solid rgba(255,255,255,0.2);
   box-shadow: 0 8px 20px rgba(0,0,0,0.8);
 }
 
-/* 실제 이미지 : 위쪽 기준으로 절반만 */
 .report-image {
   width: 100%;
   height: auto;
-  transform: translateY(-0%);    /* 필요시 -10% 등으로 윗부분 더 이동 */
 }
 
-/* --- 설명 박스 --- */
 .report-explain {
   flex: 1 1 45%;
   max-width: 800px !important;
@@ -305,7 +305,7 @@ body {
   border-radius: 12px;
   color: #eee;
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  border: 1.4px solid rgba(255,255,255,0.15); 
+  border: 1.4px solid rgba(255,255,255,0.15);
 }
 
 .report-explain h3 {
@@ -328,7 +328,7 @@ body {
   color: #ff6b35;
 }
 
-/* 반응형: 좁은 화면에서는 세로 배치 */
+/* 반응형 */
 @media (max-width: 1000px) {
   .report-visual {
     flex-direction: column;
@@ -339,7 +339,8 @@ body {
     max-width: 100%;
   }
 }
-/* ===== 사고 유형 분석 : 기본 구조 복원 ===== */
+
+/* ===== 사고 유형 분석 ===== */
 .analysis-desc {
   max-width: 900px;
   font-size: 1.2rem;
@@ -349,7 +350,6 @@ body {
   text-align: center;
 }
 
-/* 이미지 박스 */
 .analysis-fullimage {
   width: 100%;
   max-width: 1000px;
@@ -361,17 +361,16 @@ body {
   margin-bottom: 10px;
 }
 
-/* 이미지 전체가 잘리지 않고 축소 */
 .analysis-fullimage .analysis-image {
   width: 100%;
-  max-height: 500px;    /* 필요 시 높이 조절 */
-  object-fit: contain;  /* 비율 유지하며 잘리지 않음 */
+  max-height: 500px;
+  object-fit: contain;
   object-position: center;
   display: block;
   background: #000;
 }
 
-/* ====== 사용자 인증 관련 스타일 ====== */
+/* ===== 사용자 인증 스타일 ===== */
 .user-info {
   display: flex;
   align-items: center;
@@ -445,7 +444,6 @@ body {
   border-top: 1px solid #eee;
 }
 
-/* 사용자 버튼 그룹 스타일 */
 .cta-buttons > div {
   display: flex;
   gap: 16px;
@@ -453,17 +451,16 @@ body {
   flex-wrap: wrap;
 }
 
+/* 모바일 인증 스타일 */
 @media (max-width: 768px) {
   .user-info {
     flex-direction: column;
     gap: 4px;
     margin-right: 8px;
   }
-  
   .user-email {
     font-size: 12px;
   }
-  
   .user-role {
     font-size: 10px;
     padding: 2px 6px;
@@ -477,30 +474,13 @@ body {
   opacity: 0 !important;
 }
 
-/* ✅ 첫 번째 섹션(메인)에서만 스크롤바 안 뜨게 고정 */
-.section.hero {
-  overflow: hidden !important;  /* 내부 스크롤 완전 차단 */
-}
-
-/* ✅ 브라우저 자체 스크롤바는 숨기지 않음 (다른 섹션 위해) */
-html, body {
-  height: 100%;
-  overflow-x: hidden; /* 가로 스크롤만 방지 */
-}
-
-/* ✅ hero 섹션 배경 고정 및 정확한 비율 맞춤 */
-.hero {
-  background: url("../images/메인화면.png") center center / cover no-repeat;
-  background-attachment: scroll;
-}
-
-/* ✅ hero 안 내용이 화면 중앙에 다 들어오도록 위치 조정 */
+/* 요청된 hero 조정 */
 .hero .content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 100px); /* 헤더 높이만큼 여백 확보 */
+  min-height: calc(100vh - 100px);
 }
 
 /* ===== 토스트 알림 ===== */
@@ -526,11 +506,11 @@ html, body {
 }
 
 .toast.success {
-  background: rgba(46, 204, 113, 0.9); /* 초록 */
+  background: rgba(46, 204, 113, 0.9);
 }
 .toast.error {
-  background: rgba(231, 76, 60, 0.9); /* 빨강 */
+  background: rgba(231, 76, 60, 0.9);
 }
 .toast.warning {
-  background: rgba(241, 196, 15, 0.9); /* 노랑 */
+  background: rgba(241, 196, 15, 0.9);
 }
