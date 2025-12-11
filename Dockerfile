@@ -1,5 +1,5 @@
 # 1. JDK 21이 포함된 경량 베이스 이미지
-FROM openjdk:21-jdk
+FROM eclipse-temurin:21-jdk
 
 # 2. 타임존 설정 (한국)
 ENV TZ=Asia/Seoul
